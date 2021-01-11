@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="yanglei" />
+  <meta name="description" content="仅作为学习记录" />
+  
+  
+  <title>
+    
+      jvm体系结构 
+      
+      
+      |
+    
+     个人博客
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+  <!-- jquery3.3.1 -->
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- fancybox -->
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <script async src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">积少成多</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">主页</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">归档</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">分类</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">标签</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">关于</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+<!-- LaTex Display -->
+<!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> -->
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  }
+};
+</script>
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">jvm体系结构</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2020-12-19 16:50:39
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/java/" title="java">
+                    <b>#</b> java
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/jvm/" title="jvm">
+                    <b>#</b> jvm
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="JVM体系结构"><a href="#JVM体系结构" class="headerlink" title="JVM体系结构"></a>JVM体系结构</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>​        JVM 是可运行 Java 代码的假想计算，包括<strong>一套字节码指令集、一组寄存器、一个栈、一个垃圾回收、堆和一个存储方法域</strong>。 JVM 是运行在操作系统之上的，它与硬件没有直接的交互。</p>
+<h2 id="JVM内存模型"><a href="#JVM内存模型" class="headerlink" title="JVM内存模型"></a>JVM内存模型</h2><p>完整内存模型图见：<a target="_blank" rel="noopener" href="https://www.processon.com/diagraming/5d42ca2ce4b043dcf84e8764">https://www.processon.com/diagraming/5d42ca2ce4b043dcf84e8764</a></p>
+<p><img src="/2020/12/19/java/jvm/java-jvm-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/1610267566650.png" alt="1610267566650"></p>
+<ul>
+<li>JVM 内存区域主要分为：线程私有区域【<strong>程序计数器、虚拟机栈、本地方法区</strong>】、线程共享区域【 <strong>JAVA 堆、方法区</strong>】、直接内存。</li>
+</ul>
+<ul>
+<li>线程私有区域生命周期与线程相同，依赖用户线程的启动/结束 而 创建/销毁(在 Hotspot VM 内，每个线程都与操作系统的本本地线程直接映射，因此这部分内存区域的存/否跟随本地线程的生/死对应)。</li>
+</ul>
+<ul>
+<li>线程区域随虚拟机的启动/关闭而创建/销毁。</li>
+</ul>
+<ul>
+<li>直接内存并不是 JVM 运行时数据区的一部分，但也会被频繁的使用：在 JDK1.4 引入的 NIO 提供了基于 Channel 与 Buffer 的 IO 方式，它可以使用 Native 函数库直接分配堆外内存，然后使用 DirectByteBuffer 对象作为这块内存的引用进行操作，这样就避免了在 Java 堆和 Native 堆中来回复制数据，因此在一些场景中可以显著提高性能。</li>
+</ul>
+<h3 id="程序计数器（线程私有）"><a href="#程序计数器（线程私有）" class="headerlink" title="程序计数器（线程私有）"></a>程序计数器（线程私有）</h3><ul>
+<li>字节码解释器从程序计数器中取出指令，实现对流程的控制</li>
+</ul>
+<ul>
+<li><p><strong>在线程切换的过程中，保存当前线程的执行位置，以便在线程恢复执行的时候找到正确的执行位置</strong></p>
+</li>
+<li><p>唯一一个不会发生 OutOfMemoryError 的区域。</p>
+</li>
+</ul>
+<h3 id="Java虚拟机栈（线程私有）"><a href="#Java虚拟机栈（线程私有）" class="headerlink" title="Java虚拟机栈（线程私有）"></a>Java虚拟机栈（线程私有）</h3><ul>
+<li>由一组栈帧组成，栈帧用来保存<strong>局部变量、操作数栈、动态链接、方法出口</strong>等信息，栈帧随着方法调用而创建，随着方法结束而销毁—-无论方法是正常完成还是异常完成（抛出了在方法内未捕获的异常）都算方法结束。</li>
+<li>局部变量表主要存放了编译期可知的各种<strong>数据类型</strong>（boolean,byte,char,short,int,float,long,double）、<strong>对象引用</strong>（reference类型，它不同于对象本身，可能是一个指向对象起始地址的应用指针，也可能是指向一个代表对象的句柄或其他与此对象相关的位置）。</li>
+<li>StackOverFlowError：若 java 虚拟机的内存大小不动态扩展，那么当线程请求栈的深度超过当前 java 虚拟机栈的最大深度的时候，就抛出 StackOverFlowError 错误。</li>
+<li>OutOfMemory：若 java 虚拟机堆中没有空闲内存，并且垃圾收集器也无法提供更多的内存。就会抛出 OutOfMemoryError 错误。</li>
+<li>每一次函数的调用就是对应栈帧的一次入栈到出栈的过程。</li>
+</ul>
+<h3 id="本地方法栈（线程私有）"><a href="#本地方法栈（线程私有）" class="headerlink" title="本地方法栈（线程私有）"></a>本地方法栈（线程私有）</h3><ul>
+<li>使用到的是本地方法服务。</li>
+<li>HotSpot 虚拟机中和 Java 虚拟机栈合二为一。</li>
+<li>线程私有区域，他的生命周期随着线程的创建而开始，随着线程的消亡而结束。</li>
+</ul>
+<h3 id="堆（-Heap-线程共享-）-运行时数据区"><a href="#堆（-Heap-线程共享-）-运行时数据区" class="headerlink" title="堆（ Heap-线程共享 ）-运行时数据区"></a>堆（ Heap-线程共享 ）-运行时数据区</h3><ul>
+<li><p>目的是存放对象实例，几乎所有的对象实例和数组都在这里分配内存</p>
+</li>
+<li><p>随着JTI编译器的发展和逃逸分析技术的成熟，栈上分配、变量替换优化技术，使得所有对象在堆上的分配变得不那么绝对。<strong>如果某些方法中的对象引用没有被返回或者未被外面使用，那么对象可以直接在栈上分配内存</strong>。</p>
+</li>
+<li><p>堆是垃圾收集器管理的主要区域，因此才被称为GC堆，现在垃圾收集器都是采用<strong>分代收集算法</strong>。Java堆细分：新生代和老年代，在细致一点的话就是：伊甸区，from区，to区。划分的目的是更好的回收内存，或者更快的分配内存。</p>
+</li>
+</ul>
+<h3 id="方法区-永久代（线程共享）"><a href="#方法区-永久代（线程共享）" class="headerlink" title="方法区/永久代（线程共享）"></a>方法区/永久代（线程共享）</h3><ul>
+<li>用于存放已被虚拟机加载的类信息，常量，静态变量，即时编译器后的代码数据。</li>
+<li>java虚拟机规范把方法区描述为堆的一个逻辑部分，Non-Heap（非堆）</li>
+<li>永久代就是HotsSpot虚拟机堆虚拟机规范方法区中的一种实现方式。也就是说，永久代是HotSpot的概念，方法区是java虚拟机规范中的定义，是一种规范，而永久代是一种实现，一个是标准一个是实现。</li>
+<li>-XX:PermSize=N  //方法区（永久代）初始大小</li>
+<li>-XX:MaxPermSizze=N  //方法区（永久代）最大大小，超过这个值就会抛出OutOfMemoryError异常：java.lang.OutOfMemoryError:PermGen</li>
+</ul>
+<h2 id="为什么元区间取代了永久代"><a href="#为什么元区间取代了永久代" class="headerlink" title="为什么元区间取代了永久代"></a>为什么元区间取代了永久代</h2><ul>
+<li>永久代在 JVM 中受到 JVM 本身固定大小的限制，无法进行调整。</li>
+<li>元空间使用的是直接内存，受本机可用内存的限制</li>
+<li>元空间内存溢出：java.lang.OutOfMemoryError:MetaSpace</li>
+<li>-XX:MaxMetaspaceSize 标志设置最大元空间大小，默认值为 unlimited ,这意味着他只受系统内存的限制</li>
+<li>元空间里面存在的是元数据，这样加载多个类的元数据就不由 MaxPermSize 控制，而是由系统的实际可用空间来控制，这样能加载更多的类</li>
+<li>在 JDK8 中，合并 HotSpot 和 Jrockit 的代码时，Jrockit 从来没有一个叫永久代的东西，合并之后就没有必要额外的设置这么一个永久代的地方了</li>
+</ul>
+<h2 id="运行常量池"><a href="#运行常量池" class="headerlink" title="运行常量池"></a>运行常量池</h2><ul>
+<li>java7之前，运行时常量池包含字符串常量池。</li>
+<li>java7，运行时常量池在永久代，字符串常量池在堆中。</li>
+<li>java8，运行时常量池在元空间，字符串常量池在堆中。</li>
+</ul>
+<h2 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h2><ul>
+<li>本机的内存</li>
+<li>JDK1.4 之后的 NIO ，引入了一种基于通道与缓存区的 I/O 方式，可以直接使用 Native 函数库直接分配堆外内存，然后通过一个存储在 Java 堆中的 DirectByteBuffer 对象作为这块内存的应用操作，这样就能在一些场景中显著提高性能，因为避免了在 Java 堆和 Native 堆之间来回复制数据</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2020/12/19/java/jvm/java-jvm-%E5%AF%B9%E8%B1%A1%E6%AD%BB%E4%BA%A1%E5%88%A4%E6%96%AD/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一篇</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2020-12-19 16:50:39
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/java/" title="java">
+                        <b>#</b> java
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/jvm/" title="jvm">
+                        <b>#</b> jvm
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2020/12/19/java/jvm/java-jvm-%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%BF%87%E7%A8%8B/" target="_self">
+                <span>上一篇</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div class="post-catalog" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JVM%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="toc-text">JVM体系结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JVM%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B"><span class="toc-text">JVM内存模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8%EF%BC%88%E7%BA%BF%E7%A8%8B%E7%A7%81%E6%9C%89%EF%BC%89"><span class="toc-text">程序计数器（线程私有）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88%EF%BC%88%E7%BA%BF%E7%A8%8B%E7%A7%81%E6%9C%89%EF%BC%89"><span class="toc-text">Java虚拟机栈（线程私有）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88%EF%BC%88%E7%BA%BF%E7%A8%8B%E7%A7%81%E6%9C%89%EF%BC%89"><span class="toc-text">本地方法栈（线程私有）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%EF%BC%88-Heap-%E7%BA%BF%E7%A8%8B%E5%85%B1%E4%BA%AB-%EF%BC%89-%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA"><span class="toc-text">堆（ Heap-线程共享 ）-运行时数据区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA-%E6%B0%B8%E4%B9%85%E4%BB%A3%EF%BC%88%E7%BA%BF%E7%A8%8B%E5%85%B1%E4%BA%AB%EF%BC%89"><span class="toc-text">方法区&#x2F;永久代（线程共享）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%85%83%E5%8C%BA%E9%97%B4%E5%8F%96%E4%BB%A3%E4%BA%86%E6%B0%B8%E4%B9%85%E4%BB%A3"><span class="toc-text">为什么元区间取代了永久代</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E5%B8%B8%E9%87%8F%E6%B1%A0"><span class="toc-text">运行常量池</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B4%E6%8E%A5%E5%86%85%E5%AD%98"><span class="toc-text">直接内存</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+  <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  <div id="gitalk-container"></div>
+
+  <script>
+    const gitalk = new Gitalk({
+      clientID: '3ccb828c63e0fc996035',
+      clientSecret: '0b353a289ba940bdaa2e818c42e98e43ace7edfa',
+      repo: 'yanglei1992.github.io',
+      owner: 'yanglei1992',
+      admin: ['yanglei1992'],
+      id: location.pathname,
+      distractionFreeMode: false
+    })
+
+    gitalk.render('gitalk-container')
+  </script>
+
+
+      </div>
+    
+  </div>
+
+
+        <div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" href="https://yanglei1992.github.io/">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/yanglei1992/yanglei1992.github.io">Copyright © yangl 2020</a>
+        
+    </div>
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="back-to-top hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+      
+  <div class="search-icon" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="yanglei" />
+  <meta name="description" content="仅作为学习记录" />
+  
+  
+  <title>
+    
+      jvm(HotSpot)的垃圾回收器 
+      
+      
+      |
+    
+     个人博客
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+  <!-- jquery3.3.1 -->
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- fancybox -->
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <script async src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">积少成多</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">主页</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">归档</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">分类</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">标签</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">关于</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+<!-- LaTex Display -->
+<!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> -->
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  }
+};
+</script>
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">jvm(HotSpot)的垃圾回收器</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2020-12-19 16:57:39
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/java/" title="java">
+                    <b>#</b> java
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/jvm/" title="jvm">
+                    <b>#</b> jvm
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="jvm垃圾的回收作用范围"><a href="#jvm垃圾的回收作用范围" class="headerlink" title="jvm垃圾的回收作用范围"></a>jvm垃圾的回收作用范围</h1><p>下面描述的收集器是基于 JDK1.7 Update 14 之后的 HotSpot 虚拟机，这个虚拟机包含的所有收集器如下图：如果两个收集器之间存在连线，就说明他们可以搭配使用。</p>
+<p><img src="/2020/12/19/java/jvm/java-jvm-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/1610272098369.png" alt="1610272098369"></p>
+<h1 id="jvm的7种垃圾回收器"><a href="#jvm的7种垃圾回收器" class="headerlink" title="jvm的7种垃圾回收器"></a>jvm的7种垃圾回收器</h1><h2 id="1-Serial收集器-单线程"><a href="#1-Serial收集器-单线程" class="headerlink" title="1.Serial收集器(单线程)"></a>1.Serial收集器(单线程)</h2><p>Serial收集器时最基本、发展历史最悠久的收集器。是单线程的收集器。它在进行垃圾收集时，必须暂停其他所有的工作线程，直到它收集完成。<br>Serial收集器依然是虚拟机运行在Cleent模式下默认新生代收集器，对于运行在Client模式下的虚拟机来说是一个很好的选择。</p>
+<h2 id="2-ParNew收集器（Serial-多线程）"><a href="#2-ParNew收集器（Serial-多线程）" class="headerlink" title="2.ParNew收集器（Serial+多线程）"></a>2.ParNew收集器（Serial+多线程）</h2><p>ParNew收集器其实就是Serial收集器的多线程版本，除了使用多线程进行垃圾收集之外，其余行为包括Serial收集器可用的所有控制参数、收集算法、Stop The Worl、对象可分配规则、回收策略等都与Serial收集器完全一样。<br>ParNew收集器是许多运行在Server模式下的虚拟机中首选新生代收集器，其中有一个与性能无关但很重要的原因是除了Serial收集器之外，目前只有arNew它能与CMS收集器配合工作。</p>
+<h2 id="3-Parallel-Scavenge-并行回收-收集器"><a href="#3-Parallel-Scavenge-并行回收-收集器" class="headerlink" title="3.Parallel Scavenge(并行回收)收集器"></a>3.Parallel Scavenge(并行回收)收集器</h2><p>Parallel Scavenge收集器是一个新生代收集器，它也是使用复制算法的收集器，又是并行的多线程收集器</p>
+<p>该收集器的目标是达到一个可控制的吞吐量（Throughput）。所谓吞吐量就是CPU用于运行用户代码的时间与CPU总消耗时间的比值，即吞吐量=运行用户代码时间/（运行用户代码时间+垃圾收集时间）<br>停顿时间越短就越适合需要与用户交互的程序良好的响应速度能提升用户体验，二高吞吐量则可用高效率的利用CPU时间，尽快完成程序的运算任务，主要适合在后台运算二不需要太多的交互的任务。</p>
+<p>Parallel Scavenga收集器提供两个参数用于精确控制吞吐量，分别是控制最大垃圾收起停顿时间的-XX:MaxGCPauseMillis参数以及直接设置吞吐量大小的-XX:GCTimeRatio参数</p>
+<p>Parallel Scavenge收集器还有一个参数：-XX:+UseAdaptiveSizePPolicy/这是一个开关参数，当这个参数打开后，就不需要手工指定新生代的大小（-Xmn）、Eden与Survivor去的比例（-XX:SurvivorRatio）、晋升老年代对象年龄（-XX:PretenureSizeThreshold）等细节参数，只需要把基本的内存数据设置好（如-Xmx设置最大堆），然后使用MaxGvPauseMillis参数或者SGCTimeRation参数给虚拟机设立一个优化目标。</p>
+<p>自适应调节策略也是paralel Scavenge收集器与ParNew收集器的一个重要区别</p>
+<h2 id="4-Serial-Old收集器"><a href="#4-Serial-Old收集器" class="headerlink" title="4.Serial Old收集器"></a>4.Serial Old收集器</h2><p>Serial Old 是 Serial 收集器的老年代版本，它同样是一个单线程收集器，使用标记清除算法。这个收集器的主要意义也是在于给 Client 模式下的虚拟机使用。</p>
+<p>如果在 Server 模式下，主要两大用途：</p>
+<ol>
+<li>在 JDK1.5 以及之前的版本中与 Parallel Scavenge 收集器使用</li>
+<li>作为 CMS 收集器的后备预案，在并行收集发生 Concurrent Mode Failure 时使用</li>
+</ol>
+<h2 id="5-Paralled-Old收集器"><a href="#5-Paralled-Old收集器" class="headerlink" title="5.Paralled Old收集器"></a>5.Paralled Old收集器</h2><p>Parallel Old 是 Parallel Scavenge 收集器的老年代版本，使用多线程和“标记-清理”算法。这个收集器在 1.6 中才开始提供。</p>
+<h2 id="6-CMS收集器"><a href="#6-CMS收集器" class="headerlink" title="6.CMS收集器"></a>6.CMS收集器</h2><p>CMS（ Concurrent Mark Sweep ） 收集器是一种以获取最短回收停顿时间为目标的收集器。目前很大一部分的 Java 应用集中在互联网站或者 B/S 系统的服务端上，这类应用尤其重视服务器的相应速度，希望系统停顿时间最短，已给用户带来较好的体验。 CMS 收集器就非常符合这类应用需求</p>
+<p>CMS 收集器是基于“标记-清除”算法实现的。它的运作过程相对前面几种收集器来说更加复杂一些，整个过程为4个步骤:</p>
+<ol>
+<li>初始标记</li>
+<li>并发标记</li>
+<li>重新标记</li>
+<li>并发清除</li>
+</ol>
+<p>其中，初始标记、重新标记这两个步骤仍然需要 “Stop the World”。</p>
+<p>CMS 收集器的主要优点：并发收集，低停顿。</p>
+<p>CMS 三个明显的缺点：</p>
+<ol>
+<li>CMS 收集器对 CPU 资源非常敏感。 CPU 个数少于4个时， CMS 对于用户程序的影响就可能变得很大，为了应付这种情况，虚拟机提供了一种称为“增量式并发收集器”的 CMS 收集器变种。所做的事情和单 CPU 年代 PC 机操作系统使用抢占式来模拟多线程任务机制的思想。</li>
+<li>CMS 收集器无法处理浮动垃圾，可能出现“ Concurrent Mode Failure ”失败而导致另一次 Full Gc 的产生。在 JDK1.5 的默认设置下， CMS 收集器当老年代使用了 68% 的空间后就会被激活， 这是一个偏保守的设置， 如果在应用中老年代增长不是太快，可以适当调高参数 -XX:CMSInitiatingOccupancyFraction 的值来提高触发百分比，以便降低内存回收次数从而获取更好的性能，在 JDK1.6 中， CMS 收集器的启动阈值已经提升到 92%。</li>
+<li> CMS 是基于“标记-清除”算法实现的收集器，手机结束时会有大量空间碎片产生。空间碎片过多，可能会出现老年代还有很大的空间剩余，但是无法找到足够大的连续空间来分配当前对象，不得不提前发出 Full Gc。为了解决这个问题， CMS 收集器提供一个 -XX:+UseCMSCompactAtFullCollection开关参数（默认就是开启的），用于在 CMS 收集器顶不住要进行 FullGC 时开启内存碎片整合并清理过程， 内存整理的过程是无法并发的，空间碎片问题没有了，但是停顿时间变长了。虚拟机设计者还提供了另外一个参数 -XX:CMSFullGCsBeforeCompaction ，这个参数是用于设置执行多次不压缩 Full GC后，跟着来一次带压缩的FullGC（默认值为0，标识每次进入 FullGC时都进行碎片整理）</li>
+</ol>
+<h2 id="7-G1收集器"><a href="#7-G1收集器" class="headerlink" title="7.G1收集器"></a>7.G1收集器</h2><p>G1收集器的优势：</p>
+<ol>
+<li>并行与并发</li>
+<li>分代收集</li>
+<li>空间整理（标记整理算法，复制算法）</li>
+<li>可预测的停顿（G1处追求低停顿外，还能建立可预测的停顿时间模型，能让使用者明确指定在一个长度为 M毫秒的时间片段内，消耗在垃圾收集器上的时间不超过 N 毫秒，这几乎已经实现 Java（ RTSJ ）的垃圾收集器的特征）</li>
+</ol>
+<p>使用 G1 收集器时， Java 堆的内存布局是整个规划为多个大小相等的独立区域（ Region ），虽然还保留有新生代和老年代的概念，但新生代和老年代不再是物理隔离的了，它们都是一小部分 Region 的集合。</p>
+<p>G1 收集器之所以能建立可预测的停顿时间模型，是因为它可以有计划的避免在整个 Java 堆中进行全区域的垃圾收集。 G1 跟踪各个 Region 里面的垃圾堆积的价值大小（回收所获取的空间大小以及回收所需要的时间的经验值），在后台维护一个优先列表，每次根据允许的收集时间，优先收集价值最大的 Region （这也就是 Garbage-First 名称的由来）。这种使用 Region 划分的内存空间以及优先级的区域回收方式，保证了 G1 收集器在有限的时间内可以获取尽量可能高的效率。</p>
+<p>G1 内存“化整为零”的思路</p>
+<p>在 GC 根节点的枚举范围中加入 Remembered Set 即可保证不对全堆扫描也不会遗漏。</p>
+<p>如果不计算维护 Remembered Set 的操作， G1 收集器的运作大致可分为以下步骤：</p>
+<ol>
+<li>初始标记</li>
+<li>并发标记</li>
+<li>最终标记</li>
+<li>筛选回收</li>
+</ol>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2020/12/19/java/jvm/java-jvm-%E5%9E%83%E5%9C%BE%E5%88%86%E4%BB%A3%E6%94%B6%E9%9B%86/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一篇</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2020-12-19 16:57:39
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/java/" title="java">
+                        <b>#</b> java
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/jvm/" title="jvm">
+                        <b>#</b> jvm
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2020/12/19/java/jvm/java-jvm-GC%E5%8F%82%E6%95%B0%E5%92%8C%E8%B0%83%E4%BC%98/" target="_self">
+                <span>上一篇</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div class="post-catalog" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#jvm%E5%9E%83%E5%9C%BE%E7%9A%84%E5%9B%9E%E6%94%B6%E4%BD%9C%E7%94%A8%E8%8C%83%E5%9B%B4"><span class="toc-text">jvm垃圾的回收作用范围</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#jvm%E7%9A%847%E7%A7%8D%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8"><span class="toc-text">jvm的7种垃圾回收器</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Serial%E6%94%B6%E9%9B%86%E5%99%A8-%E5%8D%95%E7%BA%BF%E7%A8%8B"><span class="toc-text">1.Serial收集器(单线程)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-ParNew%E6%94%B6%E9%9B%86%E5%99%A8%EF%BC%88Serial-%E5%A4%9A%E7%BA%BF%E7%A8%8B%EF%BC%89"><span class="toc-text">2.ParNew收集器（Serial+多线程）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Parallel-Scavenge-%E5%B9%B6%E8%A1%8C%E5%9B%9E%E6%94%B6-%E6%94%B6%E9%9B%86%E5%99%A8"><span class="toc-text">3.Parallel Scavenge(并行回收)收集器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Serial-Old%E6%94%B6%E9%9B%86%E5%99%A8"><span class="toc-text">4.Serial Old收集器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Paralled-Old%E6%94%B6%E9%9B%86%E5%99%A8"><span class="toc-text">5.Paralled Old收集器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-CMS%E6%94%B6%E9%9B%86%E5%99%A8"><span class="toc-text">6.CMS收集器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-G1%E6%94%B6%E9%9B%86%E5%99%A8"><span class="toc-text">7.G1收集器</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+  <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  <div id="gitalk-container"></div>
+
+  <script>
+    const gitalk = new Gitalk({
+      clientID: '3ccb828c63e0fc996035',
+      clientSecret: '0b353a289ba940bdaa2e818c42e98e43ace7edfa',
+      repo: 'yanglei1992.github.io',
+      owner: 'yanglei1992',
+      admin: ['yanglei1992'],
+      id: location.pathname,
+      distractionFreeMode: false
+    })
+
+    gitalk.render('gitalk-container')
+  </script>
+
+
+      </div>
+    
+  </div>
+
+
+        <div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" href="https://yanglei1992.github.io/">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/yanglei1992/yanglei1992.github.io">Copyright © yangl 2020</a>
+        
+    </div>
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="back-to-top hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+      
+  <div class="search-icon" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+    </div>
+  </body>
+</html>

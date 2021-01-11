@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="yanglei" />
+  <meta name="description" content="仅作为学习记录" />
+  
+  
+  <title>
+    
+      java多线程--JMM和volatile关键字 
+      
+      
+      |
+    
+     个人博客
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/iconfont/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+  <!-- jquery3.3.1 -->
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- fancybox -->
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <script async src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">积少成多</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">主页</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">归档</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">分类</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">标签</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">关于</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+<!-- LaTex Display -->
+<!-- <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> -->
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  }
+};
+</script>
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">java多线程--JMM和volatile关键字</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2020-12-31 17:33:41
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/java/" title="java">
+                    <b>#</b> java
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/juc/" title="juc">
+                    <b>#</b> juc
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="JMM和volatile关键字"><a href="#JMM和volatile关键字" class="headerlink" title="JMM和volatile关键字"></a>JMM和volatile关键字</h1><h1 id="JMM相关"><a href="#JMM相关" class="headerlink" title="JMM相关"></a>JMM相关</h1><h2 id="CPU缓存模型"><a href="#CPU缓存模型" class="headerlink" title="CPU缓存模型"></a>CPU缓存模型</h2><blockquote>
+<p>CPU的运算速度和内存的访问速度相差比较大。这就导致CPU每次操作内存都要耗费很多等待时间。内存的读写速度成为了计算机运行的瓶颈。<strong>于是就有了在CPU和主内存之间增加缓存的设计</strong>。最靠近CPU的缓存称为L1，然后依次是 L2，L3和主内存，CPU缓存模型如图下图所示。</p>
+<ul>
+<li>CPU访问数据 -&gt; L1 L2 高速缓存 -&gt; 一致性协议 -&gt; 内存</li>
+</ul>
+</blockquote>
+<p><img src="/2020/12/31/java/juc/java-juc-jmm%E5%92%8Cvolatile%E5%85%B3%E9%94%AE%E5%AD%97/1609942893338.png" alt="1609942893338"></p>
+<h2 id="Java内存模型（JMM）"><a href="#Java内存模型（JMM）" class="headerlink" title="Java内存模型（JMM）"></a>Java内存模型（JMM）</h2><ul>
+<li><p>JMM描述的是变量存储到内存和从内存中读取变量的细节。</p>
+</li>
+<li><p>Java中实例变量和类变量都是存在于主内存，是线程共享的。</p>
+<blockquote>
+<ul>
+<li>每个线程都有一个自己的工作内存，它从主内存读取数据到工作内存中进行使用。这样就可能造成了一个线程在主内存中修改了一个变量的值，而另一个线程还在使用之前拷贝的值，就造成了数据的不一致型。</li>
+<li>解决：把变量声明为volatile，指示这个变量是不稳定的，没用使用的时候需要从主内存中读取。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p><img src="/2020/12/31/java/juc/java-juc-jmm%E5%92%8Cvolatile%E5%85%B3%E9%94%AE%E5%AD%97/1609943944217.png" alt="1609943944217"></p>
+<blockquote>
+<ul>
+<li>主内存 所有线程共享的内存区域 线程内存 线程自己私有的内存区域 主内存和线程内存通过save和load操作进行交互 所有提到的内存区域并不是真实存在的，而是虚拟存在的，就和虚拟机的运行时数据区一样。</li>
+</ul>
+</blockquote>
+<h2 id="JMM-的八种内存交互操作"><a href="#JMM-的八种内存交互操作" class="headerlink" title="JMM 的八种内存交互操作"></a>JMM 的八种内存交互操作</h2><p><img src="/2020/12/31/java/juc/java-juc-jmm%E5%92%8Cvolatile%E5%85%B3%E9%94%AE%E5%AD%97/1609946346742.png" alt="1609946346742"></p>
+<ol>
+<li>lock(锁定)：作用于<strong>主内存</strong>中的变量，一个变量在同一时间只能被一个线程锁定，即把变量标识为线程<strong>独占</strong>状态。</li>
+<li>read(读取)：作用于<strong>主内存</strong>变量，表示把一个变量值从主内存传输到线程的工作内存中，以便下一步的 load 操作使用。</li>
+<li>load(载入)：作用于线程的<strong>工作内存</strong>的变量，表示把 read 操作从主内存中读取的变量值放到工作内存的变量副本中(副本是相对于主内存的变量而言的)。</li>
+<li>use(使用)：作用于线程的<strong>工作内存</strong>中的变量，表示把工作内存中的一个变量值传递给执行引擎，每当虚拟机遇到一个需要使用变量的值的字节码指令时就会执行该操作。</li>
+<li>assign(赋值)：作用于线程的<strong>工作内存</strong>的变量，表示把执行引擎返回的值赋值给工作内存中的变量，每当虚拟机遇到一个给变量赋值的字节码指令时就会执行该操作。</li>
+<li>store(存储)：作用于线程的<strong>工作内存</strong>中的变量，把工作内存中的一个变量的值传递给主内存，以便下一步的 write 操作使用。</li>
+<li>write(写入)：作用于<strong>主内存</strong>的变量，表示把 store 操作从工作内存中得到的变量的值放入主内存的变量中。</li>
+<li>unlock(解锁)：作用于<strong>主内存</strong>的变量，表示把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定。</li>
+</ol>
+<p>JMM 还规定了以上八种操作需按照如下规则进行：</p>
+<ul>
+<li>不允许read 和 load、store 和 write 操作之一单独出现，也就是 read 操作后必须 load，store 操作后必须 write。即不允许一个变量从主内存读取了但工作内存不接受，或者从工作内存发起回写了但主内存不接受的情况出现。</li>
+<li>不允许线程丢弃它最近的 assign 操作，即变量在工作内存中改变了之后必须把该变化同步回主内存。</li>
+<li>不允许线程将没有 assign 的数据从工作内存同步到主内存。</li>
+<li>一个新的变量必须在主内存中诞生，不允许工作内存直接使用一个未被初始化的变量。也就是对变量实施 use 和 store 操作之前，必须经过 load 和 assign 操作。</li>
+<li>一个变量同一时间只能有一个线程对其进行 lock 操作。但 lock 操作可以被同一条线程重复执行多次，多次 lock 之后，必须执行相同次数 unlock 才可以解锁。</li>
+<li>如果对一个变量进行 lock 操作，会清空所有工作内存中此变量的值。在执行引擎使用这个变量前，必须重新 load 或 assign 操作初始化变量的值。</li>
+<li>如果一个变量没有被 lock，就不能对其进行 unlock 操作。也不能 unlock 一个被其他线程锁住的变量。</li>
+<li>一个线程对一个变量进行 unlock 操作之前，必须先把此变量同步回主内存。</li>
+</ul>
+<h2 id="JMM-三大特征"><a href="#JMM-三大特征" class="headerlink" title="JMM 三大特征"></a>JMM 三大特征</h2><blockquote>
+<p>JMM 三大特征分别是：原子性，可见性，有序性。整个 JMM 实际上也是围绕着这三个特征建立起来的，并且也是 Java 并发编程的基础。</p>
+</blockquote>
+<p><strong>原子性</strong>：原子性是指一个操作是不可分割、不可中断的，要么全部执行成功要么全部执行失败。</p>
+<ul>
+<li>synchronized 修饰的代码块之间的操作都是原子性的，<strong>volatile不保证原子性</strong></li>
+</ul>
+<p><strong>可见性</strong>：可见性是指所有线程都能看到共享内存的最新状态。即当一个线程修改了一个共享变量的值时，其他线程能够立即看到该变量的最新值。</p>
+<ul>
+<li>volatile 关键字之外，final 和 synchronized 也能实现可见性。</li>
+</ul>
+<p><strong>有序性</strong>：有序性是指程序执行的顺序按照代码的先后顺序执行。</p>
+<ul>
+<li><p>可以通过 volatile 和 synchronized 关键字来保证多线程之间操作的有序性。</p>
+<ul>
+<li><p>volatile 关键字是通过在主存中加入内存屏障来达到禁止指令重排序，来保证有序性。</p>
+</li>
+<li><p>synchronized 关键字原理是，一个变量在同一时刻只能被一个线程 lock，并且必须 unlock 后，其他线程才可以重新 lock，使得被 synchronized 修饰的代码块在多线程之间是串行执行的。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="Volatile"><a href="#Volatile" class="headerlink" title="Volatile"></a>Volatile</h1><h2 id="volatile关键字"><a href="#volatile关键字" class="headerlink" title="volatile关键字"></a>volatile关键字</h2><ul>
+<li>volatitle可以保证变量的可见性。</li>
+</ul>
+<h2 id="volatile禁止指令重排序"><a href="#volatile禁止指令重排序" class="headerlink" title="volatile禁止指令重排序"></a>volatile禁止指令重排序</h2><ul>
+<li>volatile写是在前⾯和后⾯分别插⼊<strong>内存屏障</strong>，⽽volatile读操作是在后⾯插⼊两个内存屏障。</li>
+</ul>
+<h2 id="CAS算法"><a href="#CAS算法" class="headerlink" title="CAS算法"></a>CAS算法</h2><blockquote>
+<p>compare-and-swap–比较并替换</p>
+</blockquote>
+<ul>
+<li>CAS 有三个操作数，内存里当前值M，预期值 E，修改的新值 N，CAS 的语义就是：如果当前值等于预期值，则将内存修改为新值，否则不做任何操作。</li>
+<li>Java中Unsafe类</li>
+<li>每次在执行CAS操作时，线程会根据valueOffset去内存中获取当前值去跟expect的值做对比如果一致则修改并返回true，如果不一致说明有别的线程也在修改此对象的值，则返回false</li>
+</ul>
+<h2 id="ABA问题"><a href="#ABA问题" class="headerlink" title="ABA问题"></a>ABA问题</h2><ul>
+<li>一个线程对变量进行了修改，然后又修改会原来的值，对于其他线程来说好像没有变化。</li>
+<li>解决ABA最简单的方案就是给值加一个修改版本号，每次值变化，都会修改它版本号，CAS操作时都对比此版本号</li>
+</ul>
+<h2 id="synchronized和volatile的区别"><a href="#synchronized和volatile的区别" class="headerlink" title="synchronized和volatile的区别"></a>synchronized和volatile的区别</h2><ul>
+<li>volatile是线程同步的轻量级实现，只能修饰变量；而synchronized可以修饰方法及代码块</li>
+<li>volatile关键字能够保证数据的可见性，不能保证数据的原子性；synchronized两者都可以保证</li>
+<li>volatile解决的是多个线程访问变量的可见性；synchronized解决的是多线程之间访问资源的同步性</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2020/12/31/java/juc/java-juc-synchronized/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一篇</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2020-12-31 17:33:41
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/java/" title="java">
+                        <b>#</b> java
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/juc/" title="juc">
+                        <b>#</b> juc
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2020/12/31/java/juc/java-juc-AQS/" target="_self">
+                <span>上一篇</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div class="post-catalog" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JMM%E5%92%8Cvolatile%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-text">JMM和volatile关键字</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JMM%E7%9B%B8%E5%85%B3"><span class="toc-text">JMM相关</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU%E7%BC%93%E5%AD%98%E6%A8%A1%E5%9E%8B"><span class="toc-text">CPU缓存模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%EF%BC%88JMM%EF%BC%89"><span class="toc-text">Java内存模型（JMM）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JMM-%E7%9A%84%E5%85%AB%E7%A7%8D%E5%86%85%E5%AD%98%E4%BA%A4%E4%BA%92%E6%93%8D%E4%BD%9C"><span class="toc-text">JMM 的八种内存交互操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JMM-%E4%B8%89%E5%A4%A7%E7%89%B9%E5%BE%81"><span class="toc-text">JMM 三大特征</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Volatile"><span class="toc-text">Volatile</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-text">volatile关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile%E7%A6%81%E6%AD%A2%E6%8C%87%E4%BB%A4%E9%87%8D%E6%8E%92%E5%BA%8F"><span class="toc-text">volatile禁止指令重排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CAS%E7%AE%97%E6%B3%95"><span class="toc-text">CAS算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ABA%E9%97%AE%E9%A2%98"><span class="toc-text">ABA问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#synchronized%E5%92%8Cvolatile%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">synchronized和volatile的区别</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+  <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+  <div id="gitalk-container"></div>
+
+  <script>
+    const gitalk = new Gitalk({
+      clientID: '3ccb828c63e0fc996035',
+      clientSecret: '0b353a289ba940bdaa2e818c42e98e43ace7edfa',
+      repo: 'yanglei1992.github.io',
+      owner: 'yanglei1992',
+      admin: ['yanglei1992'],
+      id: location.pathname,
+      distractionFreeMode: false
+    })
+
+    gitalk.render('gitalk-container')
+  </script>
+
+
+      </div>
+    
+  </div>
+
+
+        <div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" href="https://yanglei1992.github.io/">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/yanglei1992/yanglei1992.github.io">Copyright © yangl 2020</a>
+        
+    </div>
+  
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="back-to-top hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+      
+  <div class="search-icon" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+    </div>
+  </body>
+</html>

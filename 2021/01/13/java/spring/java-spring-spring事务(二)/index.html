@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yanglei1992.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="@Transactional 注解使用详解@Transactional 的作用范围 方法 ：推荐将注解使用于方法上，不过需要注意的是：该注解只能应用到 public 方法上，否则不生效。 类 ：如果这个注解使用在类上的话，表明该注解对该类中所有的 public 方法都生效。 接口 ：不推荐在接口上使用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring事务(二)">
+<meta property="og:url" content="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%BA%8C)/index.html">
+<meta property="og:site_name" content="yangl的博客">
+<meta property="og:description" content="@Transactional 注解使用详解@Transactional 的作用范围 方法 ：推荐将注解使用于方法上，不过需要注意的是：该注解只能应用到 public 方法上，否则不生效。 类 ：如果这个注解使用在类上的话，表明该注解对该类中所有的 public 方法都生效。 接口 ：不推荐在接口上使用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%BA%8C)/170f0e025a51a1b4.png">
+<meta property="og:image" content="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%BA%8C)/170f0e025b17b3ca.png">
+<meta property="article:published_time" content="2021-01-13T10:10:39.000Z">
+<meta property="article:modified_time" content="2021-01-13T23:55:46.923Z">
+<meta property="article:author" content="yangl">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%BA%8C)/170f0e025a51a1b4.png">
+
+<link rel="canonical" href="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%BA%8C)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Spring事务(二) | yangl的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">yangl的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">积少成多</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">38</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%BA%8C)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.png">
+      <meta itemprop="name" content="yangl">
+      <meta itemprop="description" content="仅作为学习记录">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yangl的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring事务(二)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-13 18:10:39" itemprop="dateCreated datePublished" datetime="2021-01-13T18:10:39+08:00">2021-01-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-14 07:55:46" itemprop="dateModified" datetime="2021-01-14T07:55:46+08:00">2021-01-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Transactional-注解使用详解"><a href="#Transactional-注解使用详解" class="headerlink" title="@Transactional 注解使用详解"></a>@Transactional 注解使用详解</h1><h2 id="Transactional-的作用范围"><a href="#Transactional-的作用范围" class="headerlink" title="@Transactional 的作用范围"></a>@Transactional 的作用范围</h2><ul>
+<li>方法 ：推荐将注解使用于方法上，不过需要注意的是：该注解只能应用到 public 方法上，否则不生效。</li>
+<li>类 ：如果这个注解使用在类上的话，表明该注解对该类中所有的 public 方法都生效。</li>
+<li>接口 ：不推荐在接口上使用。</li>
+</ul>
+<h2 id="Transactional-的常用配置参数"><a href="#Transactional-的常用配置参数" class="headerlink" title="@Transactional 的常用配置参数"></a>@Transactional 的常用配置参数</h2><table>
+<thead>
+<tr>
+<th>属性名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>propagation</td>
+<td>事务的传播行为，默认值为 REQUIRED</td>
+</tr>
+<tr>
+<td>isolation</td>
+<td>事务的隔离级别，默认值采用 DEFAULT</td>
+</tr>
+<tr>
+<td>timeout</td>
+<td>事务的超时时间，默认值为-1（不会超时）。如果超过该时间限制但事务还没有完成，则自动回滚事务。</td>
+</tr>
+<tr>
+<td>readOnly</td>
+<td>指定事务是否为只读事务，默认值为 false。</td>
+</tr>
+<tr>
+<td>rollbackFor</td>
+<td>用于指定能够触发事务回滚的异常类型，并且可以指定多个异常类型。</td>
+</tr>
+</tbody></table>
+<h2 id="Transactional-事务注解原理"><a href="#Transactional-事务注解原理" class="headerlink" title="@Transactional 事务注解原理"></a>@Transactional 事务注解原理</h2><ul>
+<li>@Transactional 的工作机制是基于 AOP 实现的，AOP 又是使用动态代理实现的。如果目标对象实现了接口，默认情况下会采用 JDK 的动态代理，如果目标对象没有实现了接口,会使用 CGLIB 动态代理。</li>
+<li>如果一个类或者一个类中的 public 方法上被标注@Transactional 注解的话，Spring 容器就会在启动的时候为其创建一个代理类，在调用被@Transactional 注解的 public 方法的时候，实际调用的是，TransactionInterceptor 类中的 invoke()方法。这个方法的作用就是在目标方法之前开启事务，方法执行过程中如果遇到异常的时候回滚事务，方法调用完成之后提交事务。</li>
+<li>Spring AOP 自调用问题<ul>
+<li>若同一类中的其他没有 @Transactional 注解的方法内部调用有 @Transactional 注解的方法，有@Transactional 注解的方法的事务会失效。这是由于Spring AOP代理的原因造成的，因为只有当 @Transactional 注解的方法在类以外被调用的时候，Spring 事务管理才生效。</li>
+<li>解决办法就是避免同一类中自调用或者使用 AspectJ 取代 Spring AOP 代理。</li>
+</ul>
+</li>
+</ul>
+<h1 id="Transactional注有哪些属性"><a href="#Transactional注有哪些属性" class="headerlink" title="@Transactional注有哪些属性"></a>@Transactional注有哪些属性</h1><h2 id="propagation属性"><a href="#propagation属性" class="headerlink" title="propagation属性"></a><strong>propagation属性</strong></h2><p><code>propagation</code> 代表事务的传播行为，默认值为 <code>Propagation.REQUIRED</code>，其他的属性信息如下：</p>
+<ul>
+<li><code>Propagation.REQUIRED</code>：如果当前存在事务，则加入该事务，如果当前不存在事务，则创建一个新的事务。**(** 也就是说如果A方法和B方法都添加了注解，在默认传播模式下，A方法内部调用B方法，会把两个方法的事务合并为一个事务 <strong>）</strong></li>
+<li><code>Propagation.SUPPORTS</code>：如果当前存在事务，则加入该事务；如果当前不存在事务，则以非事务的方式继续运行。</li>
+<li><code>Propagation.MANDATORY</code>：如果当前存在事务，则加入该事务；如果当前不存在事务，则抛出异常。</li>
+<li><code>Propagation.REQUIRES_NEW</code>：重新创建一个新的事务，如果当前存在事务，暂停当前的事务。**(** 当类A中的 a 方法用默认<code>Propagation.REQUIRED</code>模式，类B中的 b方法加上采用 <code>Propagation.REQUIRES_NEW</code>模式，然后在 a 方法中调用 b方法操作数据库，然而 a方法抛出异常后，b方法并没有进行回滚，因为<code>Propagation.REQUIRES_NEW</code>会暂停 a方法的事务 <strong>)</strong></li>
+<li><code>Propagation.NOT_SUPPORTED</code>：以非事务的方式运行，如果当前存在事务，暂停当前的事务。</li>
+<li><code>Propagation.NEVER</code>：以非事务的方式运行，如果当前存在事务，则抛出异常。</li>
+<li><code>Propagation.NESTED</code> ：和 Propagation.REQUIRED 效果一样。</li>
+</ul>
+<h2 id="isolation-属性"><a href="#isolation-属性" class="headerlink" title="isolation 属性"></a><strong>isolation 属性</strong></h2><p><code>isolation</code> ：事务的隔离级别，默认值为 <code>Isolation.DEFAULT</code>。</p>
+<ul>
+<li>Isolation.DEFAULT：使用底层数据库默认的隔离级别。</li>
+<li>Isolation.READ_UNCOMMITTED</li>
+<li>Isolation.READ_COMMITTED</li>
+<li>Isolation.REPEATABLE_READ</li>
+<li>Isolation.SERIALIZABLE</li>
+</ul>
+<h2 id="timeout-属性"><a href="#timeout-属性" class="headerlink" title="timeout 属性"></a><strong>timeout 属性</strong></h2><p><code>timeout</code> ：事务的超时时间，默认值为 -1。如果超过该时间限制但事务还没有完成，则自动回滚事务。</p>
+<h2 id="readOnly-属性"><a href="#readOnly-属性" class="headerlink" title="readOnly 属性"></a><strong>readOnly 属性</strong></h2><p><code>readOnly</code> ：指定事务是否为只读事务，默认值为 false；为了忽略那些不需要事务的方法，比如读取数据，可以设置 read-only 为 true。</p>
+<h2 id="rollbackFor-属性"><a href="#rollbackFor-属性" class="headerlink" title="rollbackFor 属性"></a><strong>rollbackFor 属性</strong></h2><p><code>rollbackFor</code> ：用于指定能够触发事务回滚的异常类型，可以指定多个异常类型。</p>
+<h2 id="noRollbackFor属性"><a href="#noRollbackFor属性" class="headerlink" title="noRollbackFor属性"></a><strong>noRollbackFor</strong>属性</h2><p><code>noRollbackFor</code>：抛出指定的异常类型，不回滚事务，也可以指定多个异常类型。</p>
+<h1 id="Transactional失效场景"><a href="#Transactional失效场景" class="headerlink" title="@Transactional失效场景"></a>@Transactional失效场景</h1><p>接下来我们结合具体的代码分析一下哪些场景下，@Transactional 注解会失效。</p>
+<h2 id="1、-Transactional-应用在非-public-修饰的方法上"><a href="#1、-Transactional-应用在非-public-修饰的方法上" class="headerlink" title="1、@Transactional 应用在非 public 修饰的方法上"></a>1、@Transactional 应用在非 public 修饰的方法上</h2><p>如果<code>Transactional</code>注解应用在非<code>public</code> 修饰的方法上，Transactional将会失效。 </p>
+<p><img src="/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%BA%8C)/170f0e025a51a1b4.png" alt="在这里插入图片描述"></p>
+<p>之所以会失效是因为在Spring AOP 代理时，如上图所示 <code>TransactionInterceptor</code> （事务拦截器）在目标方法执行前后进行拦截，<code>DynamicAdvisedInterceptor</code>（CglibAopProxy 的内部类）的 intercept 方法或 <code>JdkDynamicAopProxy</code> 的 invoke 方法会间接调用 <code>AbstractFallbackTransactionAttributeSource</code>的 <code>computeTransactionAttribute</code> 方法，获取Transactional 注解的事务配置信息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> TransactionAttribute <span class="title">computeTransactionAttribute</span><span class="params">(Method method,</span></span></span><br><span class="line"><span class="function"><span class="params">    Class&lt;?&gt; targetClass)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Don&#x27;t allow no-public methods as required.</span></span><br><span class="line">        <span class="keyword">if</span> (allowPublicMethodsOnly() &amp;&amp; !Modifier.isPublic(method.getModifiers())) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此方法会检查目标方法的修饰符是否为 public，不是 public则不会获取@Transactional 的属性配置信息。</p>
+<p><strong>注意：protected、private 修饰的方法上使用 @Transactional 注解，虽然事务无效，但不会有任何报错，这是我们很容犯错的一点。</strong></p>
+<h2 id="2、-Transactional-注解属性-propagation-设置错误"><a href="#2、-Transactional-注解属性-propagation-设置错误" class="headerlink" title="2、@Transactional 注解属性 propagation 设置错误"></a>2、@Transactional 注解属性 propagation 设置错误</h2><p>这种失效是由于配置错误，若是错误的配置以下三种 propagation，事务将不会发生回滚。</p>
+<p><code>TransactionDefinition.PROPAGATION_SUPPORTS</code>：如果当前存在事务，则加入该事务；如果当前没有事务，则以非事务的方式继续运行。 <code>TransactionDefinition.PROPAGATION_NOT_SUPPORTED</code>：以非事务方式运行，如果当前存在事务，则把当前事务挂起。 <code>TransactionDefinition.PROPAGATION_NEVER</code>：以非事务方式运行，如果当前存在事务，则抛出异常。</p>
+<h2 id="3、-Transactional-注解属性-rollbackFor-设置错误"><a href="#3、-Transactional-注解属性-rollbackFor-设置错误" class="headerlink" title="3、@Transactional  注解属性 rollbackFor 设置错误"></a>3、@Transactional  注解属性 rollbackFor 设置错误</h2><p><code>rollbackFor</code> 可以指定能够触发事务回滚的异常类型。Spring默认抛出了未检查<code>unchecked</code>异常（继承自 <code>RuntimeException</code> 的异常）或者 <code>Error</code>才回滚事务；其他异常不会触发回滚事务。如果在事务中抛出其他类型的异常，但却期望 Spring 能够回滚事务，就需要指定 <strong>rollbackFor</strong>属性。</p>
+<p><img src="/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%BA%8C)/170f0e025b17b3ca.png" alt="在这里插入图片描述"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 希望自定义的异常可以进行回滚</span></span><br><span class="line"><span class="meta">@Transactional(propagation= Propagation.REQUIRED,rollbackFor= MyException.class</span></span><br></pre></td></tr></table></figure>
+<p>若在目标方法中抛出的异常是 <code>rollbackFor</code> 指定的异常的子类，事务同样会回滚。Spring源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getDepth</span><span class="params">(Class&lt;?&gt; exceptionClass, <span class="keyword">int</span> depth)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (exceptionClass.getName().contains(<span class="keyword">this</span>.exceptionName)) &#123;</span><br><span class="line">            <span class="comment">// Found it!</span></span><br><span class="line">            <span class="keyword">return</span> depth;</span><br><span class="line">&#125;</span><br><span class="line">        <span class="comment">// If we&#x27;ve gone as far as we can go and haven&#x27;t found it...</span></span><br><span class="line">        <span class="keyword">if</span> (exceptionClass == Throwable.class) &#123;</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> getDepth(exceptionClass.getSuperclass(), depth + <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4、同一个类中方法调用，导致-Transactional失效"><a href="#4、同一个类中方法调用，导致-Transactional失效" class="headerlink" title="4、同一个类中方法调用，导致@Transactional失效"></a>4、同一个类中方法调用，导致@Transactional失效</h2><p>开发中避免不了会对同一个类里面的方法调用，比如有一个类Test，它的一个方法A，A再调用本类的方法B（不论方法B是用public还是private修饰），但方法A没有声明注解事务，而B方法有。则外部调用方法A之后，方法B的事务是不会起作用的。这也是经常犯错误的一个地方。</p>
+<p>那为啥会出现这种情况？其实这还是由于使用<code>Spring AOP</code>代理造成的，因为只有当事务方法被当前类以外的代码调用时，才会由<code>Spring</code>生成的代理对象来管理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//@Transactional</span></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/test&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> Integer <span class="title">A</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        CityInfoDict cityInfoDict = <span class="keyword">new</span> CityInfoDict();</span><br><span class="line">        cityInfoDict.setCityName(<span class="string">&quot;2&quot;</span>);</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * B 插入字段为 3的数据</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">this</span>.insertB();</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * A 插入字段为 2的数据</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">int</span> insert = cityInfoDictMapper.insert(cityInfoDict);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> insert;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Transactional()</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">insertB</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        CityInfoDict cityInfoDict = <span class="keyword">new</span> CityInfoDict();</span><br><span class="line">        cityInfoDict.setCityName(<span class="string">&quot;3&quot;</span>);</span><br><span class="line">        cityInfoDict.setParentCityId(<span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> cityInfoDictMapper.insert(cityInfoDict);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="5、异常被你的-catch“吃了”导致-Transactional失效"><a href="#5、异常被你的-catch“吃了”导致-Transactional失效" class="headerlink" title="5、异常被你的 catch“吃了”导致@Transactional失效"></a>5、异常被你的 catch“吃了”导致@Transactional失效</h2><p>这种情况是最常见的一种@Transactional注解失效场景，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Transactional</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> Integer <span class="title">A</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> insert = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        CityInfoDict cityInfoDict = <span class="keyword">new</span> CityInfoDict();</span><br><span class="line">        cityInfoDict.setCityName(<span class="string">&quot;2&quot;</span>);</span><br><span class="line">        cityInfoDict.setParentCityId(<span class="number">2</span>);</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * A 插入字段为 2的数据</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        insert = cityInfoDictMapper.insert(cityInfoDict);</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * B 插入字段为 3的数据</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        b.insertB();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果B方法内部抛了异常，而A方法此时try catch了B方法的异常，那这个事务还能正常回滚吗？</p>
+<p>答案：不能！</p>
+<p>会抛出异常：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">org.springframework.transaction.UnexpectedRollbackException: Transaction rolled back because it has been marked as rollback-only</span><br></pre></td></tr></table></figure>
+<p>因为当<code>ServiceB</code>中抛出了一个异常以后，<code>ServiceB</code>标识当前事务需要<code>rollback</code>。但是<code>ServiceA</code>中由于你手动的捕获这个异常并进行处理，<code>ServiceA</code>认为当前事务应该正常<code>commit</code>。此时就出现了前后不一致，也就是因为这样，抛出了前面的<code>UnexpectedRollbackException</code>异常。</p>
+<p><code>spring</code>的事务是在调用业务方法之前开始的，业务方法执行完毕之后才执行<code>commit</code> or <code>rollback</code>，事务是否执行取决于是否抛出<code>runtime异常</code>。如果抛出<code>runtime exception</code> 并在你的业务方法中没有catch到的话，事务会回滚。</p>
+<p>在业务方法中一般不需要catch异常，如果非要catch一定要抛出<code>throw new RuntimeException()</code>，或者注解中指定抛异常类型<code>@Transactional(rollbackFor=Exception.class)</code>，否则会导致事务失效，数据commit造成数据不一致，所以有些时候try catch反倒会画蛇添足。</p>
+<h2 id="6、数据库引擎不支持事务"><a href="#6、数据库引擎不支持事务" class="headerlink" title="6、数据库引擎不支持事务"></a>6、数据库引擎不支持事务</h2><p>这种情况出现的概率并不高，事务能否生效数据库引擎是否支持事务是关键。常用的MySQL数据库默认使用支持事务的<code>innodb</code>引擎。一旦数据库引擎切换成不支持事务的<code>myisam</code>，那事务就从根本上失效了。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>@Transactional 注解的看似简单易用，但如果对它的用法一知半解，还是会踩到很多坑的。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%B8%80)/" rel="prev" title="Spring事务(一)">
+      <i class="fa fa-chevron-left"></i> Spring事务(一)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/13/java/spring/java-spring-springIOC/" rel="next" title="Spring IoC">
+      Spring IoC <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Transactional-%E6%B3%A8%E8%A7%A3%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">@Transactional 注解使用详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Transactional-%E7%9A%84%E4%BD%9C%E7%94%A8%E8%8C%83%E5%9B%B4"><span class="nav-number">1.1.</span> <span class="nav-text">@Transactional 的作用范围</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transactional-%E7%9A%84%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="nav-number">1.2.</span> <span class="nav-text">@Transactional 的常用配置参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transactional-%E4%BA%8B%E5%8A%A1%E6%B3%A8%E8%A7%A3%E5%8E%9F%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">@Transactional 事务注解原理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Transactional%E6%B3%A8%E6%9C%89%E5%93%AA%E4%BA%9B%E5%B1%9E%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">@Transactional注有哪些属性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#propagation%E5%B1%9E%E6%80%A7"><span class="nav-number">2.1.</span> <span class="nav-text">propagation属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#isolation-%E5%B1%9E%E6%80%A7"><span class="nav-number">2.2.</span> <span class="nav-text">isolation 属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#timeout-%E5%B1%9E%E6%80%A7"><span class="nav-number">2.3.</span> <span class="nav-text">timeout 属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#readOnly-%E5%B1%9E%E6%80%A7"><span class="nav-number">2.4.</span> <span class="nav-text">readOnly 属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rollbackFor-%E5%B1%9E%E6%80%A7"><span class="nav-number">2.5.</span> <span class="nav-text">rollbackFor 属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#noRollbackFor%E5%B1%9E%E6%80%A7"><span class="nav-number">2.6.</span> <span class="nav-text">noRollbackFor属性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Transactional%E5%A4%B1%E6%95%88%E5%9C%BA%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">@Transactional失效场景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81-Transactional-%E5%BA%94%E7%94%A8%E5%9C%A8%E9%9D%9E-public-%E4%BF%AE%E9%A5%B0%E7%9A%84%E6%96%B9%E6%B3%95%E4%B8%8A"><span class="nav-number">3.1.</span> <span class="nav-text">1、@Transactional 应用在非 public 修饰的方法上</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81-Transactional-%E6%B3%A8%E8%A7%A3%E5%B1%9E%E6%80%A7-propagation-%E8%AE%BE%E7%BD%AE%E9%94%99%E8%AF%AF"><span class="nav-number">3.2.</span> <span class="nav-text">2、@Transactional 注解属性 propagation 设置错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81-Transactional-%E6%B3%A8%E8%A7%A3%E5%B1%9E%E6%80%A7-rollbackFor-%E8%AE%BE%E7%BD%AE%E9%94%99%E8%AF%AF"><span class="nav-number">3.3.</span> <span class="nav-text">3、@Transactional  注解属性 rollbackFor 设置错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4%E3%80%81%E5%90%8C%E4%B8%80%E4%B8%AA%E7%B1%BB%E4%B8%AD%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%EF%BC%8C%E5%AF%BC%E8%87%B4-Transactional%E5%A4%B1%E6%95%88"><span class="nav-number">3.4.</span> <span class="nav-text">4、同一个类中方法调用，导致@Transactional失效</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5%E3%80%81%E5%BC%82%E5%B8%B8%E8%A2%AB%E4%BD%A0%E7%9A%84-catch%E2%80%9C%E5%90%83%E4%BA%86%E2%80%9D%E5%AF%BC%E8%87%B4-Transactional%E5%A4%B1%E6%95%88"><span class="nav-number">3.5.</span> <span class="nav-text">5、异常被你的 catch“吃了”导致@Transactional失效</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BC%95%E6%93%8E%E4%B8%8D%E6%94%AF%E6%8C%81%E4%BA%8B%E5%8A%A1"><span class="nav-number">3.6.</span> <span class="nav-text">6、数据库引擎不支持事务</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yangl"
+      src="/images/favicon.png">
+  <p class="site-author-name" itemprop="name">yangl</p>
+  <div class="site-description" itemprop="description">仅作为学习记录</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yangl</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '3ccb828c63e0fc996035',
+      clientSecret: '0b353a289ba940bdaa2e818c42e98e43ace7edfa',
+      repo        : 'yanglei1992.github.io',
+      owner       : 'yanglei1992',
+      admin       : ['yanglei1992'],
+      id          : '2844dbc707ebe31c845c26653f9b1ecc',
+        language: 'zh-CN',
+      distractionFreeMode: false
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

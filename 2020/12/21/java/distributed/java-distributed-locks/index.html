@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yanglei1992.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="分布式锁基于数据库  基于数据库表记录做唯一约束（表中记录方法名称） 基于数据库表做悲观锁（InnoDB，for update） 基于数据库表做乐观锁，用于分布式锁。（version）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式锁">
+<meta property="og:url" content="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-locks/index.html">
+<meta property="og:site_name" content="yangl的博客">
+<meta property="og:description" content="分布式锁基于数据库  基于数据库表记录做唯一约束（表中记录方法名称） 基于数据库表做悲观锁（InnoDB，for update） 基于数据库表做乐观锁，用于分布式锁。（version）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-locks/16757f4b2a97bdf2">
+<meta property="og:image" content="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-locks/16757f62c5d2d91a">
+<meta property="og:image" content="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-locks/16757f4df2225419">
+<meta property="article:published_time" content="2020-12-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-01-13T23:55:46.915Z">
+<meta property="article:author" content="yangl">
+<meta property="article:tag" content="distributed">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-locks/16757f4b2a97bdf2">
+
+<link rel="canonical" href="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-locks/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>分布式锁 | yangl的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">yangl的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">积少成多</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">38</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-locks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.png">
+      <meta itemprop="name" content="yangl">
+      <meta itemprop="description" content="仅作为学习记录">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yangl的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分布式锁
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-21 00:00:00" itemprop="dateCreated datePublished" datetime="2020-12-21T00:00:00+08:00">2020-12-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-14 07:55:46" itemprop="dateModified" datetime="2021-01-14T07:55:46+08:00">2021-01-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h1><h2 id="基于数据库"><a href="#基于数据库" class="headerlink" title="基于数据库"></a><strong>基于数据库</strong></h2><blockquote>
+<ul>
+<li>基于数据库表记录做唯一约束（表中记录方法名称）</li>
+<li>基于数据库表做悲观锁（InnoDB，for update）</li>
+<li>基于数据库表做乐观锁，用于分布式锁。（version）</li>
+</ul>
+</blockquote>
+<h3 id="基于数据库表数据记录做唯一约束（表中记录方法名称）"><a href="#基于数据库表数据记录做唯一约束（表中记录方法名称）" class="headerlink" title="基于数据库表数据记录做唯一约束（表中记录方法名称）"></a>基于数据库表数据记录做唯一约束（表中记录方法名称）</h3><ul>
+<li>要实现分布式锁，最简单的方式可能就是直接创建一张锁表，然后通过操作该表中的数据来实现了。</li>
+<li>当我们要锁住某个方法或资源时，我们就在该表中增加一条记录，想要释放锁的时候就删除这条记录。 创建这样一张数据库表：</li>
+</ul>
+<p><img src="/2020/12/21/java/distributed/java-distributed-locks/16757f4b2a97bdf2" alt="img"></p>
+<ul>
+<li>当我们想要锁住某个方法时，执行以下SQL：</li>
+</ul>
+<p><img src="/2020/12/21/java/distributed/java-distributed-locks/16757f62c5d2d91a" alt="img"></p>
+<ul>
+<li><p>因为我们对method_name做了唯一性约束，这里如果有多个请求同时提交到数据库的话，数据库会保证只有一个操作可以成功（原子性），那么我们就可以认为操作成功的那个线程获得了该方法的锁，可以执行方法体内容。</p>
+</li>
+<li><p>当方法执行完毕之后，想要释放锁的话，需要执行以下Sql: </p>
+</li>
+</ul>
+<p><img src="/2020/12/21/java/distributed/java-distributed-locks/16757f4df2225419" alt="img"></p>
+<p><strong>上面这种简单的实现有以下几个问题：</strong></p>
+<blockquote>
+<ol>
+<li>这把锁强依赖数据库的可用性，数据库是一个单点，一旦数据库挂掉，会导致业务系统不可用。</li>
+<li>这把锁没有失效时间，一旦解锁操作失败，就会导致锁记录一直在数据库中，其他线程无法再获得到锁。</li>
+<li>这把锁只能是非阻塞的，因为数据的insert操作，一旦插入失败就会直接报错。没有获得锁的线程并不会进入排队队列，要想再次获得锁就要再次触发获得锁操作。</li>
+<li>这把锁是非重入的，同一个线程在没有释放锁之前无法再次获得该锁。因为数据中数据已经存在了。</li>
+</ol>
+<p>当然，我们也可以有其他方式解决上面的问题。</p>
+<ul>
+<li>数据库是单点？搞两个数据库，数据之前双向同步。一旦挂掉快速切换到备库上。</li>
+<li>没有失效时间？只要做一个定时任务，每隔一定时间把数据库中的超时数据清理一遍。</li>
+<li>非阻塞的？搞一个while循环，直到insert成功再返回成功。</li>
+<li>非重入的？在数据库表中加两个字段，一个记录当前获得锁的机器的主机信息和线程信息，另一个是count值，用于记录重入的次数，那么下次再获取锁的时候先查询数据库，如果当前机器的主机信息和线程信息在数据库可以查到的话，直接把锁分配给他就可以了，并把count加1。在释放锁的时候把count值减1，当count值为0时候，删除记录即可。</li>
+</ul>
+</blockquote>
+<h3 id="基于数据库表做悲观锁（InnoDB引擎，for-update语句）"><a href="#基于数据库表做悲观锁（InnoDB引擎，for-update语句）" class="headerlink" title="基于数据库表做悲观锁（InnoDB引擎，for update语句）"></a>基于数据库表做悲观锁（InnoDB引擎，for update语句）</h3><p>除了可以通过增删操作数据表中的记录以外，其实还可以借助数据中自带的锁来实现分布式的锁。 我们还用刚刚创建的那张数据库表。可以通过数据库的排他锁来实现分布式锁。 基于MySql的InnoDB引擎，可以使用以下方法来实现加锁操作：</p>
+<p>在查询语句后面增加for update，数据库会在查询过程中给数据库表增加排他锁（<strong>这里再多提一句，InnoDB引擎在加锁的时候，只有通过索引进行检索的时候才会使用行级锁，否则会使用表级锁。这里我们希望使用行级锁，就要给method_name添加索引，值得注意的是，这个索引一定要创建成唯一索引，否则会出现多个重载方法之间无法同时被访问的问题。重载方法的话建议把参数类型也加上</strong>）。</p>
+<p>当某条记录被加上排他锁之后，其他线程无法再在该行记录上增加排他锁。 我们可以认为获得排它锁的线程即可获得分布式锁，当获取到锁之后，可以执行方法的业务逻辑，执行完方法之后，再通过以下方法解锁：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span></span>&#123;</span><br><span class="line">    connection.setAutoCommit(<span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(count &lt; <span class="number">4</span>)&#123;</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            select * from lock where lock_name=xxx <span class="keyword">for</span> update;</span><br><span class="line">            <span class="keyword">if</span>(结果不为空)&#123;</span><br><span class="line">                <span class="comment">//代表获取到锁</span></span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line"></span><br><span class="line">   		&#125;</span><br><span class="line">        <span class="comment">//为空或者抛异常的话都表示没有获取到锁</span></span><br><span class="line">        sleep(<span class="number">1000</span>);</span><br><span class="line">        count++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> LockException();</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>通过 connection.commit() 操作来释放锁。</p>
+<p>这种方法可以有效的解决上面提到的无法释放锁和阻塞锁的问题。</p>
+<ul>
+<li>阻塞锁？ for update语句会在执行成功后立即返回，在执行失败时一直处于阻塞状态，直到成功。</li>
+<li>锁定之后服务宕机，无法释放？使用这种方式，服务宕机之后数据库会自己把锁释放掉</li>
+</ul>
+<p>但是还是无法直接解决数据库单点和可重入问题。</p>
+<p>这里还可能存在另外一个问题，虽然我们对method_name 使用了唯一索引，并且显示使用for update来使用行级锁。但是，MySql会对查询进行优化，即便在条件中使用了索引字段，但是否使用索引来检索数据是由 MySQL 通过判断不同执行计划的代价来决定的，如果 MySQL 认为全表扫效率更高，比如对一些很小的表，它就不会使用索引，这种情况下 InnoDB 将使用表锁，而不是行锁。如果发生这种情况就悲剧了。。。</p>
+<p>还有一个问题，就是我们要使用排他锁来进行分布式锁的lock，那么一个排他锁长时间不提交，就会占用数据库连接。一旦类似的连接变得多了，就可能把数据库连接池撑爆</p>
+<h3 id="基于数据库资源表做乐观锁，用于分布式锁"><a href="#基于数据库资源表做乐观锁，用于分布式锁" class="headerlink" title="基于数据库资源表做乐观锁，用于分布式锁:"></a>基于数据库资源表做乐观锁，用于分布式锁:</h3><ol>
+<li><p>首先说明乐观锁的含义:</p>
+<blockquote>
+<p> 大多数是基于数据版本(VERSION)的记录机制实现的。何谓数据版本号？即为数据增加一个版本标识，<br> 在基于数据库表的版本解决方案中，一般是通过为数据库表添加一个“VERSION”字段来实现读取出数据时<br> ，将此版本号一同读出，之后更新时，对此版本号加1。</p>
+<p> 在更新过程中，会对版本号进行比较，如果是一致的，没有发生改变，则会成功执行本次操作；<br> 如果版本号不一致，则会更新失败。<br>复制代码</p>
+</blockquote>
+</li>
+</ol>
+<ol start="2">
+<li>对乐观锁的含义有了一定的了解后，结合具体的例子，我们来推演下我们应该怎么处理：</li>
+</ol>
+<ul>
+<li><p>假设我们有一张资源表，如下图所示: T_RESOURCE , 其中有6个字段ID, RESOOURCE, STATE, ADD_TIME, UPDATE_TIME, VERSION,分别表示表主键、资源、分配状态(1未分配 2已分配)、资源创建时间、资源更新时间、资源数据版本号。</p>
+</li>
+<li><p>假设我们现在我们对ID=5780这条数据进行分配，那么非分布式场景的情况下，我们一般先查询出来STATE=1(未分配)的数据，然后从其中选取一条数据可以通过以下语句进行，如果可以更新成功，那么就说明已经占用了这个资源 UPDATE T_RESOURCE SET STATE=2 WHERE STATE=1 AND ID=5780。</p>
+</li>
+<li><p>如果在分布式场景中，由于数据库的UPDATE操作是原子是原子的，其实上边这条语句理论上也没有问题，但是这条语句如果在典型的“ABA”情况下，我们是无法感知的。有人可能会问什么是“ABA”问题呢？大家可以网上搜索一下，这里我说简单一点就是，如果在你第一次SELECT和第二次UPDATE过程中，由于两次操作是非原子的，所以这过程中，如果有一个线程，先是占用了资源(STATE=2)，然后又释放了资源(STATE=1)，实际上最后你执行UPDATE操作的时候，是无法知道这个资源发生过变化的。也许你会说这个在你说的场景中应该也还好吧，但是在实际的使用过程中，比如银行账户存款或者扣款的过程中，这种情况是比较恐怖的。</p>
+</li>
+<li><p>那么如果使用乐观锁我们如何解决上边的问题呢？</p>
+<blockquote>
+<p> A. 先执行SELECT操作查询当前数据的数据版本号,比如当前数据版本号是26：<br>  SELECT ID, RESOURCE, STATE,VERSION FROM T_RESOURCE WHERE STATE=1 AND ID=5780;<br>  B. 执行更新操作：<br>  UPDATE T_RESOURE SET STATE=2, VERSION=27, UPDATE_TIME=NOW() WHERE RESOURCE=XXXXXX AND<br>  STATE=1 AND VERSION=26<br>  C. 如果上述UPDATE语句真正更新影响到了一行数据，那就说明占位成功。如果没有更新影响到一行数据<br>  ，则说明这个资源已经被别人占位了。</p>
+</blockquote>
+</li>
+</ul>
+<ol start="3">
+<li><p>基于数据库表做乐观锁的一些缺点:</p>
+<ol>
+<li> 这种操作方式，使原本一次的UPDATE操作，必须变为2次操作: SELECT版本号一次；UPDATE一次。增加了数据库操作的次数。</li>
+<li> 如果业务场景中的一次业务流程中，多个资源都需要用保证数据一致性，那么如果全部使用基于数据库资源表的乐观锁，就要让每个资源都有一张资源表，这个在实际使用场景中肯定是无法满足的。而且这些都基于数据库操作，在高并发的要求下，对数据库连接的开销一定是无法忍受的。</li>
+<li> 乐观锁机制往往基于系统中的数据存储逻辑，因此可能会造成脏数据被更新到数据库中。在系统设计阶段，我们应该充分考虑到这些情况出现的可能性，并进行相应调整，如将乐观锁策略在数据库存储过程中实现，对外只开放基于此存储过程的数据更新途径，而不是将数据库表直接对外公开。</li>
+</ol>
+</li>
+</ol>
+<p>讲了乐观锁的实现方式和缺点，是不是会觉得不敢使用乐观锁了呢？？？当然不是，在文章开头我自己的业务场景中，场景1和场景2的一部分都使用了基于数据库资源表的乐观锁，已经很好的解决了线上问题。所以大家要根据的具体业务场景选择技术方案，并不是随便找一个足够复杂、足够新潮的技术方案来解决业务问题就是好方案？！比如，如果在我的场景一中，我使用zookeeper做锁，可以这么做，但是真的有必要吗？？？答案觉得是没有必要的！！！</p>
+<p>总结一下使用数据库来实现分布式锁的方式，这两种方式都是依赖数据库的一张表，一种是通过表中的记录的存在情况确定当前是否有锁存在，另外一种是通过数据库的排他锁来实现分布式锁。</p>
+<blockquote>
+<p>数据库实现分布式锁的优点<br>    直接借助数据库，容易理解。<br>数据库实现分布式锁的缺点<br>    会有各种各样的问题，在解决问题的过程中会使整个方案变得越来越复杂。<br>    操作数据库需要一定的开销，性能问题需要考虑。<br>    使用数据库的行级锁并不一定靠谱，尤其是当我们的锁表并不大的时候。</p>
+</blockquote>
+<h2 id="基于缓存"><a href="#基于缓存" class="headerlink" title="基于缓存"></a><strong>基于缓存</strong></h2><blockquote>
+<ul>
+<li>使用redis的setnx()用于分布式锁。（setNx，直接设置值为当前时间+超时时间，保持操作原子性）</li>
+<li><del>使用memcached的add()方法，用于分布式锁。</del></li>
+<li><del>使用Tair的put()方法，用于分布式锁。</del></li>
+</ul>
+</blockquote>
+<h3 id="基于缓存实现分布式锁-Redis"><a href="#基于缓存实现分布式锁-Redis" class="headerlink" title="基于缓存实现分布式锁 Redis"></a>基于缓存实现分布式锁 Redis</h3><ul>
+<li><p>使用redis的setnx()用于分布式锁。（原子性）</p>
+</li>
+<li><p>SETNX是将 key 的值设为 value，当且仅当 key 不存在。若给定的 key 已经存在，则 SETNX 不做任何动作。</p>
+<blockquote>
+<ul>
+<li>返回1，说明该进程获得锁，SETNX将键 lock.id 的值设置为锁的超时时间，当前时间 +加上锁的有效时间。</li>
+<li>返回0，说明其他进程已经获得了锁，进程不能进入临界区。进程可以在一个循环中不断地尝试 SETNX 操作，以获得锁。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p> <strong>存在死锁的问题</strong></p>
+<p>​        SETNX实现分布式锁，可能会存在死锁的情况。与单机模式下的锁相比，分布式环境下不仅需要保证进程可见，还需要考虑进程与锁之间的网络问题。某个线程获取了锁之后，断开了与Redis 的连接，锁没有及时释放，竞争该锁的其他线程都会hung，产生死锁的情况。所以在这种情况下需要对获取的锁进行超时时间设置，即setExpire，超时自动释放锁</p>
+<p><strong>Redission的分布式锁</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Redission是redis官网推荐的一个redis客户端，除了基于redis的基础的CURD命令以外，重要的是就是Redission提供了方便好用的分布式锁API</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+<p>一、 <strong>基本用法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">RedissonClient redissonClient = RedissonTool.getInstance();</span><br><span class="line"></span><br><span class="line">      RLock distribute_lock = redissonClient.getLock(<span class="string">&quot;distribute_lock&quot;</span>);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">          <span class="keyword">boolean</span> result = distribute_lock.tryLock(<span class="number">3</span>, <span class="number">10</span>, TimeUnit.SECONDS);</span><br><span class="line">          </span><br><span class="line">      &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">          e.printStackTrace();</span><br><span class="line">      &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">          <span class="keyword">if</span> (distribute_lock.isLocked()) &#123;</span><br><span class="line">              distribute_lock.unlock();</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>代码流程</strong></p>
+<ol>
+<li>通过 redissonClient 获取 RLock 实例</li>
+<li>tryLock 获取尝试获取锁，第一个是等待时间，第二个是锁的超时时间，第三个是时间单位</li>
+<li>执行完业务逻辑后，最终释放锁</li>
+</ol>
+<p>二、 <strong>具体实现</strong></p>
+<blockquote>
+<p>我们通过tryLock来分析redission分布式的实现，lock方法跟tryLock差不多，只不过没有最长等待时间的设置，会自旋循环等待锁的释放，直到获取锁为止</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> time = unit.toMillis(waitTime);</span><br><span class="line">     <span class="keyword">long</span> current = System.currentTimeMillis();</span><br><span class="line">     <span class="comment">//获取当前线程ID，用于实现可重入锁</span></span><br><span class="line">     <span class="keyword">final</span> <span class="keyword">long</span> threadId = Thread.currentThread().getId();</span><br><span class="line">     <span class="comment">//尝试获取锁</span></span><br><span class="line">     Long ttl = tryAcquire(leaseTime, unit, threadId);</span><br><span class="line">     <span class="comment">// lock acquired</span></span><br><span class="line">     <span class="keyword">if</span> (ttl == <span class="keyword">null</span>) &#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">     &#125;</span><br><span class="line">     </span><br><span class="line">     time -= (System.currentTimeMillis() - current);</span><br><span class="line">     <span class="keyword">if</span> (time &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">     	<span class="comment">//等待时间结束，返回获取失败</span></span><br><span class="line">         acquireFailed(threadId);</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">     &#125;</span><br><span class="line">     </span><br><span class="line">     current = System.currentTimeMillis();</span><br><span class="line">     <span class="comment">//订阅锁的队列，等待锁被其余线程释放后通知</span></span><br><span class="line">     <span class="keyword">final</span> RFuture&lt;RedissonLockEntry&gt; subscribeFuture = subscribe(threadId);</span><br><span class="line">     <span class="keyword">if</span> (!await(subscribeFuture, time, TimeUnit.MILLISECONDS)) &#123;</span><br><span class="line">         <span class="keyword">if</span> (!subscribeFuture.cancel(<span class="keyword">false</span>)) &#123;</span><br><span class="line">             subscribeFuture.addListener(<span class="keyword">new</span> FutureListener&lt;RedissonLockEntry&gt;() &#123;</span><br><span class="line">                 <span class="meta">@Override</span></span><br><span class="line">                 <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operationComplete</span><span class="params">(Future&lt;RedissonLockEntry&gt; future)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                     <span class="keyword">if</span> (subscribeFuture.isSuccess()) &#123;</span><br><span class="line">                         unsubscribe(subscribeFuture, threadId);</span><br><span class="line">                     &#125;</span><br><span class="line">                 &#125;</span><br><span class="line">             &#125;);</span><br><span class="line">         &#125;</span><br><span class="line">         acquireFailed(threadId);</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">         time -= (System.currentTimeMillis() - current);</span><br><span class="line">         <span class="keyword">if</span> (time &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">             acquireFailed(threadId);</span><br><span class="line">             <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">         &#125;</span><br><span class="line">     </span><br><span class="line">         <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">             <span class="keyword">long</span> currentTime = System.currentTimeMillis();</span><br><span class="line">             ttl = tryAcquire(leaseTime, unit, threadId);</span><br><span class="line">             <span class="comment">// lock acquired</span></span><br><span class="line">             <span class="keyword">if</span> (ttl == <span class="keyword">null</span>) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">             &#125;</span><br><span class="line"></span><br><span class="line">             time -= (System.currentTimeMillis() - currentTime);</span><br><span class="line">             <span class="keyword">if</span> (time &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                 acquireFailed(threadId);</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">             &#125;</span><br><span class="line"></span><br><span class="line">             <span class="comment">// waiting for message，等待订阅的队列消息</span></span><br><span class="line">             currentTime = System.currentTimeMillis();</span><br><span class="line">             <span class="keyword">if</span> (ttl &gt;= <span class="number">0</span> &amp;&amp; ttl &lt; time) &#123;</span><br><span class="line">                 getEntry(threadId).getLatch().tryAcquire(ttl, TimeUnit.MILLISECONDS);</span><br><span class="line">             &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                 getEntry(threadId).getLatch().tryAcquire(time, TimeUnit.MILLISECONDS);</span><br><span class="line">             &#125;</span><br><span class="line"></span><br><span class="line">             time -= (System.currentTimeMillis() - currentTime);</span><br><span class="line">             <span class="keyword">if</span> (time &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                 acquireFailed(threadId);</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">         unsubscribe(subscribeFuture, threadId);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>代码分析</strong></p>
+<ol>
+<li>首先 tryAcquire 尝试获取锁，若返回ttl为null，说明获取到锁了</li>
+<li>判断等待时间是否过期，如果过期，直接返回获取锁失败</li>
+<li>通过 Redis 的 Channel 订阅监听队列，subscribe 内部通过信号量 semaphore，再通过await方法阻塞，内部其实是用 CountDownLatch 来实现阻塞，获取 subscribe 异步执行的结果，来保证订阅成功，再判断是否到了等待时间</li>
+<li>再次尝试申请锁和等待时间的判断，循环阻塞在这里等待锁释放的消息 RedissonLockEntry 也维护了一个semaphore 的信号量</li>
+<li>无论是否释放锁，最终都要取消订阅这个队列消息</li>
+<li>redission 内部的 getEntryName 是客户端实例ID + 锁名称 来保证多个实例下的锁可重入</li>
+</ol>
+<hr>
+<p><strong>tryAcquire获取锁</strong></p>
+<blockquote>
+<p>redisssion获取锁的核心代码,内部其实是异步调用，但是用get方法阻塞了</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">private</span> Long <span class="title">tryAcquire</span><span class="params">(<span class="keyword">long</span> leaseTime, TimeUnit unit, <span class="keyword">long</span> threadId)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> get(tryAcquireAsync(leaseTime, unit, threadId));</span><br><span class="line">    &#125;</span><br><span class="line">复制代码</span><br><span class="line"> <span class="keyword">private</span> &lt;T&gt; <span class="function">RFuture&lt;Long&gt; <span class="title">tryAcquireAsync</span><span class="params">(<span class="keyword">long</span> leaseTime, TimeUnit unit, <span class="keyword">final</span> <span class="keyword">long</span> threadId)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (leaseTime != -<span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> tryLockInnerAsync(leaseTime, unit, threadId, RedisCommands.EVAL_LONG);</span><br><span class="line">        &#125;</span><br><span class="line">        RFuture&lt;Long&gt; ttlRemainingFuture = tryLockInnerAsync(LOCK_EXPIRATION_INTERVAL_SECONDS, TimeUnit.SECONDS, threadId, RedisCommands.EVAL_LONG);</span><br><span class="line">        ttlRemainingFuture.addListener(<span class="keyword">new</span> FutureListener&lt;Long&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operationComplete</span><span class="params">(Future&lt;Long&gt; future)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                <span class="keyword">if</span> (!future.isSuccess()) &#123;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                Long ttlRemaining = future.getNow();</span><br><span class="line">                <span class="comment">// lock acquired</span></span><br><span class="line">                <span class="keyword">if</span> (ttlRemaining == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    scheduleExpirationRenewal(threadId);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">return</span> ttlRemainingFuture;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>tryLockInnerAsync方法内部是基于Lua脚本来获取锁的</p>
+<ul>
+<li>先判断KEYS[1]（锁名称）对应的key是否存在，不存在获取到锁，hset设置key的value，pexpire设置过期时间，返回null表示获取到锁</li>
+<li>存在的话，锁被占，hexists判断是否是当前线程的锁，若是的话，hincrby增加重入次数，重新设置过期时间，不是当前线程的锁，返回当前锁的过期时间</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;T&gt; <span class="function">RFuture&lt;T&gt; <span class="title">tryLockInnerAsync</span><span class="params">(<span class="keyword">long</span> leaseTime, TimeUnit unit, <span class="keyword">long</span> threadId, RedisStrictCommand&lt;T&gt; command)</span> </span>&#123;</span><br><span class="line">       internalLockLeaseTime = unit.toMillis(leaseTime);</span><br><span class="line">   </span><br><span class="line">       <span class="keyword">return</span> commandExecutor.evalWriteAsync(getName(), LongCodec.INSTANCE, command,</span><br><span class="line">                 <span class="string">&quot;if (redis.call(&#x27;exists&#x27;, KEYS[1]) == 0) then &quot;</span> +</span><br><span class="line">                     <span class="string">&quot;redis.call(&#x27;hset&#x27;, KEYS[1], ARGV[2], 1); &quot;</span> +</span><br><span class="line">                     <span class="string">&quot;redis.call(&#x27;pexpire&#x27;, KEYS[1], ARGV[1]); &quot;</span> +</span><br><span class="line">                     <span class="string">&quot;return nil; &quot;</span> +</span><br><span class="line">                 <span class="string">&quot;end; &quot;</span> +</span><br><span class="line">                 <span class="string">&quot;if (redis.call(&#x27;hexists&#x27;, KEYS[1], ARGV[2]) == 1) then &quot;</span> +</span><br><span class="line">                     <span class="string">&quot;redis.call(&#x27;hincrby&#x27;, KEYS[1], ARGV[2], 1); &quot;</span> +</span><br><span class="line">                     <span class="string">&quot;redis.call(&#x27;pexpire&#x27;, KEYS[1], ARGV[1]); &quot;</span> +</span><br><span class="line">                     <span class="string">&quot;return nil; &quot;</span> +</span><br><span class="line">                 <span class="string">&quot;end; &quot;</span> +</span><br><span class="line">                 <span class="string">&quot;return redis.call(&#x27;pttl&#x27;, KEYS[1]);&quot;</span>,</span><br><span class="line">                   Collections.&lt;Object&gt;singletonList(getName()), internalLockLeaseTime, getLockName(threadId));</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Redission避免死锁的解决方案：</p>
+<p>Redission为了避免锁未被释放，采用了一个特殊的解决方案，若未设置过期时间的话，redission默认的过期时间是30s，同时未避免锁在业务未处理完成之前被提前释放，Redisson在获取到锁且默认过期时间的时候，会在当前客户端内部启动一个定时任务，每隔internalLockLeaseTime/3的时间去刷新key的过期时间，这样既避免了锁提前释放，同时如果客户端宕机的话，这个锁最多存活30s的时间就会自动释放（刷新过期时间的定时任务进程也宕机）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// lock acquired，获取到锁的时候设置定期更新时间的任务</span></span><br><span class="line">            <span class="keyword">if</span> (ttlRemaining) &#123;</span><br><span class="line">                scheduleExpirationRenewal(threadId);</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//expirationRenewalMap的并发安全MAP记录设置过的缓存，避免并发情况下重复设置任务，internalLockLeaseTime / 3的时间后重新设置过期时间</span></span><br><span class="line">               <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">scheduleExpirationRenewal</span><span class="params">(<span class="keyword">final</span> <span class="keyword">long</span> threadId)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (expirationRenewalMap.containsKey(getEntryName())) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">   </span><br><span class="line">    Timeout task = commandExecutor.getConnectionManager().newTimeout(<span class="keyword">new</span> TimerTask() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(Timeout timeout)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            </span><br><span class="line">            RFuture&lt;Boolean&gt; future = commandExecutor.evalWriteAsync(getName(), LongCodec.INSTANCE, RedisCommands.EVAL_BOOLEAN,</span><br><span class="line">                    <span class="string">&quot;if (redis.call(&#x27;hexists&#x27;, KEYS[1], ARGV[2]) == 1) then &quot;</span> +</span><br><span class="line">                        <span class="string">&quot;redis.call(&#x27;pexpire&#x27;, KEYS[1], ARGV[1]); &quot;</span> +</span><br><span class="line">                        <span class="string">&quot;return 1; &quot;</span> +</span><br><span class="line">                    <span class="string">&quot;end; &quot;</span> +</span><br><span class="line">                    <span class="string">&quot;return 0;&quot;</span>,</span><br><span class="line">                      Collections.&lt;Object&gt;singletonList(getName()), internalLockLeaseTime, getLockName(threadId));</span><br><span class="line">            </span><br><span class="line">            future.addListener(<span class="keyword">new</span> FutureListener&lt;Boolean&gt;() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operationComplete</span><span class="params">(Future&lt;Boolean&gt; future)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                    expirationRenewalMap.remove(getEntryName());</span><br><span class="line">                    <span class="keyword">if</span> (!future.isSuccess()) &#123;</span><br><span class="line">                        log.error(<span class="string">&quot;Can&#x27;t update lock &quot;</span> + getName() + <span class="string">&quot; expiration&quot;</span>, future.cause());</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    </span><br><span class="line">                    <span class="keyword">if</span> (future.getNow()) &#123;</span><br><span class="line">                        <span class="comment">// reschedule itself</span></span><br><span class="line">                        scheduleExpirationRenewal(threadId);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, internalLockLeaseTime / <span class="number">3</span>, TimeUnit.MILLISECONDS);</span><br><span class="line">   </span><br><span class="line">    <span class="keyword">if</span> (expirationRenewalMap.putIfAbsent(getEntryName(), task) != <span class="keyword">null</span>) &#123;</span><br><span class="line">        task.cancel();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<p><strong>unlock解锁</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">protected RFuture&lt;Boolean&gt; unlockInnerAsync(long threadId) &#123;</span><br><span class="line">        return commandExecutor.evalWriteAsync(getName(), LongCodec.INSTANCE, RedisCommands.EVAL_BOOLEAN,</span><br><span class="line">                &quot;if (redis.call(&#39;exists&#39;, KEYS[1]) &#x3D;&#x3D; 0) then &quot; +</span><br><span class="line">                    &quot;redis.call(&#39;publish&#39;, KEYS[2], ARGV[1]); &quot; +</span><br><span class="line">                    &quot;return 1; &quot; +</span><br><span class="line">                &quot;end;&quot; +</span><br><span class="line">                &quot;if (redis.call(&#39;hexists&#39;, KEYS[1], ARGV[3]) &#x3D;&#x3D; 0) then &quot; +</span><br><span class="line">                    &quot;return nil;&quot; +</span><br><span class="line">                &quot;end; &quot; +</span><br><span class="line">                &quot;local counter &#x3D; redis.call(&#39;hincrby&#39;, KEYS[1], ARGV[3], -1); &quot; +</span><br><span class="line">                &quot;if (counter &gt; 0) then &quot; +</span><br><span class="line">                    &quot;redis.call(&#39;pexpire&#39;, KEYS[1], ARGV[2]); &quot; +</span><br><span class="line">                    &quot;return 0; &quot; +</span><br><span class="line">                &quot;else &quot; +</span><br><span class="line">                    &quot;redis.call(&#39;del&#39;, KEYS[1]); &quot; +</span><br><span class="line">                    &quot;redis.call(&#39;publish&#39;, KEYS[2], ARGV[1]); &quot; +</span><br><span class="line">                    &quot;return 1; &quot;+</span><br><span class="line">                &quot;end; &quot; +</span><br><span class="line">                &quot;return nil;&quot;,</span><br><span class="line">                Arrays.&lt;Object&gt;asList(getName(), getChannelName()), LockPubSub.unlockMessage, internalLockLeaseTime, getLockName(threadId));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>   Redission的unlock解锁也是基于Lua脚本实现的，内部逻辑是先判断锁是否存在，不存在说明已经被释放了，发布锁释放消息后返回，锁存在再判断当前线程是否锁拥有者，不是的话，无权释放返回，解锁的话，会减去重入的次数，重新更新过期时间，若重入数捡完，删除当前key，发布锁释放消息</p>
+<h2 id="基于Zookeeper"><a href="#基于Zookeeper" class="headerlink" title="基于Zookeeper"></a>基于Zookeeper</h2><blockquote>
+<ul>
+<li>每个客户端对某个方法加锁时，在zookeeper上的与该方法对应的指定节点的目录下，生成一个唯一的瞬时有序节点。 判断是否获取锁只需要判断有序节点中序号最小的一个。 当释放锁的时候，只需将这个瞬时节点删除即可。</li>
+</ul>
+</blockquote>
+<h3 id="基于Zookeeper实现分布式锁"><a href="#基于Zookeeper实现分布式锁" class="headerlink" title="基于Zookeeper实现分布式锁"></a>基于Zookeeper实现分布式锁</h3><p>基于 zookeeper 临时有序节点可以实现的分布式锁。</p>
+<p>大致思想即为：</p>
+<blockquote>
+<p>每个客户端对某个方法加锁时，在zookeeper上的与该方法对应的指定节点的目录下，生成一个唯一的临时有<br>序节点。 判断是否获取锁的方式很简单，只需要判断有序节点中序号最小的一个。<br>当释放锁的时候，只需将这个临时节点删除即可。同时，排队的节点需要监听排在自己之前的节点，这样能<br>在节点释放时候接收到回调通知，让其获得锁。zk的session由客户端管理，其可以避免服务宕机导致的锁无<br>法释放，而产生的死锁问题，不需要关注锁超时。<br>复制代码</p>
+</blockquote>
+<p>来看下Zookeeper能不能解决前面提到的问题。</p>
+<blockquote>
+<ul>
+<li>锁无法释放？使用Zookeeper可以有效的解决锁无法释放的问题，因为在创建锁的时候，客户端会在ZK中创建一个临时节点，一旦客户端获取到锁之后突然挂掉（Session连接断开），那么这个临时节点就会自动删除掉。其他客户端就可以再次获得锁。</li>
+<li>非阻塞锁？使用Zookeeper可以实现阻塞的锁，客户端可以通过在ZK中创建顺序节点，并且在节点上绑定监听器，一旦节点有变化，Zookeeper会通知客户端，客户端可以检查自己创建的节点是不是当前所有节点中序号最小的，如果是，那么自己就获取到锁，便可以执行业务逻辑了。</li>
+<li>不可重入？使用Zookeeper也可以有效的解决不可重入的问题，客户端在创建节点的时候，把当前客户端的主机信息和线程信息直接写入到节点中，下次想要获取锁的时候和当前最小的节点中的数据比对一下就可以了。如果和自己的信息一样，那么自己直接获取到锁，如果不一样就再创建一个临时的顺序节点，参与排队。</li>
+<li>单点问题？使用Zookeeper可以有效的解决单点问题，ZK是集群部署的，只要集群中有半数以上的机器存活，就可以对外提供服务。</li>
+</ul>
+</blockquote>
+<p>可以直接使用zookeeper第三方库Curator客户端，这个客户端中封装了一个可重入的锁服务。</p>
+<ul>
+<li><p>Curator提供的InterProcessMutex是分布式锁的实现。acquire方法用户获取锁，release方法用于释放锁。</p>
+</li>
+<li><p>使用ZK实现的分布式锁好像完全符合了本文开头我们对一个分布式锁的所有期望。但是，其实并不是，Zookeeper实现的分布式锁其实存在一个缺点，<strong>那就是性能上可能并没有缓存服务那么高</strong>。因为每次在创建锁和释放锁的过程中，都要动态创建、销毁瞬时节点来实现锁功能。ZK中创建和删除节点只能通过Leader服务器来执行，然后将数据同步到所有的Follower机器上。</p>
+</li>
+<li><p>其实，使用Zookeeper也有可能带来并发问题，只是并不常见而已。考虑这样的情况，由于网络抖动，客户端到ZK集群的session连接断了，那么zk以为客户端挂了，就会删除临时节点，这时候其他客户端就可以获取到分布式锁了。就可能产生并发问题。这个问题不常见是因为zk有重试机制，一旦zk集群检测不到客户端的心跳，就会重试，Curator客户端支持多种重试策略。多次重试之后还不行的话才会删除临时节点。（所以，选择一个合适的重试策略也比较重要，要在锁的粒度和并发之间找一个平衡。）</p>
+</li>
+</ul>
+<p><strong>基于ZK的方案的总结</strong></p>
+<p>使用Zookeeper实现分布式锁的优点</p>
+<blockquote>
+<p>有效的解决单点问题，不可重入问题，非阻塞问题以及锁无法释放的问题。实现起来较为简单。</p>
+</blockquote>
+<p>使用Zookeeper实现分布式锁的缺点</p>
+<blockquote>
+<p>性能上不如使用缓存实现分布式锁。 需要对ZK的原理有所了解。</p>
+</blockquote>
+<h2 id="三种方案的比较"><a href="#三种方案的比较" class="headerlink" title="三种方案的比较"></a>三种方案的比较</h2><p>上面几种方式，哪种方式都无法做到完美。就像CAP一样，在复杂性、可靠性、性能等方面无法同时满足，所以，根据不同的应用场景选择最适合自己的才是王道。</p>
+<ul>
+<li><p>从理解的难易程度角度（从低到高）</p>
+<blockquote>
+<p>数据库 &gt; 缓存 &gt; Zookeeper</p>
+</blockquote>
+</li>
+<li><p>从实现的复杂性角度（从低到高）</p>
+<blockquote>
+<p>Zookeeper &gt;= 缓存 &gt; 数据库</p>
+</blockquote>
+</li>
+<li><p>从性能角度（从高到低）</p>
+<blockquote>
+<p>缓存 &gt; Zookeeper &gt;= 数据库</p>
+</blockquote>
+</li>
+<li><p>从可靠性角度（从高到低）</p>
+<blockquote>
+<p>Zookeeper &gt; 缓存 &gt; 数据库</p>
+</blockquote>
+</li>
+</ul>
+<p>参考：<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903726268809224">https://juejin.cn/post/6844903726268809224</a></p>
+<p>参考：<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903662762852359#heading-4">https://juejin.cn/post/6844903662762852359#heading-4</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/distributed/" rel="tag"># distributed</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/19/java/jvm/java-jvm-GC%E5%8F%82%E6%95%B0%E5%92%8C%E8%B0%83%E4%BC%98/" rel="prev" title="GC参数和调优">
+      <i class="fa fa-chevron-left"></i> GC参数和调优
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/21/java/distributed/java-distributed-transaction/" rel="next" title="分布式事务">
+      分布式事务 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.1.</span> <span class="nav-text">基于数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E6%95%B0%E6%8D%AE%E8%AE%B0%E5%BD%95%E5%81%9A%E5%94%AF%E4%B8%80%E7%BA%A6%E6%9D%9F%EF%BC%88%E8%A1%A8%E4%B8%AD%E8%AE%B0%E5%BD%95%E6%96%B9%E6%B3%95%E5%90%8D%E7%A7%B0%EF%BC%89"><span class="nav-number">1.1.1.</span> <span class="nav-text">基于数据库表数据记录做唯一约束（表中记录方法名称）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E5%81%9A%E6%82%B2%E8%A7%82%E9%94%81%EF%BC%88InnoDB%E5%BC%95%E6%93%8E%EF%BC%8Cfor-update%E8%AF%AD%E5%8F%A5%EF%BC%89"><span class="nav-number">1.1.2.</span> <span class="nav-text">基于数据库表做悲观锁（InnoDB引擎，for update语句）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E8%B5%84%E6%BA%90%E8%A1%A8%E5%81%9A%E4%B9%90%E8%A7%82%E9%94%81%EF%BC%8C%E7%94%A8%E4%BA%8E%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.1.3.</span> <span class="nav-text">基于数据库资源表做乐观锁，用于分布式锁:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E7%BC%93%E5%AD%98"><span class="nav-number">1.2.</span> <span class="nav-text">基于缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E7%BC%93%E5%AD%98%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81-Redis"><span class="nav-number">1.2.1.</span> <span class="nav-text">基于缓存实现分布式锁 Redis</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EZookeeper"><span class="nav-number">1.3.</span> <span class="nav-text">基于Zookeeper</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EZookeeper%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.3.1.</span> <span class="nav-text">基于Zookeeper实现分布式锁</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E6%96%B9%E6%A1%88%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">1.4.</span> <span class="nav-text">三种方案的比较</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yangl"
+      src="/images/favicon.png">
+  <p class="site-author-name" itemprop="name">yangl</p>
+  <div class="site-description" itemprop="description">仅作为学习记录</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yangl</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '3ccb828c63e0fc996035',
+      clientSecret: '0b353a289ba940bdaa2e818c42e98e43ace7edfa',
+      repo        : 'yanglei1992.github.io',
+      owner       : 'yanglei1992',
+      admin       : ['yanglei1992'],
+      id          : 'b38dd9e4df8eebf63de4991631b0bce0',
+        language: 'zh-CN',
+      distractionFreeMode: false
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

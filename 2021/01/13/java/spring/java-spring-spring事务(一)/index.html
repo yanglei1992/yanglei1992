@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yanglei1992.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="什么是事务 事务是一组逻辑上的操作，要么都执行，要么都不执行 事务能否生效需要数据库引擎的支持，比如常用的 MySQL 数据库默认使用支持事务的innodb引擎。但是，如果把数据库引擎变为 myisam，那么程序也就不再支持事务了。  事务的ACID特性">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring事务(一)">
+<meta property="og:url" content="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%B8%80)/index.html">
+<meta property="og:site_name" content="yangl的博客">
+<meta property="og:description" content="什么是事务 事务是一组逻辑上的操作，要么都执行，要么都不执行 事务能否生效需要数据库引擎的支持，比如常用的 MySQL 数据库默认使用支持事务的innodb引擎。但是，如果把数据库引擎变为 myisam，那么程序也就不再支持事务了。  事务的ACID特性">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-13T09:50:39.000Z">
+<meta property="article:modified_time" content="2021-01-13T23:55:46.921Z">
+<meta property="article:author" content="yangl">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%B8%80)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Spring事务(一) | yangl的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">yangl的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">积少成多</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">38</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%B8%80)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.png">
+      <meta itemprop="name" content="yangl">
+      <meta itemprop="description" content="仅作为学习记录">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yangl的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring事务(一)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-13 17:50:39" itemprop="dateCreated datePublished" datetime="2021-01-13T17:50:39+08:00">2021-01-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-14 07:55:46" itemprop="dateModified" datetime="2021-01-14T07:55:46+08:00">2021-01-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="什么是事务"><a href="#什么是事务" class="headerlink" title="什么是事务"></a>什么是事务</h1><ul>
+<li>事务是一组逻辑上的操作，要么都执行，要么都不执行</li>
+<li>事务能否生效需要数据库引擎的支持，比如常用的 MySQL 数据库默认使用支持事务的innodb引擎。但是，如果把数据库引擎变为 myisam，那么程序也就不再支持事务了。</li>
+</ul>
+<h1 id="事务的ACID特性"><a href="#事务的ACID特性" class="headerlink" title="事务的ACID特性"></a>事务的ACID特性</h1><ul>
+<li>原子性：一个事务的操作，要么全部执行，要么全部不执行</li>
+<li>一致性：执行事务前后，数据保持一致</li>
+<li>隔离性：一个事务的执行不受其他事务的影响</li>
+<li>持久性：事务提交后对数据库的影响是永久的</li>
+</ul>
+<h2 id="并发事务的问题"><a href="#并发事务的问题" class="headerlink" title="并发事务的问题"></a>并发事务的问题</h2><ul>
+<li>多个任务对同一个数据进行操作</li>
+<li>丢失修改：多个事务对同一个数据进行修改，之后的事务修改的结果覆盖了之前的。</li>
+<li><strong>脏读</strong>：一个事务对数据的修改还没有提交，另一个事务就访问使用了这个数据。</li>
+<li><strong>不可重复读</strong>：一个事务多次对一个数据读取，在这个中间另一个事务修改了该数据，导致，前一个前后读取的结果不一样。</li>
+<li><strong>幻读</strong>：前一个事务读了几条记录，后一个事务插入或删除了记录，导致前一个事务再次读的时候数据多了或少了。</li>
+</ul>
+<h1 id="SQL-标准定义了四个隔离级别"><a href="#SQL-标准定义了四个隔离级别" class="headerlink" title="SQL 标准定义了四个隔离级别"></a>SQL 标准定义了四个隔离级别</h1><ul>
+<li>READ-UNCOMMITTED(<strong>读取未提交</strong>)： 最低的隔离级别，<strong>允许读取尚未提交的数据变更</strong>，可能会导致脏读、幻读或不可重复读</li>
+<li>READ-COMMITTED(<strong>读取已提交</strong>): <strong>允许读取并发事务已经提交的数据</strong>，可以阻止脏读，但是幻读或不可重复读仍有可能发生</li>
+<li>REPEATABLE-READ（<strong>可重读</strong>）: <strong>对同一字段的多次读取结果都是一致的</strong>，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复读，但幻读仍有可能发生。</li>
+<li>SERIALIZABLE(<strong>可串行化</strong>): 最高的隔离级别，完全服从ACID的隔离级别。<strong>所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰</strong>，也就是说，该级别可以防止脏读、不可重复读以及幻读。</li>
+</ul>
+<h1 id="Spring对事务的支持"><a href="#Spring对事务的支持" class="headerlink" title="Spring对事务的支持"></a>Spring对事务的支持</h1><h2 id="编程式事务管理"><a href="#编程式事务管理" class="headerlink" title="编程式事务管理"></a>编程式事务管理</h2><ul>
+<li>通过TransactionTemplate和TransactionManager手动管理事务</li>
+</ul>
+<h2 id="声明式事务管理"><a href="#声明式事务管理" class="headerlink" title="声明式事务管理"></a>声明式事务管理</h2><ul>
+<li>使用 @Transactional注解进行事务管理，基于AOP实现的</li>
+</ul>
+<h1 id="Spring事务管理接口"><a href="#Spring事务管理接口" class="headerlink" title="Spring事务管理接口"></a>Spring事务管理接口</h1><ul>
+<li>PlatformTransactionManager： （平台）事务管理器接口，Spring 事务策略的核心。<ul>
+<li>PlatformTransactionManager 会根据 TransactionDefinition 的定义比如事务超时时间、隔离级别、传播行为等来进行事务管理 ，而 TransactionStatus 接口则提供了一些方法来获取事务相应的状态比如是否新事务、是否可以回滚等等。</li>
+<li>Spring 并不直接管理事务，而是提供了多种事务管理器 。Spring 事务管理器的接口是： PlatformTransactionManager 。通过这个接口，Spring 为各个平台如 JDBC(DataSourceTransactionManager)、Hibernate(HibernateTransactionManager)、JPA(JpaTransactionManager)等都提供了对应的事务管理器，但是具体的实现就是各个平台自己的事情了。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PlatformTransactionManager</span> </span>&#123;</span><br><span class="line">    <span class="comment">//获得事务</span></span><br><span class="line">    <span class="function">TransactionStatus <span class="title">getTransaction</span><span class="params">(<span class="meta">@Nullable</span> TransactionDefinition var1)</span> <span class="keyword">throws</span> TransactionException</span>;</span><br><span class="line">    <span class="comment">//提交事务</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">commit</span><span class="params">(TransactionStatus var1)</span> <span class="keyword">throws</span> TransactionException</span>;</span><br><span class="line">    <span class="comment">//回滚事务</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">rollback</span><span class="params">(TransactionStatus var1)</span> <span class="keyword">throws</span> TransactionException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>TransactionDefinition： 事务（属性）定义信息(事务隔离级别、传播行为、超时、只读、回滚规则)。<ul>
+<li>这个类就定义了一些基本的事务属性</li>
+<li>事务属性可以理解成事务的一些基本配置，描述了事务策略如何应用到方法上。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回事务的传播行为，默认值为 REQUIRED。</span></span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">getPropagationBehavior</span><span class="params">()</span></span>;</span><br><span class="line">   <span class="comment">//返回事务的隔离级别，默认值是 DEFAULT</span></span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">getIsolationLevel</span><span class="params">()</span></span>;</span><br><span class="line">   <span class="comment">// 返回事务的超时时间，默认值为-1。如果超过该时间限制但事务还没有完成，则自动回滚事务。</span></span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">getTimeout</span><span class="params">()</span></span>;</span><br><span class="line">   <span class="comment">// 返回是否为只读事务，默认值为 false</span></span><br><span class="line">   <span class="function"><span class="keyword">boolean</span> <span class="title">isReadOnly</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Nullable</span></span><br><span class="line">   <span class="function">String <span class="title">getName</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>TransactionStatus： 事务运行状态<ul>
+<li>TransactionStatus接口用来记录事务的状态 该接口定义了一组方法,用来获取或判断事务的相应状态信息。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TransactionStatus</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isNewTransaction</span><span class="params">()</span></span>; <span class="comment">// 是否是新的事物</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">hasSavepoint</span><span class="params">()</span></span>; <span class="comment">// 是否有恢复点</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setRollbackOnly</span><span class="params">()</span></span>;  <span class="comment">// 设置为只回滚</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isRollbackOnly</span><span class="params">()</span></span>; <span class="comment">// 是否为只回滚</span></span><br><span class="line">    <span class="keyword">boolean</span> isCompleted; <span class="comment">// 是否已完成</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="TransactionDefinition接口中定义五个隔离级别"><a href="#TransactionDefinition接口中定义五个隔离级别" class="headerlink" title="TransactionDefinition接口中定义五个隔离级别"></a><strong>TransactionDefinition接口中定义五个隔离级别</strong></h1><blockquote>
+<p><strong>ISOLATION_DEFAULT 这是一个PlatfromTransactionManager默认的隔离级别</strong>，使用数据库默认的事务隔离级别.另外四个与JDBC的隔离级别相对应；</p>
+<p><strong>ISOLATION_READ_UNCOMMITTED 这是事务最低的隔离级别</strong>，它充许别外一个事务可以看到这个事务未提交的数据。这种隔离级别会产生脏读，不可重复读和幻像读。</p>
+<p><strong>ISOLATION_READ_COMMITTED 保证一个事务修改的数据提交后才能被另外一个事务读取</strong>。另外一个事务不能读取该事务未提交的数据。这种事务隔离级别可以避免脏读出现，但是可能会出现不可重复读和幻像读。</p>
+<p><strong>ISOLATION_REPEATABLE_READ 这种事务隔离级别可以防止脏读，不可重复读</strong>。但是可能出现幻像读。它除了保证一个事务不能读取另一个事务未提交的数据外，还保证了避免下面的情况产生(不可重复读)。</p>
+<p><strong>ISOLATION_SERIALIZABLE 这是花费最高代价但是最可靠的事务隔离级别</strong>。事务被处理为顺序执行。除了防止脏读，不可重复读外，还避免了幻像读。</p>
+</blockquote>
+<ul>
+<li><h1 id="TransactionDefinition接口中定义了七个事务传播行为"><a href="#TransactionDefinition接口中定义了七个事务传播行为" class="headerlink" title="TransactionDefinition接口中定义了七个事务传播行为"></a>TransactionDefinition接口中定义了七个事务传播行为</h1></li>
+</ul>
+<blockquote>
+<p>事务传播行为：</p>
+<ul>
+<li>解决业务层方法之间相互调用的事务问题</li>
+<li>当事务方法被另一个事务方法调用时，必须指定事务应该如何传播。例如：方法可能继续在现有事务中运行，也可能开启一个新事务，并在自己的事务中运行。</li>
+</ul>
+</blockquote>
+<h2 id="TransactionDefinition-PROPAGATION-REQUIRED"><a href="#TransactionDefinition-PROPAGATION-REQUIRED" class="headerlink" title="TransactionDefinition.PROPAGATION_REQUIRED"></a>TransactionDefinition.PROPAGATION_REQUIRED</h2><ul>
+<li>使用的最多的一个事务传播行为，我们平时经常使用的@Transactional注解默认使用就是这个事务传播行为。<strong>如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务</strong>。也就是说：</li>
+<li>如果外部方法没有开启事务的话，Propagation.REQUIRED修饰的内部方法会新开启自己的事务，且开启的事务相互独立，互不干扰。</li>
+<li>如果外部方法开启事务并且被Propagation.REQUIRED的话，所有Propagation.REQUIRED修饰的内部方法和外部方法均属于<strong>同一事务 ，只要一个方法回滚，整个事务均回滚</strong>。</li>
+</ul>
+<h2 id="TransactionDefinition-PROPAGATION-REQUIRES-NEW"><a href="#TransactionDefinition-PROPAGATION-REQUIRES-NEW" class="headerlink" title="TransactionDefinition.PROPAGATION_REQUIRES_NEW"></a>TransactionDefinition.PROPAGATION_REQUIRES_NEW</h2><ul>
+<li>创建一个新的事务，如果当前存在事务，则把当前事务挂起。也就是说不管外部方法是否开启事务，Propagation.REQUIRES_NEW修饰的内部方法会<strong>新开启自己的事务</strong>，且开启的事务相互独立，互不干扰。</li>
+</ul>
+<h2 id="TransactionDefinition-PROPAGATION-NESTED"><a href="#TransactionDefinition-PROPAGATION-NESTED" class="headerlink" title="TransactionDefinition.PROPAGATION_NESTED"></a>TransactionDefinition.PROPAGATION_NESTED</h2><ul>
+<li>如果当前存在事务，则创建一个事务作为当前事务的<strong>嵌套事务</strong>来运行；如果当前没有事务，则该取值等价于TransactionDefinition.PROPAGATION_REQUIRED。</li>
+<li>也就是说：在外部方法未开启事务的情况下Propagation.NESTED和Propagation.REQUIRED作用相同，修饰的内部方法都会<strong>新开启自己的事务</strong>，且开启的事务相互独立，互不干扰。</li>
+<li>如果外部方法开启事务的话，Propagation.NESTED修饰的内部方法属于<strong>外部事务的子事务，外部主事务回滚的话，子事务也会回滚，而内部子事务可以单独回滚而不影响外部主事务和其他子事务</strong>。</li>
+</ul>
+<h2 id="TransactionDefinition-PROPAGATION-MANDATORY"><a href="#TransactionDefinition-PROPAGATION-MANDATORY" class="headerlink" title="TransactionDefinition.PROPAGATION_MANDATORY"></a>TransactionDefinition.PROPAGATION_MANDATORY</h2><ul>
+<li>如果当前存在事务，则加入该事务；<strong>如果当前没有事务，则抛出异常</strong>。（mandatory：强制性）</li>
+</ul>
+<h2 id="TransactionDefinition-PROPAGATION-SUPPORTS"><a href="#TransactionDefinition-PROPAGATION-SUPPORTS" class="headerlink" title="TransactionDefinition.PROPAGATION_SUPPORTS"></a>TransactionDefinition.PROPAGATION_SUPPORTS</h2><ul>
+<li>如果当前存在事务，则加入该事务；<strong>如果当前没有事务，则以非事务的方式继续运行</strong>。</li>
+</ul>
+<h2 id="TransactionDefinition-PROPAGATION-NOT-SUPPORTED"><a href="#TransactionDefinition-PROPAGATION-NOT-SUPPORTED" class="headerlink" title="TransactionDefinition.PROPAGATION_NOT_SUPPORTED"></a>TransactionDefinition.PROPAGATION_NOT_SUPPORTED</h2><ul>
+<li><strong>以非事务方式运行</strong>，如果当前存在事务，则把当前事务挂起。</li>
+</ul>
+<h2 id="TransactionDefinition-PROPAGATION-NEVER"><a href="#TransactionDefinition-PROPAGATION-NEVER" class="headerlink" title="TransactionDefinition.PROPAGATION_NEVER"></a>TransactionDefinition.PROPAGATION_NEVER</h2><ul>
+<li>以非事务方式运行，<strong>如果当前存在事务，则抛出异常</strong>。</li>
+</ul>
+<h1 id="配置事务的属性"><a href="#配置事务的属性" class="headerlink" title="配置事务的属性"></a>配置事务的属性</h1><blockquote>
+<ul>
+<li>isolation：用于指定事务的隔离级别。默认值是DEFAULT，表示使用数据库的默认隔离级别。</li>
+<li>propagation：用于指定事务的传播行为。默认值是REQUIRED，表示一定会有事务，增删改的选择。查询方法可以选择SUPPORTS。</li>
+<li>read-only：用于指定事务是否只读。只有查询方法才能设置为true。默认值是false，表示读写。</li>
+<li>timeout：用于指定事务的超时时间，默认值是-1，表示永不超时。如果指定了数值，以秒为单位。</li>
+<li>rollback-for：用于指定一个异常，当产生该异常时，事务回滚，产生其他异常时，事务不回滚。没有默认值。表示任何异常都回滚。</li>
+<li>no-rollback-for：用于指定一个异常，当产生该异常时，事务不回滚，产生其他异常时事务回滚。没有默认值。表示任何异常都回滚。</li>
+</ul>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/04/java/map/java-map-jdk8-concorrentHashMap/" rel="prev" title="JDK8中concorrentHashMap源码解析">
+      <i class="fa fa-chevron-left"></i> JDK8中concorrentHashMap源码解析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/13/java/spring/java-spring-spring%E4%BA%8B%E5%8A%A1(%E4%BA%8C)/" rel="next" title="Spring事务(二)">
+      Spring事务(二) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E4%BA%8B%E5%8A%A1"><span class="nav-number">1.</span> <span class="nav-text">什么是事务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1%E7%9A%84ACID%E7%89%B9%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">事务的ACID特性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.</span> <span class="nav-text">并发事务的问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL-%E6%A0%87%E5%87%86%E5%AE%9A%E4%B9%89%E4%BA%86%E5%9B%9B%E4%B8%AA%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">SQL 标准定义了四个隔离级别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring%E5%AF%B9%E4%BA%8B%E5%8A%A1%E7%9A%84%E6%94%AF%E6%8C%81"><span class="nav-number">4.</span> <span class="nav-text">Spring对事务的支持</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E7%A8%8B%E5%BC%8F%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">编程式事务管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A3%B0%E6%98%8E%E5%BC%8F%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86"><span class="nav-number">4.2.</span> <span class="nav-text">声明式事务管理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86%E6%8E%A5%E5%8F%A3"><span class="nav-number">5.</span> <span class="nav-text">Spring事务管理接口</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TransactionDefinition%E6%8E%A5%E5%8F%A3%E4%B8%AD%E5%AE%9A%E4%B9%89%E4%BA%94%E4%B8%AA%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-number">6.</span> <span class="nav-text">TransactionDefinition接口中定义五个隔离级别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TransactionDefinition%E6%8E%A5%E5%8F%A3%E4%B8%AD%E5%AE%9A%E4%B9%89%E4%BA%86%E4%B8%83%E4%B8%AA%E4%BA%8B%E5%8A%A1%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA"><span class="nav-number">7.</span> <span class="nav-text">TransactionDefinition接口中定义了七个事务传播行为</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TransactionDefinition-PROPAGATION-REQUIRED"><span class="nav-number">7.1.</span> <span class="nav-text">TransactionDefinition.PROPAGATION_REQUIRED</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TransactionDefinition-PROPAGATION-REQUIRES-NEW"><span class="nav-number">7.2.</span> <span class="nav-text">TransactionDefinition.PROPAGATION_REQUIRES_NEW</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TransactionDefinition-PROPAGATION-NESTED"><span class="nav-number">7.3.</span> <span class="nav-text">TransactionDefinition.PROPAGATION_NESTED</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TransactionDefinition-PROPAGATION-MANDATORY"><span class="nav-number">7.4.</span> <span class="nav-text">TransactionDefinition.PROPAGATION_MANDATORY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TransactionDefinition-PROPAGATION-SUPPORTS"><span class="nav-number">7.5.</span> <span class="nav-text">TransactionDefinition.PROPAGATION_SUPPORTS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TransactionDefinition-PROPAGATION-NOT-SUPPORTED"><span class="nav-number">7.6.</span> <span class="nav-text">TransactionDefinition.PROPAGATION_NOT_SUPPORTED</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TransactionDefinition-PROPAGATION-NEVER"><span class="nav-number">7.7.</span> <span class="nav-text">TransactionDefinition.PROPAGATION_NEVER</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%BA%8B%E5%8A%A1%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="nav-number">8.</span> <span class="nav-text">配置事务的属性</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yangl"
+      src="/images/favicon.png">
+  <p class="site-author-name" itemprop="name">yangl</p>
+  <div class="site-description" itemprop="description">仅作为学习记录</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yangl</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '3ccb828c63e0fc996035',
+      clientSecret: '0b353a289ba940bdaa2e818c42e98e43ace7edfa',
+      repo        : 'yanglei1992.github.io',
+      owner       : 'yanglei1992',
+      admin       : ['yanglei1992'],
+      id          : '81bb261ea5f23bd8d853bb7b665cecab',
+        language: 'zh-CN',
+      distractionFreeMode: false
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yanglei1992.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="分布式ID生成器一、需求缘起几乎所有的业务系统，都有生成一个唯一记录标识的需求，例如：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式id">
+<meta property="og:url" content="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-id/index.html">
+<meta property="og:site_name" content="yangl的博客">
+<meta property="og:description" content="分布式ID生成器一、需求缘起几乎所有的业务系统，都有生成一个唯一记录标识的需求，例如：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-id/687474703a2f2f696d672e6d702e6974632e636e2f75706c6f61642f32303137303632352f37346638636339373866393034366533386536313364346430643330363938642e6a7067">
+<meta property="og:image" content="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-id/687474703a2f2f696d672e6d702e6974632e636e2f75706c6f61642f32303137303632352f39336165303932633465386334643361613932613539616661383161626235332e6a7067">
+<meta property="og:image" content="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-id/687474703a2f2f696d672e6d702e6974632e636e2f75706c6f61642f32303137303632352f34343963323232663763333434323039616634346466383330343739646464652e6a7067">
+<meta property="article:published_time" content="2020-12-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-01-13T23:55:46.912Z">
+<meta property="article:author" content="yangl">
+<meta property="article:tag" content="distributed">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-id/687474703a2f2f696d672e6d702e6974632e636e2f75706c6f61642f32303137303632352f37346638636339373866393034366533386536313364346430643330363938642e6a7067">
+
+<link rel="canonical" href="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-id/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>分布式id | yangl的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">yangl的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">积少成多</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">38</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-id/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.png">
+      <meta itemprop="name" content="yangl">
+      <meta itemprop="description" content="仅作为学习记录">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yangl的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分布式id
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-21 00:00:00" itemprop="dateCreated datePublished" datetime="2020-12-21T00:00:00+08:00">2020-12-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-14 07:55:46" itemprop="dateModified" datetime="2021-01-14T07:55:46+08:00">2021-01-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="分布式ID生成器"><a href="#分布式ID生成器" class="headerlink" title="分布式ID生成器"></a>分布式ID生成器</h1><h2 id="一、需求缘起"><a href="#一、需求缘起" class="headerlink" title="一、需求缘起"></a><strong>一、需求缘起</strong></h2><p>几乎所有的业务系统，都有生成一个唯一记录标识的需求，例如：</p>
+<ul>
+<li>消息标识：message-id</li>
+<li>订单标识：order-id</li>
+<li>帖子标识：tiezi-id</li>
+</ul>
+<p>这个记录标识往往就是数据库中的<strong>主键</strong>，数据库上会建立<strong>聚集索引</strong>（cluster index），即在物理存储上以这个字段排序。</p>
+<p>这个记录标识上的查询，往往又有分页或者排序的业务需求，例如：</p>
+<ul>
+<li><p>拉取最新的一页消息</p>
+<p>select message-id/ order by time/ limit 100</p>
+</li>
+<li><p>拉取最新的一页订单</p>
+<p>select order-id/ order by time/ limit 100</p>
+</li>
+<li><p>拉取最新的一页帖子</p>
+<p>select tiezi-id/ order by time/ limit 100</p>
+</li>
+</ul>
+<p>所以往往要有一个time字段，并且在time字段上建立<strong>普通索引</strong>（non-cluster index）。</p>
+<p>普通索引存储的是实际记录的指针，其访问效率会比聚集索引慢，如果记录标识在生成时能够基本按照时间有序，则可以省去这个time字段的索引查询：</p>
+<p>select message-id/ (order by message-id)/limit 100</p>
+<p>强调，能这么做的前提是，message-id的生成基本是<strong>趋势时间递增的</strong>。</p>
+<p>这就引出了记录标识生成（也就是上文提到的三个XXX-id）的两大核心需求：</p>
+<ul>
+<li>全局唯一</li>
+<li>趋势有序</li>
+</ul>
+<p>这也是本文要讨论的核心问题：<strong>如何高效生成趋势有序的全局唯一ID。</strong></p>
+<h2 id="二、常见方法、不足与优化"><a href="#二、常见方法、不足与优化" class="headerlink" title="二、常见方法、不足与优化"></a><strong>二、常见方法、不足与优化</strong></h2><h3 id="方法一：使用数据库的-auto-increment-来生成全局唯一递增ID"><a href="#方法一：使用数据库的-auto-increment-来生成全局唯一递增ID" class="headerlink" title="方法一：使用数据库的 auto_increment 来生成全局唯一递增ID"></a><strong>方法一：使用数据库的 auto_increment 来生成全局唯一递增ID</strong></h3><p><strong>优点：</strong></p>
+<ul>
+<li>简单，使用数据库已有的功能</li>
+<li>能够保证唯一性</li>
+<li>能够保证递增性</li>
+<li>步长固定</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>可用性难以保证：数据库常见架构是一主多从+读写分离，生成自增ID是写请求，主库挂了就玩不转了</li>
+<li>扩展性差，性能有上限：因为写入是单点，数据库主库的写性能决定ID的生成性能上限，并且难以扩展</li>
+</ul>
+<p><strong>改进方法：</strong></p>
+<ul>
+<li>冗余主库，避免写入单点</li>
+<li>数据水平切分，保证各主库生成的ID不重复</li>
+</ul>
+<p><img src="/2020/12/21/java/distributed/java-distributed-id/687474703a2f2f696d672e6d702e6974632e636e2f75706c6f61642f32303137303632352f37346638636339373866393034366533386536313364346430643330363938642e6a7067" alt="img"></p>
+<p>如上图所述，由1个写库变成3个写库，<strong>每个写库设置不同的auto_increment初始值，以及相同的增长步长</strong>，以保证每个数据库生成的ID是不同的（上图中库0生成0,3,6,9…，库1生成1,4,7,10，库2生成2,5,8,11…）</p>
+<p>改进后的架构保证了可用性，但<strong>缺点</strong>是：</p>
+<ul>
+<li>丧失了ID生成的“绝对递增性”：先访问库0生成0,3，再访问库1生成1，可能导致在非常短的时间内，ID生成不是绝对递增的（这个问题不大，目标是趋势递增，不是绝对递增）</li>
+<li>数据库的写压力依然很大，每次生成ID都要访问数据库</li>
+</ul>
+<p>为了解决上述两个问题，引出了第二个常见的方案。</p>
+<h3 id="方法二：单点批量ID生成服务"><a href="#方法二：单点批量ID生成服务" class="headerlink" title="方法二：单点批量ID生成服务"></a><strong>方法二：单点批量ID生成服务</strong></h3><p>分布式系统之所以难，很重要的原因之一是“没有一个全局时钟，难以保证绝对的时序”，要想保证绝对的时序，还是只能使用单点服务，用本地时钟保证“绝对时序”。</p>
+<p>数据库写压力大，是因为每次生成ID都访问了数据库，可以使用批量的方式降低数据库写压力。</p>
+<p><img src="/2020/12/21/java/distributed/java-distributed-id/687474703a2f2f696d672e6d702e6974632e636e2f75706c6f61642f32303137303632352f39336165303932633465386334643361613932613539616661383161626235332e6a7067" alt="img"></p>
+<p>如上图所述，数据库使用双master保证可用性，数据库中只存储当前ID的最大值，例如0。</p>
+<p>ID生成服务假设每次批量拉取6个ID，服务访问数据库，将当前ID的最大值修改为5，这样应用访问ID生成服务索要ID，ID生成服务不需要每次访问数据库，就能依次派发0,1,2,3,4,5这些ID了。</p>
+<p>当ID发完后，再将ID的最大值修改为11，就能再次派发6,7,8,9,10,11这些ID了，于是数据库的压力就降低到原来的1/6。</p>
+<p><strong>优点</strong>：</p>
+<ul>
+<li>保证了ID生成的绝对递增有序</li>
+<li>大大的降低了数据库的压力，ID生成可以做到每秒生成几万几十万个</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>服务仍然是单点</li>
+<li>如果服务挂了，服务重启起来之后，继续生成ID可能会不连续，中间出现空洞（服务内存是保存着0,1,2,3,4,5，数据库中max-id是5，分配到3时，服务重启了，下次会从6开始分配，4和5就成了空洞，不过这个问题也不大）</li>
+<li>虽然每秒可以生成几万几十万个ID，但毕竟还是有性能上限，无法进行水平扩展</li>
+</ul>
+<p><strong>改进方法</strong>：</p>
+<p>单点服务的常用高可用优化方案是“备用服务”，也叫“影子服务”，所以我们能用以下方法优化上述缺点（1）：</p>
+<p><img src="/2020/12/21/java/distributed/java-distributed-id/687474703a2f2f696d672e6d702e6974632e636e2f75706c6f61642f32303137303632352f34343963323232663763333434323039616634346466383330343739646464652e6a7067" alt="img"></p>
+<p>如上图，对外提供的服务是主服务，有一个影子服务时刻处于备用状态，当主服务挂了的时候影子服务顶上。</p>
+<p>这个切换的过程对调用方是透明的，可以自动完成，常用的技术是vip+keepalived，具体就不在这里展开。</p>
+<p>另外，ID-gen-service也可以实施水平扩展，以解决上述缺点（3），但会引发一致性问题，具体解决方案详见。</p>
+<h3 id="方法三：uuid-guid"><a href="#方法三：uuid-guid" class="headerlink" title="方法三：uuid/guid"></a><strong>方法三：uuid/guid</strong></h3><p>不管是通过数据库，还是通过服务来生成ID，业务方Application都需要进行一次远程调用，比较耗时。</p>
+<p>有没有一种本地生成ID的方法，即高性能，又时延低呢？</p>
+<p>uuid是一种常见的方案：</p>
+<p>string ID =GenUUID();</p>
+<p><strong>优点</strong>：</p>
+<ul>
+<li>本地生成ID，不需要进行远程调用，时延低</li>
+<li>扩展性好，基本可以认为没有性能上限</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>无法保证趋势递增</li>
+<li>uuid过长，往往用字符串表示，作为主键建立索引查询效率低，常见优化方案为“转化为两个uint64整数存储”或者“折半存储”（折半后不能保证唯一性）</li>
+</ul>
+<h3 id="方法四：取当前毫秒数"><a href="#方法四：取当前毫秒数" class="headerlink" title="方法四：取当前毫秒数"></a><strong>方法四：取当前毫秒数</strong></h3><p>uuid是一个本地算法，生成性能高，但无法保证趋势递增，且作为字符串ID检索效率低，有没有一种能保证递增的本地算法呢？</p>
+<p>取当前毫秒数是一种常见方案：</p>
+<p>uint64 ID = GenTimeMS();</p>
+<p><strong>优点</strong>：</p>
+<ul>
+<li>本地生成ID，不需要进行远程调用，时延低</li>
+<li>生成的ID趋势递增</li>
+<li>生成的ID是整数，建立索引后查询效率高</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>如果并发量超过1000，会生成重复的ID</li>
+</ul>
+<p>这个缺点要了命了，不能保证ID的唯一性。当然，使用微秒可以降低冲突概率，但每秒最多只能生成1000000个ID，再多的话就一定会冲突了，所以使用微秒并不从根本上解决问题。</p>
+<h3 id="方法五：类snowflake算法"><a href="#方法五：类snowflake算法" class="headerlink" title="方法五：类snowflake算法"></a><strong>方法五：类snowflake算法</strong></h3><p>snowflake是twitter开源的分布式ID生成算法，其<strong>核心思想为，</strong>一个long型的ID：</p>
+<ul>
+<li>41bit作为毫秒数</li>
+<li>10bit作为机器编号</li>
+<li>12bit作为毫秒内序列号</li>
+</ul>
+<p>算法单机每秒内理论上最多可以生成1000*(2^12)，也就是400W的ID，完全能满足业务的需求。</p>
+<p>借鉴snowflake的思想，结合各公司的业务逻辑和并发量，可以实现<strong>自己的分布式ID生成算法</strong>。</p>
+<p>举例，假设某公司ID生成器服务的需求如下：</p>
+<ul>
+<li>单机高峰并发量小于1W，预计未来5年单机高峰并发量小于10W</li>
+<li>有2个机房，预计未来5年机房数量小于4个</li>
+<li>每个机房机器数小于100台</li>
+<li>目前有5个业务线有ID生成需求，预计未来业务线数量小于10个</li>
+<li>…</li>
+</ul>
+<p>分析过程如下：</p>
+<ul>
+<li>高位取从2017年1月1日到现在的毫秒数（假设系统ID生成器服务在这个时间之后上线），假设系统至少运行10年，那至少需要10年<em>365天</em>24小时<em>3600秒</em>1000毫秒=320*10^9，差不多预留39bit给毫秒数</li>
+<li>每秒的单机高峰并发量小于10W，即平均每毫秒的单机高峰并发量小于100，差不多预留7bit给每毫秒内序列号</li>
+<li>5年内机房数小于4个，预留2bit给机房标识</li>
+<li>每个机房小于100台机器，预留7bit给每个机房内的服务器标识</li>
+<li>业务线小于10个，预留4bit给业务线标识</li>
+</ul>
+<p>这样设计的64bit标识，可以保证：</p>
+<ul>
+<li>每个业务线、每个机房、每个机器生成的ID都是不同的</li>
+<li>同一个机器，每个毫秒内生成的ID都是不同的</li>
+<li>同一个机器，同一个毫秒内，以序列号区区分保证生成的ID是不同的</li>
+<li>将毫秒数放在最高位，保证生成的ID是趋势递增的</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>由于“没有一个全局时钟”，每台服务器分配的ID是绝对递增的，但从全局看，生成的ID只是趋势递增的（有些服务器的时间早，有些服务器的时间晚）</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/distributed/" rel="tag"># distributed</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/21/java/distributed/java-distributed-transaction/" rel="prev" title="分布式事务">
+      <i class="fa fa-chevron-left"></i> 分布式事务
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/31/java/juc/java-juc-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E7%90%86%E8%A7%A3/" rel="next" title="java多线程--基本概念">
+      java多线程--基本概念 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8FID%E7%94%9F%E6%88%90%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">分布式ID生成器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%9C%80%E6%B1%82%E7%BC%98%E8%B5%B7"><span class="nav-number">1.1.</span> <span class="nav-text">一、需求缘起</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B8%B8%E8%A7%81%E6%96%B9%E6%B3%95%E3%80%81%E4%B8%8D%E8%B6%B3%E4%B8%8E%E4%BC%98%E5%8C%96"><span class="nav-number">1.2.</span> <span class="nav-text">二、常见方法、不足与优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%EF%BC%9A%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84-auto-increment-%E6%9D%A5%E7%94%9F%E6%88%90%E5%85%A8%E5%B1%80%E5%94%AF%E4%B8%80%E9%80%92%E5%A2%9EID"><span class="nav-number">1.2.1.</span> <span class="nav-text">方法一：使用数据库的 auto_increment 来生成全局唯一递增ID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C%EF%BC%9A%E5%8D%95%E7%82%B9%E6%89%B9%E9%87%8FID%E7%94%9F%E6%88%90%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.2.2.</span> <span class="nav-text">方法二：单点批量ID生成服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%89%EF%BC%9Auuid-guid"><span class="nav-number">1.2.3.</span> <span class="nav-text">方法三：uuid&#x2F;guid</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%9B%9B%EF%BC%9A%E5%8F%96%E5%BD%93%E5%89%8D%E6%AF%AB%E7%A7%92%E6%95%B0"><span class="nav-number">1.2.4.</span> <span class="nav-text">方法四：取当前毫秒数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%94%EF%BC%9A%E7%B1%BBsnowflake%E7%AE%97%E6%B3%95"><span class="nav-number">1.2.5.</span> <span class="nav-text">方法五：类snowflake算法</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yangl"
+      src="/images/favicon.png">
+  <p class="site-author-name" itemprop="name">yangl</p>
+  <div class="site-description" itemprop="description">仅作为学习记录</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yangl</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '3ccb828c63e0fc996035',
+      clientSecret: '0b353a289ba940bdaa2e818c42e98e43ace7edfa',
+      repo        : 'yanglei1992.github.io',
+      owner       : 'yanglei1992',
+      admin       : ['yanglei1992'],
+      id          : '28eb95f494b4979a3a0059fc919750c7',
+        language: 'zh-CN',
+      distractionFreeMode: false
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

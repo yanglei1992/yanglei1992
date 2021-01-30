@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-center-atom.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yanglei1992.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1 Sharding把数据库横向扩展到多个物理节点的一种有效方式，主要是为了突破数据库单机服务器的 I&#x2F;O 瓶颈，解决数据库扩展问题。 Sharding可简单定义为将大数据库分布到多个物理节点上的一个分区方案。每一个分区包含数据库的某一部分，称为一个shard，分区方式可以是任意的，并不局限于传统的水平分区和垂直分区。 一个shard可以包含多个表的内容甚至可以包含多个数据库实例中的内容。每个sh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL 分库分表">
+<meta property="og:url" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/index.html">
+<meta property="og:site_name" content="yangl的博客">
+<meta property="og:description" content="1 Sharding把数据库横向扩展到多个物理节点的一种有效方式，主要是为了突破数据库单机服务器的 I&#x2F;O 瓶颈，解决数据库扩展问题。 Sharding可简单定义为将大数据库分布到多个物理节点上的一个分区方案。每一个分区包含数据库的某一部分，称为一个shard，分区方式可以是任意的，并不局限于传统的水平分区和垂直分区。 一个shard可以包含多个表的内容甚至可以包含多个数据库实例中的内容。每个sh">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200829110221177.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200829015141290.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80Njg1OTY4LTFhNzBiNTMzNDY1MDU3NTQucG5n?x-oss-process=image/format,png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200829114917514.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200829115657202.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200829112801122.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200829112716345.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200829120226464.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200829120300693.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200829120344287.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center">
+<meta property="article:published_time" content="2021-01-17T10:15:32.000Z">
+<meta property="article:modified_time" content="2021-01-28T09:21:30.068Z">
+<meta property="article:author" content="yangl">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200829110221177.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center">
+
+<link rel="canonical" href="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MySQL 分库分表 | yangl的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <script type="text/javascript" color="0,0,0" opacity='0.5' zIndex="-1" count="99" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  <div class="container use-motion">
+    <div class="headband"><a target="_blank" rel="noopener" href="https://github.com/yanglei1992/yanglei1992.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">yangl的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">积少成多</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">4</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>时间轴<span class="badge">55</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.png">
+      <meta itemprop="name" content="yangl">
+      <meta itemprop="description" content="仅作为学习记录">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yangl的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL 分库分表
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-17 18:15:32" itemprop="dateCreated datePublished" datetime="2021-01-17T18:15:32+08:00">2021-01-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-28 17:21:30" itemprop="dateModified" datetime="2021-01-28T17:21:30+08:00">2021-01-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/database/" itemprop="url" rel="index"><span itemprop="name">database</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/01/17/database/mysql/mysql-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/17/database/mysql/mysql-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-Sharding"><a href="#1-Sharding" class="headerlink" title="1 Sharding"></a>1 Sharding</h1><p>把数据库横向扩展到多个物理节点的一种有效方式，主要是为了突破数据库单机服务器的 I/O 瓶颈，解决数据库扩展问题。</p>
+<p>Sharding可简单定义为将大数据库分布到多个物理节点上的一个分区方案。每一个分区包含数据库的某一部分，称为一个shard，分区方式可以是任意的，并不局限于传统的水平分区和垂直分区。 一个shard可以包含多个表的内容甚至可以包含多个数据库实例中的内容。每个shard被放置在一个数据库服务器上。一个数据库服务器可以处理一个或多个shard的数据。系统中需要有服务器进行查询路由转发，负责将查询转发到包含该查询所访问数据的shard或shards节点上去执行。</p>
+<h1 id="2-垂直切分-水平切分"><a href="#2-垂直切分-水平切分" class="headerlink" title="2 垂直切分/水平切分"></a>2 垂直切分/水平切分</h1><h2 id="2-1-MySQL的扩展方案"><a href="#2-1-MySQL的扩展方案" class="headerlink" title="2.1 MySQL的扩展方案"></a>2.1 MySQL的扩展方案</h2><ul>
+<li>Scale Out 水平扩展</li>
+</ul>
+<p>一般对数据中心应用，添加更多机器时，应用仍可很好利用这些资源提升自己的效率从而达到很好的扩展性</p>
+<ul>
+<li>Scale Up 垂直扩展</li>
+</ul>
+<p>一般对单台机器，Scale Up指当某个计算节点添加更多的CPU Cores，存储设备，使用更大的内存时，应用可以很充分的利用这些资源来提升自己的效率从而达到很好的扩展性</p>
+<h2 id="2-2-MySQL的Sharding策略"><a href="#2-2-MySQL的Sharding策略" class="headerlink" title="2.2 MySQL的Sharding策略"></a>2.2 MySQL的Sharding策略</h2><ol>
+<li>垂直切分：按功能模块拆分，以解决<code>表与表之间</code>的I/O竞争</li>
+</ol>
+<p>e.g. 将原来的老订单库，切分为基础订单库和订单流程库。数据库之间的<code>表结构不同</code> <img src="https://img-blog.csdnimg.cn/20200829110221177.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center" alt="img"></p>
+<ol>
+<li>水平切分：将<code>同个表</code>的数据分块，保存至不同的数据库</li>
+</ol>
+<p>以解决单表中数据量增长压力。这些数据库中的<code>表结构完全相同</code></p>
+<h2 id="2-3-表结构设计案例"><a href="#2-3-表结构设计案例" class="headerlink" title="2.3 表结构设计案例"></a>2.3 表结构设计案例</h2><h3 id="垂直切分"><a href="#垂直切分" class="headerlink" title="垂直切分"></a>垂直切分</h3><ol>
+<li>大字段</li>
+</ol>
+<p>单独将大字段建在另外的表中，提高基础表的访问性能，原则上在性能关键的应用中应当避免数据库的大字段 2. 按用途 例如企业物料属性，可以按照基本属性、销售属性、采购属性、生产制造属性、财务会计属性等用途垂直切分 3. 按访问频率 例如电子商务、Web 2.0系统中，如果用户属性设置非常多，可以将基本、使用频繁的属性和不常用的属性垂直切分开</p>
+<h3 id="水平切分"><a href="#水平切分" class="headerlink" title="水平切分"></a>水平切分</h3><ol>
+<li>比如在线电子商务网站，订单表数据量过大，按照年度、月度水平切分</li>
+<li>网站注册用户、在线活跃用户过多，按照用户ID范围等方式，将相关用户以及该用户紧密关联的表做水平切分</li>
+<li>论坛的置顶帖，因为涉及到分页问题，每页都需显示置顶贴，这种情况可以把置顶贴水平切分开来，避免取置顶帖子时从所有帖子的表中读取</li>
+</ol>
+<h1 id="3-分表和分区"><a href="#3-分表和分区" class="headerlink" title="3 分表和分区"></a>3 分表和分区</h1><p>分表：把一张表分成多个小表； 分区：把一张表的数据分成N多个区块，这些区块可以在同一个磁盘上，也可以在不同的磁盘上。</p>
+<h2 id="3-1-分表和分区的区别"><a href="#3-1-分表和分区的区别" class="headerlink" title="3.1 分表和分区的区别"></a>3.1 分表和分区的区别</h2><ul>
+<li>实现方式</li>
+</ul>
+<p>MySQL的一张表分成多表后，每个小表都是完整的一张表，都对应三个文件（MyISAM引擎：.MYD数据文件，.MYI索引文件，.frm表结构文件）</p>
+<ul>
+<li>数据处理 <ul>
+<li>分表后数据都存放在分表里，总表只是个外壳，存取数据发生在一个个的分表里</li>
+<li>分区则不存在分表的概念，分区只不过把存放数据的文件分成许多小块，分区后的表还是一张表，数据处理还是自己完成。</li>
+</ul>
+</li>
+<li>性能 <ul>
+<li>分表后，单表的并发能力提高了，磁盘I/O性能也提高了。分表的关键是存取数据时，如何提高 MySQL并发能力</li>
+<li>分区突破了磁盘I/O瓶颈，想提高磁盘的读写能力，来增加MySQL性能</li>
+</ul>
+</li>
+<li>实现成本 <ul>
+<li>分表的方法有很多，用merge来分表，是最简单的一种。这种方式和分区难易度差不多，并且对程序代码透明，如果用其他分表方式就比分区麻烦</li>
+<li>分区实现比较简单，建立分区表，跟建平常的表没区别，并且对代码端透明</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-2-分区适用场景"><a href="#3-2-分区适用场景" class="headerlink" title="3.2 分区适用场景"></a>3.2 分区适用场景</h2><ol>
+<li>一张表的查询速度慢到影响使用</li>
+<li>表中的数据是分段的</li>
+<li>对数据的操作往往只涉及一部分数据，而不是所有的数据</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/20200829015141290.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center" alt="img"></p>
+<h2 id="3-3-分表适用场景"><a href="#3-3-分表适用场景" class="headerlink" title="3.3 分表适用场景"></a>3.3 分表适用场景</h2><ol>
+<li>一张表的查询速度慢到影响使用</li>
+<li>频繁插入或连接查询时，速度变慢</li>
+<li>分表的实现需要业务结合实现和迁移，较为复杂</li>
+</ol>
+<h1 id="4-分库"><a href="#4-分库" class="headerlink" title="4 分库"></a>4 分库</h1><p>分表能解决<code>单表数据量过大带来的查询效率下降</code>问题，但无法给数据库的并发处理能力带来质的提升。面对高并发的读写访问，当数据库主服务器无法承载写压力，不管如何扩展从服务器，都没有意义了。 换个思路，对数据库进行拆分，<code>提高数据库写性能</code>，即分库。</p>
+<h2 id="4-1-分库的解决方案"><a href="#4-1-分库的解决方案" class="headerlink" title="4.1 分库的解决方案"></a>4.1 分库的解决方案</h2><p>一个MySQL实例中的多个数据库拆到不同MySQL实例中： <img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy80Njg1OTY4LTFhNzBiNTMzNDY1MDU3NTQucG5n?x-oss-process=image/format,png" alt="img"></p>
+<ul>
+<li>缺陷</li>
+</ul>
+<p>有的节点还是无法承受写压力。</p>
+<h3 id="4-1-1-查询切分"><a href="#4-1-1-查询切分" class="headerlink" title="4.1.1 查询切分"></a>4.1.1 查询切分</h3><ul>
+<li>将key和库的映射关系单独记录在一个数据库。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20200829114917514.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center" alt="img"></p>
+<ul>
+<li>优点</li>
+</ul>
+<p>key和库的映射算法可以随便自定义</p>
+<ul>
+<li>缺点</li>
+</ul>
+<p>引入了额外的单点</p>
+<h3 id="4-1-2-范围切分"><a href="#4-1-2-范围切分" class="headerlink" title="4.1.2 范围切分"></a>4.1.2 范围切分</h3><ul>
+<li>按照时间区间或ID区间切分。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20200829115657202.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center" alt="img"></p>
+<ul>
+<li>优点</li>
+</ul>
+<p>单表容量可控，水平扩展很方便。</p>
+<ul>
+<li>缺点</li>
+</ul>
+<p>无法解决集中写入的瓶颈问题。</p>
+<h3 id="4-1-3-Hash切分（重点）"><a href="#4-1-3-Hash切分（重点）" class="headerlink" title="4.1.3 Hash切分（重点）"></a>4.1.3 Hash切分（重点）</h3><ul>
+<li>一般都是采用hash切分。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20200829112801122.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center" alt="img"></p>
+<p>数据水平切分后我们希望是一劳永逸或者是易于水平扩展的，所以推荐采用mod 2^n这种一致性Hash。</p>
+<p>比如一个订单库，分库分表方案是32*32，即通过UserId后四位mod 32分到32个库中，同时再将UserId后四位Div 32 Mod 32将每个库分为32个表，共计分为1024张表。</p>
+<blockquote>
+<p>线上部署情况为8个集群(主从)，每个集群4个库。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/20200829112716345.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center" alt="img"></p>
+<p>为什么说这易于水平扩展？分析如下场景：</p>
+<h4 id="数据库性能达到瓶颈"><a href="#数据库性能达到瓶颈" class="headerlink" title="数据库性能达到瓶颈"></a>数据库性能达到瓶颈</h4><ol>
+<li>现有规则不变，可直接扩展到32个数据库集群。</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/20200829120226464.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center" alt="img"> 2. 如果32个集群也无法满足需求，那么将分库分表规则调整为(32<em>2^n)</em>(32⁄2^n)，可以达到最多1024个集群。 <img src="https://img-blog.csdnimg.cn/20200829120300693.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center" alt="img"></p>
+<h4 id="单表容量达到瓶颈"><a href="#单表容量达到瓶颈" class="headerlink" title="单表容量达到瓶颈"></a>单表容量达到瓶颈</h4><p>或1024都无法满足。 <img src="https://img-blog.csdnimg.cn/20200829120344287.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzNTg5NTEw,size_1,color_FFFFFF,t_70#pic_center" alt="img"> 假如单表都突破200G，200*1024=200T 没关系，32 * (32 * 2^n)，这时分库规则不变，单库里的表再裂变，当然，在目前订单这种规则下（用userId后四位 mod）还是有极限的，因为只有四位，所以最多拆8192个表。</p>
+<h2 id="选择分片键"><a href="#选择分片键" class="headerlink" title="选择分片键"></a>选择分片键</h2><ul>
+<li>尽量避免跨分区查询的发生(无法完全避免)</li>
+<li>尽量使各个分片中的数据平均</li>
+</ul>
+<h2 id="如何存储无需分片的表"><a href="#如何存储无需分片的表" class="headerlink" title="如何存储无需分片的表"></a>如何存储无需分片的表</h2><ul>
+<li>每个分片中存储一份相同的数据</li>
+</ul>
+<p>对于数据量不大且并不经常被更新的字典类表，经常需要和分区表一起关联查询，每个分片中存储一份冗余的数据可以更好提高查询效率，维护其一致性就很重要了。</p>
+<ul>
+<li>使用额外的节点统一存储</li>
+</ul>
+<p>没有冗余问题,但是查询效率较差,需要汇总</p>
+<h2 id="在节点上部署分片"><a href="#在节点上部署分片" class="headerlink" title="在节点上部署分片"></a>在节点上部署分片</h2><ul>
+<li>每个分片使用单一数据库,并且数据库名也相同</li>
+</ul>
+<p>结构也保持相同,和单一节点时的一致</p>
+<ul>
+<li>将多个分片表存储在一个数据库中,并在表名上加入分片号后缀</li>
+<li>在一个节点中部署多个数据库,每个数据库包含一个切片</li>
+</ul>
+<h1 id="5-分库分表后的难题"><a href="#5-分库分表后的难题" class="headerlink" title="5 分库分表后的难题"></a>5 分库分表后的难题</h1><h2 id="全局唯一ID生成方案"><a href="#全局唯一ID生成方案" class="headerlink" title="全局唯一ID生成方案"></a>全局唯一ID生成方案</h2><p>方案很多，主流的如下：</p>
+<h3 id="数据库自增ID"><a href="#数据库自增ID" class="headerlink" title="数据库自增ID"></a>数据库自增ID</h3><p>使用</p>
+<ul>
+<li><code>auto_increment_increment </code></li>
+<li><code>auto_increment_offset</code></li>
+</ul>
+<p>系统变量让MySQL以期望的值和偏移量来增加<code>auto_increment</code>列的值。</p>
+<ul>
+<li>优点</li>
+</ul>
+<p>最简单，不依赖于某节点，较普遍采用但需要非常仔细的配置服务器哦！</p>
+<ul>
+<li>缺点</li>
+</ul>
+<p>单点风险、单机性能瓶颈。不适用于一个节点包含多个分区表的场景。</p>
+<h3 id="数据库集群并设置相应步长（Flickr方案）"><a href="#数据库集群并设置相应步长（Flickr方案）" class="headerlink" title="数据库集群并设置相应步长（Flickr方案）"></a>数据库集群并设置相应步长（Flickr方案）</h3><p>在一个全局数据库节点中创建一个包含<code>auto_increment</code>列的表，应用通过该表生成唯一数字。</p>
+<ul>
+<li>优点</li>
+</ul>
+<p>高可用、ID较简洁。</p>
+<ul>
+<li>缺点</li>
+</ul>
+<p>需要单独的数据库集群。</p>
+<h3 id="Redis等缓存NoSQL服务"><a href="#Redis等缓存NoSQL服务" class="headerlink" title="Redis等缓存NoSQL服务"></a>Redis等缓存NoSQL服务</h3><p>避免了MySQL性能低的问题。</p>
+<h3 id="Snowflake（雪花算法）"><a href="#Snowflake（雪花算法）" class="headerlink" title="Snowflake（雪花算法）"></a>Snowflake（雪花算法）</h3><ul>
+<li>优点</li>
+</ul>
+<p>高性能高可用、易拓展。</p>
+<ul>
+<li>缺点</li>
+</ul>
+<p>需要独立的集群以及ZK。</p>
+<h3 id="各种GUID、Random算法"><a href="#各种GUID、Random算法" class="headerlink" title="各种GUID、Random算法"></a>各种GUID、Random算法</h3><ul>
+<li>优点</li>
+</ul>
+<p>简单。</p>
+<ul>
+<li>缺点</li>
+</ul>
+<p>生成ID较长，且有重复几率。</p>
+<h3 id="业务字段（美团的实践方案）"><a href="#业务字段（美团的实践方案）" class="headerlink" title="业务字段（美团的实践方案）"></a>业务字段（美团的实践方案）</h3><p>为减少运营成本并减少额外风险，美团排除了所有需要独立集群的方案，采用了带有业务属性的方案： <code>时间戳+用户标识码+随机数</code></p>
+<h4 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h4><ul>
+<li>方便、成本低</li>
+<li>基本无重复的可能</li>
+<li>自带分库规则，这里的用户标识码即为<code>userID的后四位</code>，在查询场景，只需订单号即可匹配到相应库表而无需用户ID，只取四位是希望订单号尽可能短，评估后四位已足。</li>
+<li>可排序，因为时间戳在最前</li>
+</ul>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><ul>
+<li>长度稍长，性能要比int/bigint的稍差。</li>
+</ul>
+<h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><p>分库分表后，由于数据存到了不同库，数据库事务管理出现困难。如果依赖数据库本身的分布式事务管理功能去执行事务，将付出高昂的性能代价；如果由应用程序去协助控制，形成程序逻辑上的事务，又会造成编程方面的负担。</p>
+<ul>
+<li>解决方案</li>
+</ul>
+<p>比如美团，是将整个订单领域聚合体切分，维度一致，所以对聚合体的事务是支持的。</p>
+<h2 id="跨库跨表的join问题"><a href="#跨库跨表的join问题" class="headerlink" title="跨库跨表的join问题"></a>跨库跨表的join问题</h2><p>分库分表之后，难免会将原本逻辑关联性很强的数据划分到不同的表、不同的库上，这时，表的关联操作将受到限制，我们无法join位于不同分库的表，也无法join分表粒度不同的表，结果原本一次询能够完成的业务，可能需要多次查询才能完成。</p>
+<ul>
+<li>解决方案</li>
+</ul>
+<p>垂直切分后，就跟join说拜拜了；水平切分后，查询的条件一定要在切分的维度内。 比如查询具体某个用户下的订单等； 禁止不带切分的维度的查询，即使中间件可以支持这种查询，可以在内存中组装，但是这种需求往往不应该在在线库查询，或者可以通过其他方法转换到切分的维度来实现。</p>
+<h2 id="额外的数据管理和运算压力"><a href="#额外的数据管理和运算压力" class="headerlink" title="额外的数据管理和运算压力"></a>额外的数据管理和运算压力</h2><p>额外的数据管理负担，最显而易见的就是数据的定位问题和数据的增删改查的重复执行问题，这些都可以通过应用程序解决，但必然引起额外的逻辑运算。 例如，对于一个记录用户成绩的用户数据表userTable，业务要求查出成绩最好的100位，在进行分表前，只需一个order by即可。但分表后，将需要n个order by语句，分别查出每一个分表前100名用户数据，然后再对这些数据进行合并计算，才能得出结果。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>并非所有表都需要水平拆分，要看增长的类型和速度，水平拆分是大招，拆分后会增加开发的复杂度，不到万不得已不使用。 拆分维度的选择很重要，要尽可能在解决拆分前问题的基础上，便于开发。</p>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6866295501763903502">https://juejin.cn/post/6866295501763903502</a></p>
+
+    </div>
+
+    <div>
+        
+        <div>
+    
+        <div style="text-align:center;font-size:22px;letter-spacing:10px;user-select:none;color:#bbb;"><br>----------- 本文结束啦<i class="fa fa-star"></i>感谢您阅读 -----------<br><br></div>
+    
+</div>
+
+        
+    </div>
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mysql/" rel="tag"><i class="fa fa-tag"></i> mysql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/17/database/mysql/mysql-%E9%94%81/" rel="prev" title="MySQL InnoDB-锁">
+      <i class="fa fa-chevron-left"></i> MySQL InnoDB-锁
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/18/mq/mq-mq-MQ%E5%A4%BA%E5%91%BD%E8%BF%9E%E7%8E%AF11%E9%97%AE/" rel="next" title="MQ夺命连环11问">
+      MQ夺命连环11问 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-gitalk">gitalk</a></li>
+            <li class="tab"><a href="#comment-valine">valine</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane gitalk" id="comment-gitalk">
+              <div class="comments" id="gitalk-container"></div>
+            </div>
+            <div class="tab-pane valine" id="comment-valine">
+              <div class="comments" id="valine-comments"></div>
+            </div>
+        </div>
+      </div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Sharding"><span class="nav-number">1.</span> <span class="nav-text">1 Sharding</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%9E%82%E7%9B%B4%E5%88%87%E5%88%86-%E6%B0%B4%E5%B9%B3%E5%88%87%E5%88%86"><span class="nav-number">2.</span> <span class="nav-text">2 垂直切分&#x2F;水平切分</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-MySQL%E7%9A%84%E6%89%A9%E5%B1%95%E6%96%B9%E6%A1%88"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 MySQL的扩展方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-MySQL%E7%9A%84Sharding%E7%AD%96%E7%95%A5"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 MySQL的Sharding策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E8%A1%A8%E7%BB%93%E6%9E%84%E8%AE%BE%E8%AE%A1%E6%A1%88%E4%BE%8B"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 表结构设计案例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9E%82%E7%9B%B4%E5%88%87%E5%88%86"><span class="nav-number">2.3.1.</span> <span class="nav-text">垂直切分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B0%B4%E5%B9%B3%E5%88%87%E5%88%86"><span class="nav-number">2.3.2.</span> <span class="nav-text">水平切分</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E5%88%86%E8%A1%A8%E5%92%8C%E5%88%86%E5%8C%BA"><span class="nav-number">3.</span> <span class="nav-text">3 分表和分区</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E5%88%86%E8%A1%A8%E5%92%8C%E5%88%86%E5%8C%BA%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 分表和分区的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E5%88%86%E5%8C%BA%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 分区适用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E5%88%86%E8%A1%A8%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 分表适用场景</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E5%88%86%E5%BA%93"><span class="nav-number">4.</span> <span class="nav-text">4 分库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E5%88%86%E5%BA%93%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 分库的解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-1-%E6%9F%A5%E8%AF%A2%E5%88%87%E5%88%86"><span class="nav-number">4.1.1.</span> <span class="nav-text">4.1.1 查询切分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-2-%E8%8C%83%E5%9B%B4%E5%88%87%E5%88%86"><span class="nav-number">4.1.2.</span> <span class="nav-text">4.1.2 范围切分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-3-Hash%E5%88%87%E5%88%86%EF%BC%88%E9%87%8D%E7%82%B9%EF%BC%89"><span class="nav-number">4.1.3.</span> <span class="nav-text">4.1.3 Hash切分（重点）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E6%80%A7%E8%83%BD%E8%BE%BE%E5%88%B0%E7%93%B6%E9%A2%88"><span class="nav-number">4.1.3.1.</span> <span class="nav-text">数据库性能达到瓶颈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%95%E8%A1%A8%E5%AE%B9%E9%87%8F%E8%BE%BE%E5%88%B0%E7%93%B6%E9%A2%88"><span class="nav-number">4.1.3.2.</span> <span class="nav-text">单表容量达到瓶颈</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E5%88%86%E7%89%87%E9%94%AE"><span class="nav-number">4.2.</span> <span class="nav-text">选择分片键</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E6%97%A0%E9%9C%80%E5%88%86%E7%89%87%E7%9A%84%E8%A1%A8"><span class="nav-number">4.3.</span> <span class="nav-text">如何存储无需分片的表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8%E8%8A%82%E7%82%B9%E4%B8%8A%E9%83%A8%E7%BD%B2%E5%88%86%E7%89%87"><span class="nav-number">4.4.</span> <span class="nav-text">在节点上部署分片</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%90%8E%E7%9A%84%E9%9A%BE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">5 分库分表后的难题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E5%94%AF%E4%B8%80ID%E7%94%9F%E6%88%90%E6%96%B9%E6%A1%88"><span class="nav-number">5.1.</span> <span class="nav-text">全局唯一ID生成方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%87%AA%E5%A2%9EID"><span class="nav-number">5.1.1.</span> <span class="nav-text">数据库自增ID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E9%9B%86%E7%BE%A4%E5%B9%B6%E8%AE%BE%E7%BD%AE%E7%9B%B8%E5%BA%94%E6%AD%A5%E9%95%BF%EF%BC%88Flickr%E6%96%B9%E6%A1%88%EF%BC%89"><span class="nav-number">5.1.2.</span> <span class="nav-text">数据库集群并设置相应步长（Flickr方案）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis%E7%AD%89%E7%BC%93%E5%AD%98NoSQL%E6%9C%8D%E5%8A%A1"><span class="nav-number">5.1.3.</span> <span class="nav-text">Redis等缓存NoSQL服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Snowflake%EF%BC%88%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95%EF%BC%89"><span class="nav-number">5.1.4.</span> <span class="nav-text">Snowflake（雪花算法）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%84%E7%A7%8DGUID%E3%80%81Random%E7%AE%97%E6%B3%95"><span class="nav-number">5.1.5.</span> <span class="nav-text">各种GUID、Random算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E5%AD%97%E6%AE%B5%EF%BC%88%E7%BE%8E%E5%9B%A2%E7%9A%84%E5%AE%9E%E8%B7%B5%E6%96%B9%E6%A1%88%EF%BC%89"><span class="nav-number">5.1.6.</span> <span class="nav-text">业务字段（美团的实践方案）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E7%82%B9%EF%BC%9A"><span class="nav-number">5.1.6.1.</span> <span class="nav-text">优点：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9"><span class="nav-number">5.1.6.2.</span> <span class="nav-text">缺点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1"><span class="nav-number">5.2.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%A8%E5%BA%93%E8%B7%A8%E8%A1%A8%E7%9A%84join%E9%97%AE%E9%A2%98"><span class="nav-number">5.3.</span> <span class="nav-text">跨库跨表的join问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%9D%E5%A4%96%E7%9A%84%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E5%92%8C%E8%BF%90%E7%AE%97%E5%8E%8B%E5%8A%9B"><span class="nav-number">5.4.</span> <span class="nav-text">额外的数据管理和运算压力</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yangl"
+      src="/images/favicon.png">
+  <p class="site-author-name" itemprop="name">yangl</p>
+  <div class="site-description" itemprop="description">仅作为学习记录</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+
+    <div class="links-of-blogroll motion-element links-of-blogroll-block">
+      <div class="links-of-blogroll-title">
+        <!-- modify icon to fire by szw -->
+        <i class="fa fa-history fa-" aria-hidden="true"></i>
+        近期文章
+      </div>
+      <ul class="links-of-blogroll-list">
+        
+        
+          <li>
+            <a href="/2021/01/18/mq/mq-mq-%E6%B6%88%E6%81%AF%E5%A0%86%E7%A7%AF%E5%A4%84%E7%90%86%E6%96%B9%E6%A1%88/" title="消息队列--消息堆积处理方案" target="_blank">消息队列--消息堆积处理方案</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/18/mq/mq-mq-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E6%A6%82%E8%BF%B0/" title="消息队列概述" target="_blank">消息队列概述</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/18/mq/mq-mq-MQ%E5%A4%BA%E5%91%BD%E8%BF%9E%E7%8E%AF11%E9%97%AE/" title="MQ夺命连环11问" target="_blank">MQ夺命连环11问</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/17/database/mysql/mysql-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" title="MySQL 分库分表" target="_blank">MySQL 分库分表</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/17/database/mysql/mysql-%E9%94%81/" title="MySQL InnoDB-锁" target="_blank">MySQL InnoDB-锁</a>
+          </li>
+        
+      </ul>
+    </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+      
+        <script type="text/javascript" charset="utf-8" src="/js/tagcloud.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/js/tagcanvas.js"></script>
+        <div class="widget-wrap">
+          <div id="myCanvasContainer" class="widget tagcloud">
+            <canvas width="250" height="250" id="resCanvas" style="width=100%">
+              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/distributed/" rel="tag">distributed</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/juc/" rel="tag">juc</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/" rel="tag">jvm</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/map/" rel="tag">map</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">8</span></li></ul>
+            </canvas>
+          </div>
+        </div>
+      
+
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yangl</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">254k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:51</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '3ccb828c63e0fc996035',
+      clientSecret: '0b353a289ba940bdaa2e818c42e98e43ace7edfa',
+      repo        : 'yanglei1992.github.io',
+      owner       : 'yanglei1992',
+      admin       : ['yanglei1992'],
+      id          : '0b86837841a8c3fd9921ea02a428a11d',
+        language: 'zh-CN',
+      distractionFreeMode: false
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'Fz6qs15Mj9eoCD96QaUD0Dvr-gzGzoHsz',
+      appKey     : 'MTfzOhcL8Ltz6XzeKrxls1mv',
+      placeholder: "ヾﾉ≧∀≦)o欢迎点评!",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = true;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+</body>
+</html>

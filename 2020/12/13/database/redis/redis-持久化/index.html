@@ -22,20 +22,25 @@
     var CONFIG = {"hostname":"yanglei1992.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="持久化一、持久化—— RDB什么是RDB">
+  <meta name="description" content="持久化—— RDB什么是RDB 在指定时间间隔后，将内存中的数据快照写入硬盘，在恢复的时候，直接读取快照文件，进行数据的恢复。  默认情况下，redis将数据库快照保证在名字为 dump.rdb 的二进制文件中。文件名可以在配置文件中进行自定义。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis持久化">
 <meta property="og:url" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/index.html">
 <meta property="og:site_name" content="yangl的博客">
-<meta property="og:description" content="持久化一、持久化—— RDB什么是RDB">
+<meta property="og:description" content="持久化—— RDB什么是RDB 在指定时间间隔后，将内存中的数据快照写入硬盘，在恢复的时候，直接读取快照文件，进行数据的恢复。  默认情况下，redis将数据库快照保证在名字为 dump.rdb 的二进制文件中。文件名可以在配置文件中进行自定义。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/20200513215141519.jpg">
+<meta property="og:image" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/20200513215150892.jpg">
+<meta property="og:image" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/1611993214979.png">
+<meta property="og:image" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/20200513215220858.jpg">
+<meta property="og:image" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/2020051321523151.jpg">
 <meta property="og:image" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/1609059576333.png">
 <meta property="article:published_time" content="2020-12-13T07:00:00.000Z">
-<meta property="article:modified_time" content="2021-01-11T01:59:48.832Z">
+<meta property="article:modified_time" content="2021-01-30T07:58:24.164Z">
 <meta property="article:author" content="yangl">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/1609059576333.png">
+<meta name="twitter:image" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/20200513215141519.jpg">
 
 <link rel="canonical" href="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/">
 
@@ -132,17 +137,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">9</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">4</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>时间轴<span class="badge">51</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>时间轴<span class="badge">55</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -230,7 +235,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-11 09:59:48" itemprop="dateModified" datetime="2021-01-11T09:59:48+08:00">2021-01-11</time>
+                <time title="修改时间：2021-01-30 15:58:24" itemprop="dateModified" datetime="2021-01-30T15:58:24+08:00">2021-01-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -262,7 +267,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.8k</span>
+              <span>2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -281,34 +286,44 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h1><h2 id="一、持久化——-RDB"><a href="#一、持久化——-RDB" class="headerlink" title="一、持久化—— RDB"></a>一、持久化—— RDB</h2><h3 id="什么是RDB"><a href="#什么是RDB" class="headerlink" title="什么是RDB"></a>什么是RDB</h3><ul>
+        <h1 id="持久化——-RDB"><a href="#持久化——-RDB" class="headerlink" title="持久化—— RDB"></a>持久化—— RDB</h1><h2 id="什么是RDB"><a href="#什么是RDB" class="headerlink" title="什么是RDB"></a>什么是RDB</h2><ul>
 <li><p>在指定时间间隔后，将内存中的数据快照写入硬盘，在恢复的时候，直接读取快照文件，进行数据的恢复。</p>
 </li>
 <li><p>默认情况下，redis将数据库快照保证在名字为 dump.rdb 的二进制文件中。文件名可以在配置文件中进行自定义。</p>
 </li>
 </ul>
-<h3 id="工作原理："><a href="#工作原理：" class="headerlink" title="工作原理："></a>工作原理：</h3><p>在进行rdb的时候，redis主线程是不会做io操作的，主线程会 fork 一个子线程来完成该操作：</p>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p>在进行rdb的时候，redis主线程是不会做io操作的，主线程会 fork 一个子线程来完成该操作：</p>
 <ol>
 <li>Redis 调用 fork 。 同时拥有父进程和子进程。</li>
 <li>子进程将数据集写入到一个临时 RDB 文件中</li>
 <li>当子进程完成对新 RDB 文件写入时， Redis 用新 RDB 文件替换原来的 RDB 文件，并删除旧的 RDB 文件</li>
 </ol>
 <p>这种工作方式使得Redis 可以从写时复制（copy-on-write） 机制中获益（因为是使用子进程进行写操作，而父进程依然可以接收来自客户端的请求）</p>
-<h3 id="触发机制"><a href="#触发机制" class="headerlink" title="触发机制"></a>触发机制</h3><ol>
+<p><img src="/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/20200513215141519.jpg" alt="在这里插入图片描述"></p>
+<h2 id="触发机制"><a href="#触发机制" class="headerlink" title="触发机制"></a>触发机制</h2><ol>
 <li>save 的规则满足的情况下， 会自动触发 rdb原则</li>
 <li>执行 flushall 命令也会触发我们的 rdb 原则</li>
 <li>退出 redis 也会自动产生 rdb 文件</li>
 </ol>
-<h4 id="save"><a href="#save" class="headerlink" title="save"></a>save</h4><p>使用 save 命令， 会立刻对当前内存中的数据进行持久化， 但是会阻塞， 也就是不接受其他操作了</p>
+<h3 id="save"><a href="#save" class="headerlink" title="save"></a>save</h3><p>使用 save 命令， 会立刻对当前内存中的数据进行持久化， 但是会阻塞， 也就是不接受其他操作了</p>
 <blockquote>
 <p>由于 save 命令是同步命令， 会占用 Redis 的主进程。 若Redis 数据非常多时， save 命令执行速度会非常慢，阻塞所有客户端的请求。</p>
 </blockquote>
-<h4 id="flushall"><a href="#flushall" class="headerlink" title="flushall"></a>flushall</h4><p>flushall 命令也会触发持久化</p>
-<h4 id="触发持久化规则"><a href="#触发持久化规则" class="headerlink" title="触发持久化规则"></a>触发持久化规则</h4><p>满足配置条件中的触发条件：</p>
+<p><img src="/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/20200513215150892.jpg" alt="在这里插入图片描述"></p>
+<h3 id="flushall"><a href="#flushall" class="headerlink" title="flushall"></a>flushall</h3><p>flushall 命令也会触发持久化</p>
+<h3 id="触发持久化规则"><a href="#触发持久化规则" class="headerlink" title="触发持久化规则"></a>触发持久化规则</h3><p>满足配置条件中的触发条件：</p>
 <blockquote>
 <p>可以通过配置文件对 Redis 进行设置， 让它在 “N 秒内数据集至少有 M 个改动” 这一条件满足时， 会自动进行数据集保存操作。</p>
 </blockquote>
-<h4 id="bgsave"><a href="#bgsave" class="headerlink" title="bgsave"></a>bgsave</h4><p>bgsave 是异步进行， 进行持久化的时候， redis 还可以将继续响应客户端请求</p>
+<p><img src="/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/1611993214979.png" alt="1611993214979"></p>
+<ul>
+<li>save 900 1 # 900秒内， 至少1个key进行了修改，就进行持久化</li>
+<li>save 300 10    # 300 秒内， 至少10个 key 进行了修改，则进行持久化</li>
+<li>save 60 10000    # 60秒内， 至少10000个 key  进行了修改，则进行持久化</li>
+</ul>
+<p><img src="/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/20200513215220858.jpg" alt="在这里插入图片描述"></p>
+<h3 id="bgsave"><a href="#bgsave" class="headerlink" title="bgsave"></a>bgsave</h3><p>bgsave 是异步进行， 进行持久化的时候， redis 还可以将继续响应客户端请求</p>
+<p><img src="/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/2020051321523151.jpg" alt="在这里插入图片描述"></p>
 <p>bgsave 和 save 对比</p>
 <table>
 <thead>
@@ -354,7 +369,7 @@
 <li>需要一定的时间间隔进行操作，如果redis意外宕机了，这个最后一次修改的数据就没有了</li>
 <li>fork 进程的时候， 会占用一定的内存空间</li>
 </ol>
-<h2 id="二、持久化——-AOF"><a href="#二、持久化——-AOF" class="headerlink" title="二、持久化—— AOF"></a>二、持久化—— AOF</h2><p>Append Only File</p>
+<h1 id="持久化——-AOF"><a href="#持久化——-AOF" class="headerlink" title="持久化—— AOF"></a>持久化—— AOF</h1><p>Append Only File</p>
 <p>将我们所有的命令都记录下来， history 恢复的时候就把这个文件全部再执行一遍</p>
 <blockquote>
 <p>以日志的形式来记录每个写操作，将redis执行的指令记录下来（读操作不记录），只需追加文件但不可以修改文件，redis 启动之初会读取改文件重新构建数据，换言之，redis重启的话就根据日志文件的内容将写指令从前到后执行一次以完成数据的恢复工作。</p>
@@ -362,14 +377,23 @@
 <h3 id="什么是AOF"><a href="#什么是AOF" class="headerlink" title="什么是AOF"></a>什么是AOF</h3><p>快照功能（RDB) 并不是非常耐久：如果redis因为某些原因而造成故障停机，那么服务器将丢失最近写入，以及未保存到快照中的那些数据，从1.1版本开始，Redis增加了一种完全耐久的持久方式：AOF持久化。</p>
 <p>如果要使用AOF，需要修改配置文件：</p>
 <p><img src="/2020/12/13/database/redis/redis-%E6%8C%81%E4%B9%85%E5%8C%96/1609059576333.png" alt="1609059576333"></p>
+<p>appendonly 默认是 no 不开启的，我们需要手动配置，然后重启 redis ，就可以生效</p>
+<p>如果这个 aof 文件有错误，这时候 redis 是启动不起来的，我们需要修改这个 aof 文件</p>
+<p>redis 给我们提供了一个工具， <code>redis-check-aof --fix</code></p>
 <blockquote>
-<p> appendonly  yes 则表示启动AOF</p>
-<p>appendfilename “appendonly.aof”  表示保存的文件名为 “appendonly.aof”</p>
-<p>appendfsync  everysec  每秒同步一次</p>
+<ul>
+<li>appendonly  yes 则表示启动AOF</li>
+</ul>
+<ul>
+<li>appendfilename “appendonly.aof”  表示保存的文件名为 “appendonly.aof”</li>
+</ul>
+<ul>
+<li><h1 id="appendfsync-always-每次修改都会sync-消耗性能"><a href="#appendfsync-always-每次修改都会sync-消耗性能" class="headerlink" title="appendfsync always # 每次修改都会sync 消耗性能"></a>appendfsync always # 每次修改都会sync 消耗性能</h1></li>
+<li><p>appendfsync everysec # 每秒执行一次 sync 可能会丢失这一秒的数据</p>
+</li>
+<li><h1 id="appendfsync-no-不执行-sync-这时候操作系统自己同步数据，速度最快"><a href="#appendfsync-no-不执行-sync-这时候操作系统自己同步数据，速度最快" class="headerlink" title="appendfsync no # 不执行 sync ,这时候操作系统自己同步数据，速度最快"></a>appendfsync no # 不执行 sync ,这时候操作系统自己同步数据，速度最快</h1></li>
+</ul>
 </blockquote>
-<p>appendonly 默认是no  不开启的，我们需要手动配置，然后重启redis，就可以生效</p>
-<p>如果这个aof文件有错误，这时候 redis 是启动不起来的，我们需要修改这个aof文件</p>
-<p>redis给我们提供了一个工具， redis-check-aof –fix</p>
 <h4 id="优缺点-1"><a href="#优缺点-1" class="headerlink" title="优缺点"></a>优缺点</h4><p>优点：</p>
 <ul>
 <li>每一次修改都会同步，文件的完整性会更加的好</li>
@@ -448,12 +472,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/12/13/database/redis/redis-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="prev" title="redis数据结构">
-      <i class="fa fa-chevron-left"></i> redis数据结构
+    <a href="/2020/12/13/database/redis/redis-%E4%BA%8B%E5%8A%A1/" rel="prev" title="redis事务">
+      <i class="fa fa-chevron-left"></i> redis事务
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/12/13/database/redis/redis-%E4%BA%8B%E5%8A%A1/" rel="next" title="redis事务">
-      redis事务 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/12/13/database/redis/redis-%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F/" rel="next" title="redis发布订阅模式">
+      redis发布订阅模式 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -527,7 +551,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%8C%81%E4%B9%85%E5%8C%96%E2%80%94%E2%80%94-RDB"><span class="nav-number">1.1.</span> <span class="nav-text">一、持久化—— RDB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFRDB"><span class="nav-number">1.1.1.</span> <span class="nav-text">什么是RDB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-number">1.1.2.</span> <span class="nav-text">工作原理：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A6%E5%8F%91%E6%9C%BA%E5%88%B6"><span class="nav-number">1.1.3.</span> <span class="nav-text">触发机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#save"><span class="nav-number">1.1.3.1.</span> <span class="nav-text">save</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#flushall"><span class="nav-number">1.1.3.2.</span> <span class="nav-text">flushall</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A6%E5%8F%91%E6%8C%81%E4%B9%85%E5%8C%96%E8%A7%84%E5%88%99"><span class="nav-number">1.1.3.3.</span> <span class="nav-text">触发持久化规则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#bgsave"><span class="nav-number">1.1.3.4.</span> <span class="nav-text">bgsave</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-number">1.1.4.</span> <span class="nav-text">优缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%8C%81%E4%B9%85%E5%8C%96%E2%80%94%E2%80%94-AOF"><span class="nav-number">1.2.</span> <span class="nav-text">二、持久化—— AOF</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFAOF"><span class="nav-number">1.2.1.</span> <span class="nav-text">什么是AOF</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-1"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">优缺点</span></a></li></ol></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96%E2%80%94%E2%80%94-RDB"><span class="nav-number">1.</span> <span class="nav-text">持久化—— RDB</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFRDB"><span class="nav-number">1.1.</span> <span class="nav-text">什么是RDB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">1.2.</span> <span class="nav-text">工作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A6%E5%8F%91%E6%9C%BA%E5%88%B6"><span class="nav-number">1.3.</span> <span class="nav-text">触发机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#save"><span class="nav-number">1.3.1.</span> <span class="nav-text">save</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#flushall"><span class="nav-number">1.3.2.</span> <span class="nav-text">flushall</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A6%E5%8F%91%E6%8C%81%E4%B9%85%E5%8C%96%E8%A7%84%E5%88%99"><span class="nav-number">1.3.3.</span> <span class="nav-text">触发持久化规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bgsave"><span class="nav-number">1.3.4.</span> <span class="nav-text">bgsave</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-number">1.3.5.</span> <span class="nav-text">优缺点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96%E2%80%94%E2%80%94-AOF"><span class="nav-number">2.</span> <span class="nav-text">持久化—— AOF</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFAOF"><span class="nav-number">2.0.1.</span> <span class="nav-text">什么是AOF</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#appendfsync-always-%E6%AF%8F%E6%AC%A1%E4%BF%AE%E6%94%B9%E9%83%BD%E4%BC%9Async-%E6%B6%88%E8%80%97%E6%80%A7%E8%83%BD"><span class="nav-number">3.</span> <span class="nav-text">appendfsync always # 每次修改都会sync 消耗性能</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#appendfsync-no-%E4%B8%8D%E6%89%A7%E8%A1%8C-sync-%E8%BF%99%E6%97%B6%E5%80%99%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E8%87%AA%E5%B7%B1%E5%90%8C%E6%AD%A5%E6%95%B0%E6%8D%AE%EF%BC%8C%E9%80%9F%E5%BA%A6%E6%9C%80%E5%BF%AB"><span class="nav-number">4.</span> <span class="nav-text">appendfsync no # 不执行 sync ,这时候操作系统自己同步数据，速度最快</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-1"><span class="nav-number">4.0.0.1.</span> <span class="nav-text">优缺点</span></a></li></ol></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -543,20 +567,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">55</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -575,23 +599,23 @@
         
         
           <li>
-            <a href="/2021/01/17/database/mysql/mysql-%E7%B4%A2%E5%BC%95/" title="MySQL 索引" target="_blank">MySQL 索引</a>
+            <a href="/2021/01/18/mq/mq-mq-%E6%B6%88%E6%81%AF%E5%A0%86%E7%A7%AF%E5%A4%84%E7%90%86%E6%96%B9%E6%A1%88/" title="消息队列--消息堆积处理方案" target="_blank">消息队列--消息堆积处理方案</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/18/mq/mq-mq-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E6%A6%82%E8%BF%B0/" title="消息队列概述" target="_blank">消息队列概述</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/18/mq/mq-mq-MQ%E5%A4%BA%E5%91%BD%E8%BF%9E%E7%8E%AF11%E9%97%AE/" title="MQ夺命连环11问" target="_blank">MQ夺命连环11问</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/17/database/mysql/mysql-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" title="MySQL 分库分表" target="_blank">MySQL 分库分表</a>
           </li>
         
           <li>
             <a href="/2021/01/17/database/mysql/mysql-%E9%94%81/" title="MySQL InnoDB-锁" target="_blank">MySQL InnoDB-锁</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/17/database/mysql/mysql-%E6%97%A5%E5%BF%97/" title="MySQL 日志" target="_blank">MySQL 日志</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/17/database/mysql/mysql-explain%E8%AF%A6%E8%A7%A3/" title="MySQL explain详解" target="_blank">MySQL explain详解</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/17/database/mysql/mysql-%E4%BA%8B%E5%8A%A1/" title="MySQL 事务" target="_blank">MySQL 事务</a>
           </li>
         
       </ul>
@@ -872,7 +896,7 @@ if(canvas.getContext){
         <div class="widget-wrap">
           <div id="myCanvasContainer" class="widget tagcloud">
             <canvas width="250" height="250" id="resCanvas" style="width=100%">
-              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/distributed/" rel="tag">distributed</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/juc/" rel="tag">juc</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/" rel="tag">jvm</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/map/" rel="tag">map</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">8</span></li></ul>
+              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/distributed/" rel="tag">distributed</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/juc/" rel="tag">juc</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/" rel="tag">jvm</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/map/" rel="tag">map</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">8</span></li></ul>
             </canvas>
           </div>
         </div>
@@ -905,12 +929,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">169k</span>
+    <span title="站点总字数">254k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:34</span>
+    <span title="站点阅读时长">3:51</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

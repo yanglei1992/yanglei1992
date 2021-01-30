@@ -22,18 +22,20 @@
     var CONFIG = {"hostname":"yanglei1992.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="数据类型5中基本使用类型及使用场景">
+  <meta name="description" content="linux下 redis安装参考： https:&#x2F;&#x2F;www.redis.net.cn&#x2F;download&#x2F; 下载">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis数据类型">
 <meta property="og:url" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/index.html">
 <meta property="og:site_name" content="yangl的博客">
-<meta property="og:description" content="数据类型5中基本使用类型及使用场景">
+<meta property="og:description" content="linux下 redis安装参考： https:&#x2F;&#x2F;www.redis.net.cn&#x2F;download&#x2F; 下载">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/1611908215889.png">
 <meta property="article:published_time" content="2020-12-13T06:00:00.000Z">
-<meta property="article:modified_time" content="2021-01-11T01:59:48.834Z">
+<meta property="article:modified_time" content="2021-01-30T07:03:50.984Z">
 <meta property="article:author" content="yangl">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/1611908215889.png">
 
 <link rel="canonical" href="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">
 
@@ -130,17 +132,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">9</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">3</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">4</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>时间轴<span class="badge">51</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>时间轴<span class="badge">55</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -228,7 +230,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-11 09:59:48" itemprop="dateModified" datetime="2021-01-11T09:59:48+08:00">2021-01-11</time>
+                <time title="修改时间：2021-01-30 15:03:50" itemprop="dateModified" datetime="2021-01-30T15:03:50+08:00">2021-01-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -260,14 +262,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>17</span>
+              <span>6.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>6 分钟</span>
             </span>
 
         </div>
@@ -279,7 +281,127 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h1><p>5中基本使用类型及使用场景</p>
+        <h1 id="linux下-redis安装"><a href="#linux下-redis安装" class="headerlink" title="linux下 redis安装"></a>linux下 redis安装</h1><p>参考： <a target="_blank" rel="noopener" href="https://www.redis.net.cn/download/">https://www.redis.net.cn/download/</a></p>
+<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost redis]# </span><br><span class="line">[root@localhost redis]# wget http://download.redis.io/releases/redis-5.0.4.tar.gz</span><br><span class="line">--2021-01-29 02:56:57--  http://download.redis.io/releases/redis-5.0.4.tar.gz</span><br><span class="line">Resolving download.redis.io (download.redis.io)... 45.60.125.1</span><br><span class="line">Connecting to download.redis.io (download.redis.io)|45.60.125.1|:80... connected.</span><br><span class="line">HTTP request sent, awaiting response... 200 OK</span><br><span class="line">Length: 1966337 (1.9M) [application/octet-stream]</span><br><span class="line">Saving to: ‘redis-5.0.4.tar.gz’</span><br><span class="line"></span><br><span class="line"><span class="meta">100%</span><span class="bash">[=========================================================================================================================================&gt;] 1,966,337   55.7KB/s   <span class="keyword">in</span> 39s</span>    </span><br><span class="line"></span><br><span class="line">2021-01-29 02:57:36 (49.2 KB/s) - ‘redis-5.0.4.tar.gz’ saved [1966337/1966337]</span><br><span class="line"></span><br><span class="line">[root@localhost redis]# </span><br><span class="line">[root@localhost redis]# ls</span><br><span class="line">redis-5.0.4.tar.gz</span><br><span class="line">[root@localhost redis]#</span><br></pre></td></tr></table></figure>
+<h2 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost redis]# tar xzf redis-5.0.4.tar.gz -C /usr/redis/</span><br><span class="line">[root@localhost redis]# cd /usr/redis/</span><br><span class="line">[root@localhost redis]# ls</span><br><span class="line">redis-5.0.4</span><br><span class="line">[root@localhost redis]# </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost redis-5.0.4]# yum install gcc-c++</span><br><span class="line">[root@localhost redis-5.0.4]# make</span><br><span class="line">    ............</span><br><span class="line">    INSTALL redis-sentinel</span><br><span class="line">    CC redis-cli.o</span><br><span class="line">    LINK redis-cli</span><br><span class="line">    CC redis-benchmark.o</span><br><span class="line">    LINK redis-benchmark</span><br><span class="line">    INSTALL redis-check-rdb</span><br><span class="line">    INSTALL redis-check-aof</span><br><span class="line"></span><br><span class="line">Hint: It&#x27;s a good idea to run &#x27;make test&#x27; ;)</span><br><span class="line"></span><br><span class="line">make[1]: Leaving directory `/usr/redis/redis-5.0.4/src&#x27;</span><br><span class="line">[root@localhost redis-5.0.4]# </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="启动服务（默认）"><a href="#启动服务（默认）" class="headerlink" title="启动服务（默认）"></a>启动服务（默认）</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost redis-5.0.4]# src/redis-server </span><br><span class="line">2189:C 30 Jan 2021 01:49:16.869 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo</span><br><span class="line">2189:C 30 Jan 2021 01:49:16.869 # Redis version=5.0.4, bits=64, commit=00000000, modified=0, pid=2189, just started</span><br><span class="line">2189:C 30 Jan 2021 01:49:16.869 # Warning: no config file specified, using the default config. In order to specify a config file use src/redis-server /path/to/redis.conf</span><br><span class="line">2189:M 30 Jan 2021 01:49:16.871 * Increased maximum number of open files to 10032 (it was originally set to 1024).</span><br><span class="line">                _._                                                  </span><br><span class="line">           _.-``__ &#x27;&#x27;-._                                             </span><br><span class="line">      _.-``    `.  `_.  &#x27;&#x27;-._           Redis 5.0.4 (00000000/0) 64 bit</span><br><span class="line">  .-`` .-```.  ```\/    _.,_ &#x27;&#x27;-._                                   </span><br><span class="line"> (    &#x27;      ,       .-`  | `,    )     Running in standalone mode</span><br><span class="line"> |`-._`-...-` __...-.``-._|&#x27;` _.-&#x27;|     Port: 6379</span><br><span class="line"> |    `-._   `._    /     _.-&#x27;    |     PID: 2189</span><br><span class="line">  `-._    `-._  `-./  _.-&#x27;    _.-&#x27;                                   </span><br><span class="line"> |`-._`-._    `-.__.-&#x27;    _.-&#x27;_.-&#x27;|                                  </span><br><span class="line"> |    `-._`-._        _.-&#x27;_.-&#x27;    |           http://redis.io        </span><br><span class="line">  `-._    `-._`-.__.-&#x27;_.-&#x27;    _.-&#x27;                                   </span><br><span class="line"> |`-._`-._    `-.__.-&#x27;    _.-&#x27;_.-&#x27;|                                  </span><br><span class="line"> |    `-._`-._        _.-&#x27;_.-&#x27;    |                                  </span><br><span class="line">  `-._    `-._`-.__.-&#x27;_.-&#x27;    _.-&#x27;                                   </span><br><span class="line">      `-._    `-.__.-&#x27;    _.-&#x27;                                       </span><br><span class="line">          `-._        _.-&#x27;                                           </span><br><span class="line">              `-.__.-&#x27;                                               </span><br><span class="line"></span><br><span class="line">2189:M 30 Jan 2021 01:49:16.873 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.</span><br><span class="line">2189:M 30 Jan 2021 01:49:16.874 # Server initialized</span><br><span class="line">2189:M 30 Jan 2021 01:49:16.874 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add &#x27;vm.overcommit_memory = 1&#x27; to /etc/sysctl.conf and then reboot or run the command &#x27;sysctl vm.overcommit_memory=1&#x27; for this to take effect.</span><br><span class="line">2189:M 30 Jan 2021 01:49:16.874 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command &#x27;echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled&#x27; as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.</span><br><span class="line">2189:M 30 Jan 2021 01:49:16.903 * DB loaded from disk: 0.029 seconds</span><br><span class="line">2189:M 30 Jan 2021 01:49:16.903 * Ready to accept connections</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="启动客户端"><a href="#启动客户端" class="headerlink" title="启动客户端"></a>启动客户端</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost redis-5.0.4]# src&#x2F;redis-cli </span><br><span class="line">127.0.0.1:6379&gt; set name yangl</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; get name</span><br><span class="line">&quot;yangl&quot;</span><br><span class="line">127.0.0.1:6379&gt; </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="性能测试"><a href="#性能测试" class="headerlink" title="性能测试"></a>性能测试</h2><table>
+<thead>
+<tr>
+<th align="left">序号</th>
+<th align="left">选项</th>
+<th align="left">描述</th>
+<th align="left">默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1</td>
+<td align="left"><strong>-h</strong></td>
+<td align="left">指定服务器主机名</td>
+<td align="left">127.0.0.1</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left"><strong>-p</strong></td>
+<td align="left">指定服务器端口</td>
+<td align="left">6379</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left"><strong>-s</strong></td>
+<td align="left">指定服务器 socket</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left"><strong>-c</strong></td>
+<td align="left">指定并发连接数</td>
+<td align="left">50</td>
+</tr>
+<tr>
+<td align="left">5</td>
+<td align="left"><strong>-n</strong></td>
+<td align="left">指定请求数</td>
+<td align="left">10000</td>
+</tr>
+<tr>
+<td align="left">6</td>
+<td align="left"><strong>-d</strong></td>
+<td align="left">以字节的形式指定 SET/GET 值的数据大小</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">7</td>
+<td align="left"><strong>-k</strong></td>
+<td align="left">1=keep alive 0=reconnect</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">8</td>
+<td align="left"><strong>-r</strong></td>
+<td align="left">SET/GET/INCR 使用随机 key, SADD 使用随机值</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">9</td>
+<td align="left"><strong>-P</strong></td>
+<td align="left">通过管道传输 <numreq> 请求</numreq></td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">10</td>
+<td align="left"><strong>-q</strong></td>
+<td align="left">强制退出 redis。仅显示 query/sec 值</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">11</td>
+<td align="left"><strong>–csv</strong></td>
+<td align="left">以 CSV 格式输出</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">12</td>
+<td align="left"><strong>-l</strong></td>
+<td align="left">生成循环，永久执行测试</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">13</td>
+<td align="left"><strong>-t</strong></td>
+<td align="left">仅运行以逗号分隔的测试命令列表。</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">14</td>
+<td align="left"><strong>-I</strong></td>
+<td align="left">Idle 模式。仅打开 N 个 idle 连接并等待。</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost redis-5.0.4]# src/redis-benchmark -h localhost -p 6379 -c 100 -n 100000</span><br><span class="line">====== PING_INLINE ======</span><br><span class="line">  100000 requests completed in 1.37 seconds	# 对10W个请求进行写入测试</span><br><span class="line">  100 parallel clients	# 100个并发客户管</span><br><span class="line">  3 bytes payload	# 每次写入3个字节</span><br><span class="line">  keep alive: 1	# 只有一台服务器来处理这个请求，单机性能</span><br><span class="line"></span><br><span class="line">88.95% &lt;= 1 milliseconds</span><br><span class="line">97.47% &lt;= 2 milliseconds</span><br><span class="line">99.54% &lt;= 3 milliseconds</span><br><span class="line">99.88% &lt;= 4 milliseconds</span><br><span class="line">99.99% &lt;= 5 milliseconds</span><br><span class="line">100.00% &lt;= 5 milliseconds		# 所有请求在 5 毫秒处理完成</span><br><span class="line">72992.70 requests per second	# 每秒处理 72992.70 次请求</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><img src="/2020/12/13/database/redis/redis-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/1611908215889.png" alt="1611908215889"></p>
+<h2 id="key-操作"><a href="#key-操作" class="headerlink" title="key 操作"></a>key 操作</h2><blockquote>
+<p>在redis中无论什么数据类型，在数据库中都是以key-value形式保存，通过进行对Redis-key的操作，来完成对数据库中数据的操作。</p>
+</blockquote>
+<p><code>keys *</code> ：查看当前数据库中所有的key。</p>
+<p><code>flushdb</code>：清空当前数据库中的键值对。</p>
+<p><code>flushall</code>：清空所有数据库的键值对。</p>
+<p>下面学习的命令：</p>
+<ul>
+<li><code>exists key</code>：判断键是否存在</li>
+<li><code>del key</code>：删除键值对</li>
+<li><code>move key db</code>：将键值对移动到指定数据库</li>
+<li><code>expire key second</code>：设置键值对的过期时间</li>
+<li><code>type key</code>：查看value的数据类型</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost redis-5.0.4]# src/redis-cli</span><br><span class="line">127.0.0.1:6379&gt; </span><br><span class="line">127.0.0.1:6379&gt; </span><br><span class="line">127.0.0.1:6379&gt; keys *  	# 查看当前数据库中所有的key</span><br><span class="line">1) &quot;foo&quot;</span><br><span class="line">2) &quot;key:__rand_int__&quot;</span><br><span class="line">3) &quot;mylist&quot;</span><br><span class="line">4) &quot;counter:__rand_int__&quot;</span><br><span class="line">127.0.0.1:6379&gt; </span><br><span class="line">127.0.0.1:6379&gt; DBSIZE 		# 查看当前数据库的大小，与key数量相关</span><br><span class="line">(integer) 4</span><br><span class="line">127.0.0.1:6379&gt; flushdb 	# 清空当前数据库中的键值对。</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; keys *</span><br><span class="line">(empty list or set)</span><br><span class="line">127.0.0.1:6379&gt; set name yangl</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; type name	# 查看 name 的数据类型</span><br><span class="line">string</span><br><span class="line">127.0.0.1:6379&gt; set age 18</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; type age</span><br><span class="line">string</span><br><span class="line">127.0.0.1:6379&gt; keys *</span><br><span class="line">1) &quot;age&quot;</span><br><span class="line">2) &quot;name&quot;</span><br><span class="line">127.0.0.1:6379&gt; move age 1	# 将键值对移动到指定数据库</span><br><span class="line">(integer) 1</span><br><span class="line">127.0.0.1:6379&gt; </span><br><span class="line">127.0.0.1:6379&gt; EXISTS age # 判断键是否存在</span><br><span class="line">(integer) 0	# 不存在</span><br><span class="line">127.0.0.1:6379&gt; EXISTS name</span><br><span class="line">(integer) 1	# 存在</span><br><span class="line">127.0.0.1:6379&gt; </span><br><span class="line">127.0.0.1:6379&gt; SELECT 1	# 切换数据库 DB 1</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379[1]&gt; </span><br><span class="line">127.0.0.1:6379[1]&gt; keys *</span><br><span class="line">1) &quot;age&quot;</span><br><span class="line">127.0.0.1:6379[1]&gt; del age	# 删除键值对</span><br><span class="line">(integer) 1</span><br><span class="line">127.0.0.1:6379[1]&gt; set age 20	</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379[1]&gt; EXPIRE age 10	# 设置键值对的过期时间</span><br><span class="line">(integer) 1</span><br><span class="line">127.0.0.1:6379[1]&gt; ttl age			# 查看key的过期剩余时间</span><br><span class="line">(integer) 8</span><br><span class="line">127.0.0.1:6379[1]&gt; ttl age</span><br><span class="line">(integer) 4</span><br><span class="line">127.0.0.1:6379[1]&gt; ttl age</span><br><span class="line">(integer) -2	# -2 表示key过期，-1表示key未设置过期时间</span><br><span class="line">127.0.0.1:6379[1]&gt; get age			# 过期的key 会被自动delete</span><br><span class="line">(nil)</span><br><span class="line">127.0.0.1:6379[1]&gt; </span><br><span class="line">127.0.0.1:6379[1]&gt; </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>更多命令参考：<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3507.html">https://www.redis.net.cn/tutorial/3507.html</a></p>
+<h1 id="5种最基本的数据类型"><a href="#5种最基本的数据类型" class="headerlink" title="5种最基本的数据类型"></a>5种最基本的数据类型</h1><p>Redis是一个开源（BSD许可），内存存储的数据结构服务器，可用作<strong>数据库</strong>，<strong>高速缓存</strong>和<strong>消息队列代理</strong>。它支持<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3508.html">字符串</a>、<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3509.html">哈希表</a>、<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3510.html">列表</a>、<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3511.html">集合</a>、<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3512.html">有序集合</a>，<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3508.html">位图</a>，<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3513.html">hyperloglogs</a>等数据类型。内置复制、<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3516.html">Lua脚本</a>、LRU收回、<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3515.html">事务</a>以及不同级别磁盘持久化功能，同时通过Redis Sentinel提供高可用，通过Redis Cluster提供自动<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3524.html">分区</a>。</p>
+<h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><h2 id="List"><a href="#List" class="headerlink" title="List"></a>List</h2><h2 id="Hash"><a href="#Hash" class="headerlink" title="Hash"></a>Hash</h2><h2 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h2><h2 id="Sorted-Set"><a href="#Sorted-Set" class="headerlink" title="Sorted Set"></a>Sorted Set</h2><h1 id="3种高级数据类型"><a href="#3种高级数据类型" class="headerlink" title="3种高级数据类型"></a>3种高级数据类型</h1><h2 id="bitmap"><a href="#bitmap" class="headerlink" title="bitmap"></a>bitmap</h2><h2 id="GeoHash"><a href="#GeoHash" class="headerlink" title="GeoHash"></a>GeoHash</h2><h2 id="HyperLogLog"><a href="#HyperLogLog" class="headerlink" title="HyperLogLog"></a>HyperLogLog</h2><h1 id="5-0最新版本数据类型"><a href="#5-0最新版本数据类型" class="headerlink" title="5.0最新版本数据类型"></a>5.0最新版本数据类型</h1><h1 id="Streams"><a href="#Streams" class="headerlink" title="Streams"></a>Streams</h1><p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.redis.net.cn/download/">https://www.redis.net.cn/download/</a></p>
 
     </div>
 
@@ -307,10 +429,7 @@
 
         
     <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2020/12/13/database/redis/redis-%E9%85%8D%E7%BD%AE/" rel="prev" title="redis配置">
-      <i class="fa fa-chevron-left"></i> redis配置
-    </a></div>
+      <div class="post-nav-item"></div>
       <div class="post-nav-item">
     <a href="/2020/12/13/database/redis/redis-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="next" title="redis数据结构">
       redis数据结构 <i class="fa fa-chevron-right"></i>
@@ -387,7 +506,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">数据类型</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#linux%E4%B8%8B-redis%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">linux下 redis安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD"><span class="nav-number">1.1.</span> <span class="nav-text">下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%8E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">解压</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">1.3.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1%EF%BC%88%E9%BB%98%E8%AE%A4%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">启动服务（默认）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">1.5.</span> <span class="nav-text">启动客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95"><span class="nav-number">1.6.</span> <span class="nav-text">性能测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#key-%E6%93%8D%E4%BD%9C"><span class="nav-number">1.7.</span> <span class="nav-text">key 操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5%E7%A7%8D%E6%9C%80%E5%9F%BA%E6%9C%AC%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">5种最基本的数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#String"><span class="nav-number">2.1.</span> <span class="nav-text">String</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#List"><span class="nav-number">2.2.</span> <span class="nav-text">List</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hash"><span class="nav-number">2.3.</span> <span class="nav-text">Hash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Set"><span class="nav-number">2.4.</span> <span class="nav-text">Set</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sorted-Set"><span class="nav-number">2.5.</span> <span class="nav-text">Sorted Set</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3%E7%A7%8D%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">3种高级数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#bitmap"><span class="nav-number">3.1.</span> <span class="nav-text">bitmap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GeoHash"><span class="nav-number">3.2.</span> <span class="nav-text">GeoHash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HyperLogLog"><span class="nav-number">3.3.</span> <span class="nav-text">HyperLogLog</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-0%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.</span> <span class="nav-text">5.0最新版本数据类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Streams"><span class="nav-number">5.</span> <span class="nav-text">Streams</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -403,20 +522,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-count">55</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -435,23 +554,23 @@
         
         
           <li>
-            <a href="/2021/01/17/database/mysql/mysql-%E7%B4%A2%E5%BC%95/" title="MySQL 索引" target="_blank">MySQL 索引</a>
+            <a href="/2021/01/18/mq/mq-mq-%E6%B6%88%E6%81%AF%E5%A0%86%E7%A7%AF%E5%A4%84%E7%90%86%E6%96%B9%E6%A1%88/" title="消息队列--消息堆积处理方案" target="_blank">消息队列--消息堆积处理方案</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/18/mq/mq-mq-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E6%A6%82%E8%BF%B0/" title="消息队列概述" target="_blank">消息队列概述</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/18/mq/mq-mq-MQ%E5%A4%BA%E5%91%BD%E8%BF%9E%E7%8E%AF11%E9%97%AE/" title="MQ夺命连环11问" target="_blank">MQ夺命连环11问</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/17/database/mysql/mysql-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" title="MySQL 分库分表" target="_blank">MySQL 分库分表</a>
           </li>
         
           <li>
             <a href="/2021/01/17/database/mysql/mysql-%E9%94%81/" title="MySQL InnoDB-锁" target="_blank">MySQL InnoDB-锁</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/17/database/mysql/mysql-%E6%97%A5%E5%BF%97/" title="MySQL 日志" target="_blank">MySQL 日志</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/17/database/mysql/mysql-explain%E8%AF%A6%E8%A7%A3/" title="MySQL explain详解" target="_blank">MySQL explain详解</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/17/database/mysql/mysql-%E4%BA%8B%E5%8A%A1/" title="MySQL 事务" target="_blank">MySQL 事务</a>
           </li>
         
       </ul>
@@ -732,7 +851,7 @@ if(canvas.getContext){
         <div class="widget-wrap">
           <div id="myCanvasContainer" class="widget tagcloud">
             <canvas width="250" height="250" id="resCanvas" style="width=100%">
-              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/distributed/" rel="tag">distributed</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/juc/" rel="tag">juc</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/" rel="tag">jvm</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/map/" rel="tag">map</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">8</span></li></ul>
+              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/distributed/" rel="tag">distributed</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/juc/" rel="tag">juc</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/" rel="tag">jvm</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/map/" rel="tag">map</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">8</span></li></ul>
             </canvas>
           </div>
         </div>
@@ -765,12 +884,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">169k</span>
+    <span title="站点总字数">254k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:34</span>
+    <span title="站点阅读时长">3:51</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

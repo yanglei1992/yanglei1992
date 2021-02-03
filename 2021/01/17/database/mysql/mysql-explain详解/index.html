@@ -22,41 +22,18 @@
     var CONFIG = {"hostname":"yanglei1992.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Explain命令(关键字)explain简单示例">
+  <meta name="description" content="explain简单示例创建数据 1234567891011121314151617181920212223242526-- 创表CREATE TABLE &#96;t_user&#96; ( 	&#96;id&#96; int(11) NOT NULL AUTO_INCREMENT,	NAME varchar(50) DEFAULT NULL,	PRIMARY KEY (&#96;id&#96;),    KEY &#96;idx_name&#96; (&#96;NA">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL explain详解">
 <meta property="og:url" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-explain%E8%AF%A6%E8%A7%A3/index.html">
 <meta property="og:site_name" content="yangl的博客">
-<meta property="og:description" content="Explain命令(关键字)explain简单示例">
+<meta property="og:description" content="explain简单示例创建数据 1234567891011121314151617181920212223242526-- 创表CREATE TABLE &#96;t_user&#96; ( 	&#96;id&#96; int(11) NOT NULL AUTO_INCREMENT,	NAME varchar(50) DEFAULT NULL,	PRIMARY KEY (&#96;id&#96;),    KEY &#96;idx_name&#96; (&#96;NA">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-explain%E8%AF%A6%E8%A7%A3/1611820132873.png">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f86b790131c14981a666ae62658b766a~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ef3e37ff6128454eb03cafed9bf0d6b2~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/03afcc789ca047e7ba09a1a67736205d~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c8ca7daa833549d0a4c83bb6d3080b93~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8473e4e550034a29b6f6ff1828c9920e~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/427b9dc99e734b0ca81c235b315497e1~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9e24360a2995455eb959dbf89dd14ffc~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5f8d0e9bb4394cf981a45b1550997c29~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2fab8585a1014329b53ba5c3dcc7639f~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3b5642927e9e43ae9967725a1f745c63~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/39d96b1385344a1990475e4abdfce79a~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/60db736b28254fc2acf4a5feb867ea7f~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/86b76d71a622405ebf32950b87d38413~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7781181d7da8427aba349f88bbc65e24~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/21d6d7306e0f49cab730c5e4fdcb240b~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2980ab6376e64998a09c16b4f928d811~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/59bb02b737e44cf1a133562f8fc2bf48~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/57cd61274e7c4a64b4f7d3cf22953035~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4f062a6ec67342a5a4e9a23069b0fefb~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/85e75e3ba6fb41f997b0e4a9c78e00c1~tplv-k3u1fbpfcp-zoom-1.image">
-<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b11f3b828ca14fddae669a18d79acf23~tplv-k3u1fbpfcp-zoom-1.image">
 <meta property="article:published_time" content="2021-01-17T05:21:41.000Z">
-<meta property="article:modified_time" content="2021-01-28T07:58:20.099Z">
+<meta property="article:modified_time" content="2021-02-02T12:00:56.845Z">
 <meta property="article:author" content="yangl">
 <meta property="article:tag" content="mysql">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-explain%E8%AF%A6%E8%A7%A3/1611820132873.png">
 
 <link rel="canonical" href="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-explain%E8%AF%A6%E8%A7%A3/">
 
@@ -251,7 +228,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-28 15:58:20" itemprop="dateModified" datetime="2021-01-28T15:58:20+08:00">2021-01-28</time>
+                <time title="修改时间：2021-02-02 20:00:56" itemprop="dateModified" datetime="2021-02-02T20:00:56+08:00">2021-02-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -283,14 +260,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4k</span>
+              <span>15k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
+              <span>13 分钟</span>
             </span>
 
         </div>
@@ -302,105 +279,144 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Explain命令-关键字"><a href="#Explain命令-关键字" class="headerlink" title="Explain命令(关键字)"></a>Explain命令(关键字)</h1><h2 id="explain简单示例"><a href="#explain简单示例" class="headerlink" title="explain简单示例"></a>explain简单示例</h2><p><img src="/2021/01/17/database/mysql/mysql-explain%E8%AF%A6%E8%A7%A3/1611820132873.png" alt="1611820132873"></p>
-<blockquote>
-<p>在查询中的每个”表”会输出一行，这里的“表”的意义非常广泛，不仅仅是数据库表，还可以是子查询、一个union 结果等。</p>
-</blockquote>
-<h2 id="explain结果列说明"><a href="#explain结果列说明" class="headerlink" title="explain结果列说明"></a>explain结果列说明</h2><h3 id="【id列】"><a href="#【id列】" class="headerlink" title="【id列】"></a>【id列】</h3><ul>
+        <h1 id="explain简单示例"><a href="#explain简单示例" class="headerlink" title="explain简单示例"></a>explain简单示例</h1><p>创建数据</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `t_user` ( </span><br><span class="line">	`id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">	NAME <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">	<span class="keyword">PRIMARY</span> <span class="keyword">KEY</span> (`id`),</span><br><span class="line">    KEY `idx_name` (`NAME`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">1</span> <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8;</span><br><span class="line"></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> `t_user_balance` (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  uid <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  balance <span class="type">int</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> <span class="keyword">KEY</span> (`id`),</span><br><span class="line">  KEY `idx_uid` (`uid`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">1</span> <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 插入数据</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_user <span class="keyword">values</span>(<span class="number">1</span>,<span class="string">&#x27;yangl&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_user <span class="keyword">values</span>(<span class="number">2</span>,<span class="string">&#x27;zhangsan&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_user <span class="keyword">values</span>(<span class="number">3</span>,<span class="string">&#x27;lisi&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_user <span class="keyword">values</span>(<span class="number">4</span>,<span class="string">&#x27;wangwu&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_user_balance <span class="keyword">values</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">100</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_user_balance <span class="keyword">values</span>(<span class="number">2</span>, <span class="number">2</span>, <span class="number">200</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_user_balance <span class="keyword">values</span>(<span class="number">3</span>, <span class="number">3</span>, <span class="number">300</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_user_balance <span class="keyword">values</span>(<span class="number">4</span>, <span class="number">4</span>, <span class="number">400</span>);</span><br></pre></td></tr></table></figure>
+<p>查看 explain 结果</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN SELECT * FROM t_user AS tuser, t_user_balance AS usba WHERE 1 AND tuser.id = 1 AND tuser.id = usba.uid;</span></span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+-------+------+-------+</span><br><span class="line">| id | select_type | table | type  | possible_keys | key     | key_len | ref   | rows | Extra |</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+-------+------+-------+</span><br><span class="line">|  1 | SIMPLE      | tuser | const | PRIMARY       | PRIMARY | 4       | const |    1 | NULL  |</span><br><span class="line">|  1 | SIMPLE      | usba  | ref   | idx_uid       | idx_uid | 4       | const |    1 | NULL  |</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+-------+------+-------+</span><br><span class="line">2 rows in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<h1 id="explain结果列说明"><a href="#explain结果列说明" class="headerlink" title="explain结果列说明"></a>explain结果列说明</h1><h2 id="【id列-】"><a href="#【id列-】" class="headerlink" title="【id列 】"></a>【id列 】</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select * from ( select id from t_user) as tmp;</span></span><br><span class="line">+----+-------------+------------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">| id | select_type | table      | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+------------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">|  1 | PRIMARY     | &lt;derived2&gt; | ALL   | NULL          | NULL    | NULL    | NULL |    4 | NULL        |</span><br><span class="line">|  2 | DERIVED     | t_user     | index | NULL          | PRIMARY | 4       | NULL |    4 | Using index |</span><br><span class="line">+----+-------------+------------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">2 rows in set (0.05 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<ul>
 <li>id 列是一个有顺序的编号，是查询的顺序号，有几个 select 就显示几行。</li>
 <li>id 的顺序是按 select 出现的顺序增长的。</li>
 <li>id 列的值越大执行优先级越高越先执行，id 列的值相同则从上往下执行，id列的值为NULL最后执行。</li>
 </ul>
-<h3 id="【select-type列】"><a href="#【select-type列】" class="headerlink" title="【select_type列】"></a>【select_type列】</h3><ul>
-<li>select_type列的值标明查询的类型：<ul>
-<li>simple：表明当前行对应的select是简单查询，不包含子查询和union</li>
-<li>primary：表明当前行对应的select是复杂查询中最外层的 select</li>
-<li>subquery：表明当前行对应的select是包含在 select 中的子查询（不在 from 子句中）</li>
-<li>derived：表明当前行对应的select是包含在 from 子句中的子查询。</li>
+<h2 id="【select-type列-】"><a href="#【select-type列-】" class="headerlink" title="【select_type列 】"></a>【select_type列 】</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select * from ( select * from t_user) as tmp UNION select * from t_user;</span></span><br><span class="line">+------+--------------+------------+------+---------------+------+---------+------+------+-----------------+</span><br><span class="line">| id   | select_type  | table      | type | possible_keys | key  | key_len | ref  | rows | Extra           |</span><br><span class="line">+------+--------------+------------+------+---------------+------+---------+------+------+-----------------+</span><br><span class="line">|    1 | PRIMARY      | &lt;derived2&gt; | ALL  | NULL          | NULL | NULL    | NULL |    4 | NULL            |</span><br><span class="line">|    2 | DERIVED      | t_user     | ALL  | NULL          | NULL | NULL    | NULL |    4 | NULL            |</span><br><span class="line">|    3 | UNION        | t_user     | ALL  | NULL          | NULL | NULL    | NULL |    4 | NULL            |</span><br><span class="line">| NULL | UNION RESULT | &lt;union1,3&gt; | ALL  | NULL          | NULL | NULL    | NULL | NULL | Using temporary |</span><br><span class="line">+------+--------------+------------+------+---------------+------+---------+------+------+-----------------+</span><br><span class="line">4 rows in set (0.03 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>select_type 列的值标明查询的类型：<ul>
+<li><code>simple</code> ：简单select（不使用union或子查询）。</li>
+<li><code>primary</code> ：最外面的select。</li>
+<li><code>union</code> ：union中的第二个或后面的select语句。</li>
+<li><code>dependent union</code> ：union中的第二个或后面的select语句，取决于外面的查询。</li>
+<li><code>union result</code> ：union的结果。</li>
+<li><code>subquery</code> ：子查询中的第一个select。</li>
+<li><code>dependent subquery</code> ：子查询中的第一个select，取决于外面的查询。</li>
+<li><code>derived</code> ：导出表的select（from子句的子查询）。</li>
 </ul>
 </li>
 </ul>
-<p>MySQL会创建一个临时表来存放子查询的查询结果。用如下的语句示例说明：</p>
-<p>explain select (select 1 fromt_user where user_id=1) from (select * from t_group where group_id=1) tmp;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f86b790131c14981a666ae62658b766a~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>*注意，在资料收集过程中，发现不同版本的MySQL表现不一致，经反复对比，5.7及以后版本的输出如下：</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ef3e37ff6128454eb03cafed9bf0d6b2~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>很显然，MySQL在这方面进行了优化.</p>
-<p>*注意，MySQL不同版本Explain表现差异很大，有些场景，从语句层面看，是要使用到索引，但经过优化器分析，结合表中现有数据，如果MySQL认为全表扫描性能更优，则会使用全表扫描。</p>
-<p>5）union：表明当前行对应的select是在 union 中的第二个和随后的 select</p>
-<p>6）union result：表明当前行对应的select是从 union 临时表检索结果的 select</p>
-<p>explain select 1 union all select 2 fromdual;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/03afcc789ca047e7ba09a1a67736205d~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>MySQL5.7及以后同样做了优化</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c8ca7daa833549d0a4c83bb6d3080b93~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<h3 id="【table列】"><a href="#【table列】" class="headerlink" title="【table列】"></a>【table列】</h3><p>table列的结果表明当前行对应的select正在访问哪个表。当查询的子句中有子查询时，table列是  格式，表示当前的select依赖 id=N结果行对应的查询，要先执行 id序号=N 的查询。当存在 union 时，UNION RESULT 的 table 列的值为&lt;unionN1,N2&gt;，N1和N2表示参与 union 的select 行的id序号。</p>
-<h3 id="【type列】"><a href="#【type列】" class="headerlink" title="【type列】"></a>【type列】</h3><p>type列的结果表明当前行对应的select的关联类型或访问类型，也就是优化器决定怎么查找数据表中的行，以及查找数据行记录的大概范围。该列的取值优化程度的优劣，从最优到最差依次为：null&gt;system&gt; const &gt; eq_ref &gt; ref &gt; range &gt; index &gt; ALL。一般来说，要保证查询达到range级别，最好达到ref。</p>
-<p>1）null，MySQL优化器在优化阶段分解查询语句，在优化过程中就已经可以得到结果，那么在执行阶段就不用再访问表或索引。</p>
-<p>explain select min(user_id) from t_user;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8473e4e550034a29b6f6ff1828c9920e~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>这时的函数min，在索引列user_id中选取最小值，可以直接查找索引来完成，不需要执行时再访问数据表。</p>
-<p>2）const和system：const出现在用 primary key（主键） 或 unique key（唯一键） 的所有列与常数比较时，优化器对查询进行优化并将其部分查询转化成一个常量。最多有一个匹配行，读取1次，速度非常快。而system是const的特例，表中数据只有一条匹配时为system。此时可以用explain extended+show warnings查看执行结果。</p>
-<p>explain extended select * from (select * from t_user where user_id = 1) tmp;</p>
-<p>show warnings;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/427b9dc99e734b0ca81c235b315497e1~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9e24360a2995455eb959dbf89dd14ffc~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>MySQL5.7及以后版本优化后：</p>
-<p>![什么是MySQL的执行计划（Explain关键字）？](data:image/svg+xml;utf8,<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="800" height="600"/>)</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5f8d0e9bb4394cf981a45b1550997c29~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>3）eq_ref：primary key（主键）或 unique key（唯一键） 索引的所有构成部分被join使用 ，只会返回一条符合条件的数据行。这是仅次于const的连接类型。</p>
-<p>explain select * from t_group_user gu left join t_group g ong.group_id = gu.group_id;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2fab8585a1014329b53ba5c3dcc7639f~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<ol>
-<li>ref：与eq_ref相比，ref类型不是使用primary key（主键） 或 unique key（唯一键）等唯一索引，而是使用普通索引或者联合唯一性索引的部分前缀，索引和某个值相比较，可能会找到符合条件的多个数据行。</li>
-</ol>
-<p>\1. 如下示例，使用的group_name是普通索引</p>
-<p>explain select * from t_group where group_name= ‘group1’;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3b5642927e9e43ae9967725a1f745c63~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>2.关联表查询</p>
-<p>explain select g.group_id from t_group gleft join t_group_user gu on gu.group_id = g.group_id;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/39d96b1385344a1990475e4abdfce79a~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>5）range：出现在 in(),between ,&gt; ,&lt;, &gt;= 等操作符中。使用一个索引来查询给定范围的行。</p>
-<p>6）index：扫描全表索引（index是从索引中读取的,所有字段都有索引，而all是从硬盘中读取），比ALL要快。</p>
-<p>explain select * from t_group;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/60db736b28254fc2acf4a5feb867ea7f~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>7）all：即全表扫描，需要从头到尾去查找所需要的行。一般这种情况下这需要增加索引来进行查询优化了</p>
-<p>explain select * from t_user;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/86b76d71a622405ebf32950b87d38413~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<h3 id="【possible-keys列】"><a href="#【possible-keys列】" class="headerlink" title="【possible_keys列】"></a>【possible_keys列】</h3><p>这一列的结果表明查询可能使用到哪些索引。但有些时候也会出现出现possible_keys 列有结果，而 后面的key列显示 null 的情况，这是因为此时表中数据不多，优化器认为查询索引对查询帮助不大，所以没有走索引查询而是进行了全表扫描。</p>
-<p>如果possible_keys列的结果是null，则表明没有相关的索引。这时，可以通过优化where子句，增加恰当的索引来提升查询性能。</p>
-<h3 id="【key列】"><a href="#【key列】" class="headerlink" title="【key列】"></a>【key列】</h3><p>这一列表明优化器实际采用哪个索引来优化对该表的访问。如果没有使用索引，则该列是 null。</p>
-<h3 id="【key-len列】"><a href="#【key-len列】" class="headerlink" title="【key_len列】"></a>【key_len列】</h3><p>这一列表明了在索引里使用的字节数，通过这个值可以大致估算出具体使用了联合索引中的前几个列。</p>
-<p>key_len计算规则这里不再赘述，不同的数据类型所占的字节数是不一致的。</p>
-<h3 id="【ref列】"><a href="#【ref列】" class="headerlink" title="【ref列】"></a>【ref列】</h3><p>这一列表明了在key列记录的索引中，表查找值所用到的列或常量，常见的有：const（常量），字段名，如user.user_id</p>
-<h3 id="【rows列】"><a href="#【rows列】" class="headerlink" title="【rows列】"></a>【rows列】</h3><p>这一列表明优化器大概要读取并检测的行数。跟实际的数据行数大部分情况是不一致的。</p>
-<h3 id="【Extra列】"><a href="#【Extra列】" class="headerlink" title="【Extra列】"></a>【Extra列】</h3><p>顾名思义，这一列表明的是额外信息,这一列的取值对优化SQL非常有参考意义。常见的重要取值如下：</p>
-<p>1）using index：所有被查询的字段都是索引列(称为覆盖索引),并且where条件是索引的前导列，出现这样的结果，是性能高的表现。</p>
-<p>explainselect group_id,group_name from t_group;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7781181d7da8427aba349f88bbc65e24~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>2）using where：被查询的列未被索引覆盖，where条件也并非索引的前导列，表示 MySQL 执行器从存储引擎接收到查询数据,再进行“后过滤”（Post-filter）。所谓“后过滤”，就是先读取整行数据，再检查此行是否符合 where 句的条件，符合就留下，不符合便丢弃。</p>
-<p>explain select * from t_user whereuser_name=’user1’;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/21d6d7306e0f49cab730c5e4fdcb240b~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>3）using where Using index：被查询的列被索引覆盖，并且where条件是索引列之一但是不是索引的前导列，也就是没有办法直接通过索引来查询到符合条件的数据</p>
-<p>explain select * from t_group where group_name = ‘group1’;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2980ab6376e64998a09c16b4f928d811~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>4）null：被查询的列没有被索引覆盖，但where条件是索引的前导列，此时用到了索引，但是部分列未被索引覆盖，必须通过“回表查询”来实现，不是纯粹地用到了索引，也不是完全没用到索引</p>
-<p>explain select * from t_user where user_id=’1’;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/59bb02b737e44cf1a133562f8fc2bf48~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>5）using index condition：与using where类似，查询的列不完全被索引覆盖，where条件中是一个前导列的范围；这种情况未能通过示例显现，可能跟MySQL版本有关系。</p>
-<p>6） using temporary：这表明需要通过创建临时表来处理查询。出现这种情况一般是要进行优化的，用索引来优化。创建临时表的情况：distinct，group by，orderby，子查询等</p>
-<p>explain select distinct user_name from t_user;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/57cd61274e7c4a64b4f7d3cf22953035~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>explain select distinct group_name fromt_group; –group_name是索引列</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4f062a6ec67342a5a4e9a23069b0fefb~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<ol>
-<li>usingfilesort：在使用order by的情况下出现，mysql会对结果使用一个外部索引排序，而不是按索引次序从表里读取行。此时mysql会根据连接类型浏览所有符合条件的记录，并保存排序关键字和行指针，然后排序关键字并按顺序检索行信息。这种情况下要考虑使用索引来优化的。</li>
-</ol>
-<p>explain select * from t_user orderby user_name;</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/85e75e3ba6fb41f997b0e4a9c78e00c1~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
-<p>explain select * from t_group order bygroup_name; –group_name是索引列</p>
-<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b11f3b828ca14fddae669a18d79acf23~tplv-k3u1fbpfcp-zoom-1.image" alt="什么是MySQL的执行计划（Explain关键字）？"></p>
+<h2 id="【table列-】"><a href="#【table列-】" class="headerlink" title="【table列 】"></a>【table列 】</h2><p>table 列的结果表明当前行对应的 select 正在访问哪个表。</p>
+<ul>
+<li>当查询的子句中有子查询时， table 列是格式，表示当前的 select 依赖 id=N 结果行对应的查询，要先执行 id 序号 = N 的查询。</li>
+<li>当存在 union 时，UNION RESULT 的 table 列的值为 &lt; unionN1 , N2 &gt; ， N1 和 N2 表示参与 union 的 select 行的 id 序号。</li>
+</ul>
+<h2 id="【type列-】"><a href="#【type列-】" class="headerlink" title="【type列 】"></a>【type列 】</h2><ul>
+<li><p> type 列的结果表明当前行对应的 select 的关联类型或访问类型，也就是优化器决定怎么查找数据表中的行，以及查找数据行记录的大概范围。</p>
+</li>
+<li><p>该列的取值优化程度的优劣，从最优到最差依次为：null &gt; system &gt; const &gt; eq_ref &gt; ref &gt; range &gt; index &gt; ALL。一般来说，要保证查询达到 range 级别，最好达到 ref 。</p>
+<ul>
+<li><p>null：不需要查表，直接通过索引就能查出结果</p>
+</li>
+<li><p>system：系统表，少量数据，往往不需要进行磁盘IO</p>
+</li>
+<li><p>const：常量连接</p>
+</li>
+<li><p>eq_ref：主键索引(primary key)或者非空唯一索引(unique not null)等值扫描</p>
+</li>
+<li><p>ref：非主键非唯一索引等值扫描</p>
+</li>
+<li><p>range：范围扫描</p>
+</li>
+<li><p>index：索引树扫描</p>
+</li>
+<li><p>ALL：全表扫描(full table scan)</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="1、null"><a href="#1、null" class="headerlink" title="1、null"></a>1、null</h3><ul>
+<li>MySQL 优化器在优化阶段分解查询语句，在优化过程中就已经可以得到结果，那么在执行阶段就不用再访问表或索引。</li>
+<li>这时的函数 min ，在索引列 user_id 中选取最小值，可以直接查找索引来完成 ， 不需要执行时再访问数据表。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select min(id) from t_user;</span></span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+------+------+------------------------------+</span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra                        |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+------+------+------------------------------+</span><br><span class="line">|  1 | SIMPLE      | NULL  | NULL | NULL          | NULL | NULL    | NULL | NULL | Select tables optimized away |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+------+------+------------------------------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="2、const-和-system"><a href="#2、const-和-system" class="headerlink" title="2、const 和 system"></a>2、const 和 system</h3><ul>
+<li>const 出现在用 primary key （主键） 或 unique key （唯一键） 的所有列与常数比较时，优化器对查询进行优化并将其部分查询转化成一个常量。最多有一个匹配行，读取1次，速度非常快。</li>
+<li>而system是const的特例，表中数据只有一条匹配时为system。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select * from ( select id from t_user <span class="built_in">where</span> id = 1) as tmp;</span></span><br><span class="line">+----+-------------+------------+--------+---------------+---------+---------+-------+------+-------------+</span><br><span class="line">| id | select_type | table      | type   | possible_keys | key     | key_len | ref   | rows | Extra       |</span><br><span class="line">+----+-------------+------------+--------+---------------+---------+---------+-------+------+-------------+</span><br><span class="line">|  1 | PRIMARY     | &lt;derived2&gt; | system | NULL          | NULL    | NULL    | NULL  |    1 | NULL        |</span><br><span class="line">|  2 | DERIVED     | t_user     | const  | PRIMARY       | PRIMARY | 4       | const |    1 | Using index |</span><br><span class="line">+----+-------------+------------+--------+---------------+---------+---------+-------+------+-------------+</span><br><span class="line">2 rows in set (0.05 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<h3 id="3、eq-ref"><a href="#3、eq-ref" class="headerlink" title="3、eq_ref"></a>3、eq_ref</h3><ul>
+<li>primary key（主键）或 unique key（唯一键） 索引的所有构成部分被join使用 ，只会返回一条符合条件的数据行。这是仅次于const的连接类型。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN SELECT * FROM t_user_balance AS usba LEFT JOIN t_user AS tuser on tuser.id = usba.uid;</span></span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------------------+------+-------+</span><br><span class="line">| id | select_type | table | type   | possible_keys | key     | key_len | ref                       | rows | Extra |</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------------------+------+-------+</span><br><span class="line">|  1 | SIMPLE      | usba  | ALL    | NULL          | NULL    | NULL    | NULL                      |    1 | NULL  |</span><br><span class="line">|  1 | SIMPLE      | tuser | eq_ref | PRIMARY       | PRIMARY | 4       | test_transaction.usba.uid |    1 | NULL  |</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------------------+------+-------+</span><br><span class="line">2 rows in set (0.05 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<h3 id="4、ref"><a href="#4、ref" class="headerlink" title="4、ref"></a>4、ref</h3><ul>
+<li> ref 与 eq_ref 相比， ref 类型不是使用 primary key （主键） 或 unique key （唯一键）等唯一索引，而是使用普通索引或者联合唯一性索引的部分前缀，索引和某个值相比较，可能会找到符合条件的多个数据行。</li>
+</ul>
+<h4 id="普通索引"><a href="#普通索引" class="headerlink" title="普通索引"></a>普通索引</h4><p>如下示例，使用的 name 是普通索引</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select * from t_user WHERE name = <span class="string">&#x27;yangl&#x27;</span>;</span></span><br><span class="line">+----+-------------+--------+------+---------------+----------+---------+-------+------+--------------------------+</span><br><span class="line">| id | select_type | table  | type | possible_keys | key      | key_len | ref   | rows | Extra                    |</span><br><span class="line">+----+-------------+--------+------+---------------+----------+---------+-------+------+--------------------------+</span><br><span class="line">|  1 | SIMPLE      | t_user | ref  | idx_name      | idx_name | 153     | const |    1 | Using where; Using index |</span><br><span class="line">+----+-------------+--------+------+---------------+----------+---------+-------+------+--------------------------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<h4 id="关联表查询"><a href="#关联表查询" class="headerlink" title="关联表查询"></a>关联表查询</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN SELECT * FROM t_user_balance AS usba LEFT JOIN t_user AS tuser on tuser.id = usba.uid;</span></span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------------------+------+-------+</span><br><span class="line">| id | select_type | table | type   | possible_keys | key     | key_len | ref                       | rows | Extra |</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------------------+------+-------+</span><br><span class="line">|  1 | SIMPLE      | usba  | ALL    | NULL          | NULL    | NULL    | NULL                      |    4 | NULL  |</span><br><span class="line">|  1 | SIMPLE      | tuser | eq_ref | PRIMARY       | PRIMARY | 4       | test_transaction.usba.uid |    1 | NULL  |</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------------------+------+-------+</span><br><span class="line">2 rows in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<h3 id="5、range"><a href="#5、range" class="headerlink" title="5、range"></a>5、range</h3><ul>
+<li>出现在 in(),between ,&gt; ,&lt;, &gt;= 等操作符中。使用一个索引来查询给定范围的行。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select * from t_user <span class="built_in">where</span> id &gt; 3;</span></span><br><span class="line">+----+-------------+--------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">| id | select_type | table  | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+--------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">|  1 | SIMPLE      | t_user | range | PRIMARY       | PRIMARY | 4       | NULL |    1 | Using where |</span><br><span class="line">+----+-------------+--------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<h3 id="6、index"><a href="#6、index" class="headerlink" title="6、index"></a>6、index</h3><ul>
+<li>扫描全表索引（ index 是从索引中读取的，所有字段都有索引，而 all 是从硬盘中读取），比ALL要快。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select * from t_user ;</span></span><br><span class="line">+----+-------------+--------+-------+---------------+----------+---------+------+------+-------------+</span><br><span class="line">| id | select_type | table  | type  | possible_keys | key      | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+--------+-------+---------------+----------+---------+------+------+-------------+</span><br><span class="line">|  1 | SIMPLE      | t_user | index | NULL          | idx_name | 153     | NULL |    4 | Using index |</span><br><span class="line">+----+-------------+--------+-------+---------------+----------+---------+------+------+-------------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<h3 id="7、all"><a href="#7、all" class="headerlink" title="7、all"></a>7、all</h3><p>即全表扫描，需要从头到尾去查找所需要的行。一般这种情况下这需要增加索引来进行查询优化了</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select * from t_user_balance;</span></span><br><span class="line">+----+-------------+----------------+------+---------------+------+---------+------+------+-------+</span><br><span class="line">| id | select_type | table          | type | possible_keys | key  | key_len | ref  | rows | Extra |</span><br><span class="line">+----+-------------+----------------+------+---------------+------+---------+------+------+-------+</span><br><span class="line">|  1 | SIMPLE      | t_user_balance | ALL  | NULL          | NULL | NULL    | NULL |    4 | NULL  |</span><br><span class="line">+----+-------------+----------------+------+---------------+------+---------+------+------+-------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<h2 id="【possible-keys-列】"><a href="#【possible-keys-列】" class="headerlink" title="【possible_keys 列】"></a>【possible_keys 列】</h2><ul>
+<li>这一列的结果表明查询可能使用到哪些索引。但有些时候也会出现出现 possible_keys 列有结果，而 后面的 key 列显示 null 的情况，这是因为此时表中数据不多，优化器认为查询索引对查询帮助不大，所以没有走索引查询而是进行了全表扫描。</li>
+</ul>
+<ul>
+<li>如果 possible_keys 列的结果是 null ，则表明没有相关的索引。这时，<strong>可以通过优化 where 子句，增加恰当的索引来提升查询性能</strong>。</li>
+</ul>
+<h2 id="【key-列】"><a href="#【key-列】" class="headerlink" title="【key 列】"></a>【key 列】</h2><ul>
+<li>这一列表明优化器实际采用哪个索引来优化对该表的访问。如果没有使用索引，则该列是 null。</li>
+</ul>
+<h2 id="【key-len-列】"><a href="#【key-len-列】" class="headerlink" title="【key_len 列】"></a>【key_len 列】</h2><ul>
+<li><p>这一列表明了在索引里使用的字节数，通过这个值可以大致估算出具体使用了联合索引中的前几个列。</p>
+</li>
+<li><p>key_len计算规则这里不再赘述，不同的数据类型所占的字节数是不一致的。</p>
+</li>
+</ul>
+<h2 id="【ref-列】"><a href="#【ref-列】" class="headerlink" title="【ref 列】"></a>【ref 列】</h2><ul>
+<li>这一列表明了在 key 列记录的索引中，表查找值所用到的列或常量，常见的有：const（常量），字段名，如user.user_id</li>
+</ul>
+<h2 id="【rows-列】"><a href="#【rows-列】" class="headerlink" title="【rows 列】"></a>【rows 列】</h2><ul>
+<li>这一列表明优化器大概要读取并检测的行数。跟实际的数据行数大部分情况是不一致的。</li>
+</ul>
+<h2 id="【Extra-列】"><a href="#【Extra-列】" class="headerlink" title="【Extra 列】"></a>【Extra 列】</h2><blockquote>
+<p> 顾名思义，这一列表明的是额外信息，<strong>这一列的取值对优化SQL非常有参考意义</strong>。常见的重要取值如下：</p>
+</blockquote>
+<h3 id="using-index"><a href="#using-index" class="headerlink" title="using index"></a>using index</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select * from t_user ;</span></span><br><span class="line">+----+-------------+--------+-------+---------------+----------+---------+------+------+-------------+</span><br><span class="line">| id | select_type | table  | type  | possible_keys | key      | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+--------+-------+---------------+----------+---------+------+------+-------------+</span><br><span class="line">|  1 | SIMPLE      | t_user | index | NULL          | idx_name | 153     | NULL |    4 | Using index |</span><br><span class="line">+----+-------------+--------+-------+---------------+----------+---------+------+------+-------------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>所有被查询的字段都是索引列(称为覆盖索引),并且where条件是索引的前导列，出现这样的结果，是性能高的表现。</li>
+</ul>
+<h3 id="using-where"><a href="#using-where" class="headerlink" title="using where"></a>using where</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select * from t_user_balance <span class="built_in">where</span> balance = 110;</span></span><br><span class="line">+----+-------------+----------------+------+---------------+------+---------+------+------+-------------+</span><br><span class="line">| id | select_type | table          | type | possible_keys | key  | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+----------------+------+---------------+------+---------+------+------+-------------+</span><br><span class="line">|  1 | SIMPLE      | t_user_balance | ALL  | NULL          | NULL | NULL    | NULL |    4 | Using where |</span><br><span class="line">+----+-------------+----------------+------+---------------+------+---------+------+------+-------------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>被查询的列未被索引覆盖，where条件也并非索引的前导列，表示 MySQL 执行器从存储引擎接收到查询数据,再进行“后过滤”（Post-filter）。所谓“后过滤”，就是先读取整行数据，再检查此行是否符合 where 句的条件，符合就留下，不符合便丢弃。</li>
+</ul>
+<h3 id="using-where-Using-index"><a href="#using-where-Using-index" class="headerlink" title="using where Using index"></a>using where Using index</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select * from t_user WHERE name = <span class="string">&#x27;yangl&#x27;</span>;</span></span><br><span class="line">+----+-------------+--------+------+---------------+----------+---------+-------+------+--------------------------+</span><br><span class="line">| id | select_type | table  | type | possible_keys | key      | key_len | ref   | rows | Extra                    |</span><br><span class="line">+----+-------------+--------+------+---------------+----------+---------+-------+------+--------------------------+</span><br><span class="line">|  1 | SIMPLE      | t_user | ref  | idx_name      | idx_name | 153     | const |    1 | Using where; Using index |</span><br><span class="line">+----+-------------+--------+------+---------------+----------+---------+-------+------+--------------------------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>被查询的列被索引覆盖，并且where条件是索引列之一但是不是索引的前导列，也就是没有办法直接通过索引来查询到符合条件的数据</li>
+</ul>
+<h3 id="null"><a href="#null" class="headerlink" title="null"></a>null</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select * from t_user_balance <span class="built_in">where</span> id = 1;</span></span><br><span class="line">+----+-------------+----------------+-------+---------------+---------+---------+-------+------+-------+</span><br><span class="line">| id | select_type | table          | type  | possible_keys | key     | key_len | ref   | rows | Extra |</span><br><span class="line">+----+-------------+----------------+-------+---------------+---------+---------+-------+------+-------+</span><br><span class="line">|  1 | SIMPLE      | t_user_balance | const | PRIMARY       | PRIMARY | 4       | const |    1 | NULL  |</span><br><span class="line">+----+-------------+----------------+-------+---------------+---------+---------+-------+------+-------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>被查询的列没有被索引覆盖，但 where 条件是索引的前导列，此时用到了索引，但是部分列未被索引覆盖，必须通过“回表查询”来实现，不是纯粹地用到了索引，也不是完全没用到索引</li>
+</ul>
+<h3 id="using-index-condition"><a href="#using-index-condition" class="headerlink" title="using index condition"></a>using index condition</h3><p>与 using where 类似，查询的列不完全被索引覆盖，where 条件中是一个前导列的范围；这种情况未能通过示例显现，可能跟MySQL版本有关系。</p>
+<h3 id="using-temporary"><a href="#using-temporary" class="headerlink" title="using temporary"></a>using temporary</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select distinct balance from t_user_balance;</span></span><br><span class="line">+----+-------------+----------------+------+---------------+------+---------+------+------+-----------------+</span><br><span class="line">| id | select_type | table          | type | possible_keys | key  | key_len | ref  | rows | Extra           |</span><br><span class="line">+----+-------------+----------------+------+---------------+------+---------+------+------+-----------------+</span><br><span class="line">|  1 | SIMPLE      | t_user_balance | ALL  | NULL          | NULL | NULL    | NULL |    4 | Using temporary |</span><br><span class="line">+----+-------------+----------------+------+---------------+------+---------+------+------+-----------------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<p>这表明需要通过创建临时表来处理查询。出现这种情况一般是要进行优化的，用索引来优化。创建临时表的情况：distinct，group by，orderby，子查询等</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select distinct id from t_user_balance; -- id 是索引列</span></span><br><span class="line">+----+-------------+----------------+-------+-----------------+---------+---------+------+------+-------------+</span><br><span class="line">| id | select_type | table          | type  | possible_keys   | key     | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+----------------+-------+-----------------+---------+---------+------+------+-------------+</span><br><span class="line">|  1 | SIMPLE      | t_user_balance | index | PRIMARY,idx_uid | idx_uid | 4       | NULL |    4 | Using index |</span><br><span class="line">+----+-------------+----------------+-------+-----------------+---------+---------+------+------+-------------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<h3 id="usingfilesort"><a href="#usingfilesort" class="headerlink" title="usingfilesort"></a>usingfilesort</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select balance from t_user_balance  order by balance asc;</span></span><br><span class="line">+----+-------------+----------------+------+---------------+------+---------+------+------+----------------+</span><br><span class="line">| id | select_type | table          | type | possible_keys | key  | key_len | ref  | rows | Extra          |</span><br><span class="line">+----+-------------+----------------+------+---------------+------+---------+------+------+----------------+</span><br><span class="line">|  1 | SIMPLE      | t_user_balance | ALL  | NULL          | NULL | NULL    | NULL |    4 | Using filesort |</span><br><span class="line">+----+-------------+----------------+------+---------------+------+---------+------+------+----------------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>在使用 order by 的情况下出现，mysql 会对结果使用一个外部索引排序，而不是按索引次序从表里读取行。此时 mysql 会根据连接类型浏览所有符合条件的记录，并保存排序关键字和行指针，然后排序关键字并按顺序检索行信息。这种情况下要考虑使用索引来优化的。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> EXPLAIN select id from t_user_balance order by id asc; -- id 是索引列</span></span><br><span class="line">+----+-------------+----------------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">| id | select_type | table          | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+----------------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">|  1 | SIMPLE      | t_user_balance | index | NULL          | PRIMARY | 4       | NULL |    4 | Using index |</span><br><span class="line">+----+-------------+----------------+-------+---------------+---------+---------+------+------+-------------+</span><br><span class="line">1 row in set (0.04 sec)</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> </span></span><br></pre></td></tr></table></figure>
+
+
 <p>参考：</p>
-<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6898356430802255879">https://juejin.cn/post/6898356430802255879</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yycc/p/7338894.html">https://www.cnblogs.com/yycc/p/7338894.html</a></p>
 
     </div>
 
@@ -508,7 +524,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Explain%E5%91%BD%E4%BB%A4-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">1.</span> <span class="nav-text">Explain命令(关键字)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#explain%E7%AE%80%E5%8D%95%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.1.</span> <span class="nav-text">explain简单示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#explain%E7%BB%93%E6%9E%9C%E5%88%97%E8%AF%B4%E6%98%8E"><span class="nav-number">1.2.</span> <span class="nav-text">explain结果列说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%90id%E5%88%97%E3%80%91"><span class="nav-number">1.2.1.</span> <span class="nav-text">【id列】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%90select-type%E5%88%97%E3%80%91"><span class="nav-number">1.2.2.</span> <span class="nav-text">【select_type列】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%90table%E5%88%97%E3%80%91"><span class="nav-number">1.2.3.</span> <span class="nav-text">【table列】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%90type%E5%88%97%E3%80%91"><span class="nav-number">1.2.4.</span> <span class="nav-text">【type列】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%90possible-keys%E5%88%97%E3%80%91"><span class="nav-number">1.2.5.</span> <span class="nav-text">【possible_keys列】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%90key%E5%88%97%E3%80%91"><span class="nav-number">1.2.6.</span> <span class="nav-text">【key列】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%90key-len%E5%88%97%E3%80%91"><span class="nav-number">1.2.7.</span> <span class="nav-text">【key_len列】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%90ref%E5%88%97%E3%80%91"><span class="nav-number">1.2.8.</span> <span class="nav-text">【ref列】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%90rows%E5%88%97%E3%80%91"><span class="nav-number">1.2.9.</span> <span class="nav-text">【rows列】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E3%80%90Extra%E5%88%97%E3%80%91"><span class="nav-number">1.2.10.</span> <span class="nav-text">【Extra列】</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#explain%E7%AE%80%E5%8D%95%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">explain简单示例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#explain%E7%BB%93%E6%9E%9C%E5%88%97%E8%AF%B4%E6%98%8E"><span class="nav-number">2.</span> <span class="nav-text">explain结果列说明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E3%80%90id%E5%88%97-%E3%80%91"><span class="nav-number">2.1.</span> <span class="nav-text">【id列 】</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E3%80%90select-type%E5%88%97-%E3%80%91"><span class="nav-number">2.2.</span> <span class="nav-text">【select_type列 】</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E3%80%90table%E5%88%97-%E3%80%91"><span class="nav-number">2.3.</span> <span class="nav-text">【table列 】</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E3%80%90type%E5%88%97-%E3%80%91"><span class="nav-number">2.4.</span> <span class="nav-text">【type列 】</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81null"><span class="nav-number">2.4.1.</span> <span class="nav-text">1、null</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81const-%E5%92%8C-system"><span class="nav-number">2.4.2.</span> <span class="nav-text">2、const 和 system</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81eq-ref"><span class="nav-number">2.4.3.</span> <span class="nav-text">3、eq_ref</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81ref"><span class="nav-number">2.4.4.</span> <span class="nav-text">4、ref</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%99%AE%E9%80%9A%E7%B4%A2%E5%BC%95"><span class="nav-number">2.4.4.1.</span> <span class="nav-text">普通索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2"><span class="nav-number">2.4.4.2.</span> <span class="nav-text">关联表查询</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81range"><span class="nav-number">2.4.5.</span> <span class="nav-text">5、range</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6%E3%80%81index"><span class="nav-number">2.4.6.</span> <span class="nav-text">6、index</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7%E3%80%81all"><span class="nav-number">2.4.7.</span> <span class="nav-text">7、all</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E3%80%90possible-keys-%E5%88%97%E3%80%91"><span class="nav-number">2.5.</span> <span class="nav-text">【possible_keys 列】</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E3%80%90key-%E5%88%97%E3%80%91"><span class="nav-number">2.6.</span> <span class="nav-text">【key 列】</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E3%80%90key-len-%E5%88%97%E3%80%91"><span class="nav-number">2.7.</span> <span class="nav-text">【key_len 列】</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E3%80%90ref-%E5%88%97%E3%80%91"><span class="nav-number">2.8.</span> <span class="nav-text">【ref 列】</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E3%80%90rows-%E5%88%97%E3%80%91"><span class="nav-number">2.9.</span> <span class="nav-text">【rows 列】</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E3%80%90Extra-%E5%88%97%E3%80%91"><span class="nav-number">2.10.</span> <span class="nav-text">【Extra 列】</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#using-index"><span class="nav-number">2.10.1.</span> <span class="nav-text">using index</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#using-where"><span class="nav-number">2.10.2.</span> <span class="nav-text">using where</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#using-where-Using-index"><span class="nav-number">2.10.3.</span> <span class="nav-text">using where Using index</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">2.10.4.</span> <span class="nav-text">null</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#using-index-condition"><span class="nav-number">2.10.5.</span> <span class="nav-text">using index condition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#using-temporary"><span class="nav-number">2.10.6.</span> <span class="nav-text">using temporary</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#usingfilesort"><span class="nav-number">2.10.7.</span> <span class="nav-text">usingfilesort</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -886,12 +902,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">255k</span>
+    <span title="站点总字数">266k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:52</span>
+    <span title="站点阅读时长">4:02</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

@@ -22,17 +22,17 @@
     var CONFIG = {"hostname":"yanglei1992.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="缓存穿透概念 在默认情况下，用户请求数据时，会先在缓存（Redis）中查找，若没找到即缓存为命中，再在数据库中查找，数量少可能问题不大，可是一旦大量的请求数据（例如秒杀场景），缓存没有命中的话，就会将请求全部转移到数据库上，造成数据库的压力剧增，就有可能导致数据库的崩溃。 网络安全中的也有人恶意使用这种手段进行攻击称为洪水攻击">
+  <meta name="description" content="缓存穿透（redis数据不存在，访问数据库）概念 在默认情况下，用户请求数据时，会先在缓存（Redis）中查找，若没找到即缓存未命中，再在数据库中查找，数量少可能问题不大，可是一旦大量的请求数据（例如秒杀场景），缓存没有命中的话，就会将请求全部转移到数据库上，造成数据库的压力剧增，就有可能导致数据库的崩溃。  网络安全中的也有人恶意使用这种手段进行攻击称为洪水攻击。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis缓存穿透与雪崩">
 <meta property="og:url" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E9%9B%AA%E5%B4%A9/index.html">
 <meta property="og:site_name" content="yangl的博客">
-<meta property="og:description" content="缓存穿透概念 在默认情况下，用户请求数据时，会先在缓存（Redis）中查找，若没找到即缓存为命中，再在数据库中查找，数量少可能问题不大，可是一旦大量的请求数据（例如秒杀场景），缓存没有命中的话，就会将请求全部转移到数据库上，造成数据库的压力剧增，就有可能导致数据库的崩溃。 网络安全中的也有人恶意使用这种手段进行攻击称为洪水攻击">
+<meta property="og:description" content="缓存穿透（redis数据不存在，访问数据库）概念 在默认情况下，用户请求数据时，会先在缓存（Redis）中查找，若没找到即缓存未命中，再在数据库中查找，数量少可能问题不大，可是一旦大量的请求数据（例如秒杀场景），缓存没有命中的话，就会将请求全部转移到数据库上，造成数据库的压力剧增，就有可能导致数据库的崩溃。  网络安全中的也有人恶意使用这种手段进行攻击称为洪水攻击。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E9%9B%AA%E5%B4%A9/1609072357498.png">
 <meta property="og:image" content="https://yanglei1992.github.io/2020/12/13/database/redis/redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E9%9B%AA%E5%B4%A9/1609072445647.png">
 <meta property="article:published_time" content="2020-12-13T08:00:00.000Z">
-<meta property="article:modified_time" content="2021-01-30T07:59:38.729Z">
+<meta property="article:modified_time" content="2021-02-03T00:41:14.453Z">
 <meta property="article:author" content="yangl">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary">
@@ -133,17 +133,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">9</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">4</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>时间轴<span class="badge">55</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>时间轴<span class="badge">56</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -231,7 +231,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-30 15:59:38" itemprop="dateModified" datetime="2021-01-30T15:59:38+08:00">2021-01-30</time>
+                <time title="修改时间：2021-02-03 08:41:14" itemprop="dateModified" datetime="2021-02-03T08:41:14+08:00">2021-02-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -282,25 +282,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><blockquote>
-<p>在默认情况下，用户请求数据时，会先在缓存（Redis）中查找，若没找到即缓存为命中，再在数据库中查找，数量少可能问题不大，可是一旦大量的请求数据（例如秒杀场景），缓存没有命中的话，就会将请求全部转移到数据库上，造成数据库的压力剧增，就有可能导致数据库的崩溃。</p>
-<p>网络安全中的也有人恶意使用这种手段进行攻击称为洪水攻击</p>
-</blockquote>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p>对所有可能查询的参数以hash的形式存储，以便快速确定是否存在这个值，在控制层先进行拦截，检验不通过则直接打回，减轻了存储系统的压力</p>
+        <h1 id="缓存穿透（redis数据不存在，访问数据库）"><a href="#缓存穿透（redis数据不存在，访问数据库）" class="headerlink" title="缓存穿透（redis数据不存在，访问数据库）"></a>缓存穿透（redis数据不存在，访问数据库）</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><ul>
+<li><p>在默认情况下，用户请求数据时，会先在缓存（Redis）中查找，若没找到即缓存未命中，再在数据库中查找，数量少可能问题不大，可是一旦大量的请求数据（例如秒杀场景），缓存没有命中的话，就会将请求全部转移到数据库上，造成数据库的压力剧增，就有可能导致数据库的崩溃。</p>
+</li>
+<li><p>网络安全中的也有人恶意使用这种手段进行攻击称为洪水攻击。</p>
+</li>
+</ul>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><h3 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h3><p>对所有可能查询的参数以 hash 的形式存储，以便快速确定是否存在这个值，在控制层先进行拦截，检验不通过则直接打回，减轻了存储系统的压力</p>
 <p><img src="/2020/12/13/database/redis/redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E9%9B%AA%E5%B4%A9/1609072357498.png" alt="1609072357498"></p>
 <h3 id="缓存空对象（查询不到）"><a href="#缓存空对象（查询不到）" class="headerlink" title="缓存空对象（查询不到）"></a>缓存空对象（查询不到）</h3><p>一次查询若在缓存与数据库中都没有查询到，就在缓存中放一个空对象用于处理后续这个请求</p>
 <p><img src="/2020/12/13/database/redis/redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E9%9B%AA%E5%B4%A9/1609072445647.png" alt="1609072445647"></p>
-<p>这样做有一个缺陷：储存空对象也需要空间，大量空对象会消耗一定的空间，储存效率并不高。解决这个缺陷的方式就是 <strong>设置较短的过期时间</strong>。即使对空置设置了过期时间，还是会存在缓存层和储存层的数据会有一段时间的不一致，这对于需要保持一致性的业务会有影响。</p>
-<h1 id="缓存击穿（量太大，缓存过期）"><a href="#缓存击穿（量太大，缓存过期）" class="headerlink" title="缓存击穿（量太大，缓存过期）"></a>缓存击穿（量太大，缓存过期）</h1><h2 id="概念-1"><a href="#概念-1" class="headerlink" title="概念"></a>概念</h2><blockquote>
-<p>相较于缓存穿透，缓存击穿的目的性更强，一个存在key，在缓存过期的一刻，同时有大量的请求，这些请求都会击穿到 DB ，造成瞬时的 DB 请求量大、压力骤增。这就是缓存被击穿，只是针对其中某个 key 的缓存不可用而导致的击穿，但是其他的 key 仍然可以使用缓存响应。</p>
-</blockquote>
-<p>比如热搜排行榜，一个热点新闻同时被大量访问就可能导致缓存击穿。</p>
-<h2 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h2><h3 id="设置热点数据永不过期"><a href="#设置热点数据永不过期" class="headerlink" title="设置热点数据永不过期"></a>设置热点数据永不过期</h3><p>这样就不会出现热点数据过期的情况，但是当Redis内存空间满的时候，也会清理部分书，而且此种方案会暂占用空间，一旦热点数据多了起来，久会占用大量空间</p>
-<h3 id="加互斥锁（分布式锁）"><a href="#加互斥锁（分布式锁）" class="headerlink" title="加互斥锁（分布式锁）"></a>加互斥锁（分布式锁）</h3><p>在访问 key 之前，采用 setnx （set  if  not exists）来设置另一个短期 key 来锁住当前 key 的访问，访问结束再删除改短期key。保证同时刻只有一个线程访问。这样对锁的要求就十分高。</p>
+<p>这样做有一个缺陷：储存空对象也需要空间，大量空对象会消耗一定的空间，储存效率并不高。解决这个缺陷的方式就是 <strong>设置较短的过期时间</strong>。即使对空值设置了过期时间，还是会存在缓存层和储存层的数据会有一段时间的不一致，这对于需要保持一致性的业务会有影响。</p>
+<h1 id="缓存击穿（单点量太大，缓存过期）"><a href="#缓存击穿（单点量太大，缓存过期）" class="headerlink" title="缓存击穿（单点量太大，缓存过期）"></a>缓存击穿（单点量太大，缓存过期）</h1><h2 id="概念-1"><a href="#概念-1" class="headerlink" title="概念"></a>概念</h2><ul>
+<li><p>相较于缓存穿透，缓存击穿的目的性更强，一个存在 key ，在缓存过期的一刻，同时有大量的请求，这些请求都会击穿到 DB ，造成瞬时的 DB 请求量大、压力骤增。这就是缓存被击穿，只是针对其中某个 key 的缓存不可用而导致的击穿，但是其他的 key 仍然可以使用缓存响应。</p>
+</li>
+<li><p>比如热搜排行榜，一个热点新闻同时被大量访问就可能导致缓存击穿。</p>
+</li>
+</ul>
+<h2 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h2><h3 id="设置热点数据永不过期"><a href="#设置热点数据永不过期" class="headerlink" title="设置热点数据永不过期"></a>设置热点数据永不过期</h3><p>这样就不会出现热点数据过期的情况，但是当Redis内存空间满的时候，也会清理部分书，而且此种方案会占用空间，一旦热点数据多了起来，就会占用大量空间</p>
+<h3 id="加互斥锁（分布式锁）"><a href="#加互斥锁（分布式锁）" class="headerlink" title="加互斥锁（分布式锁）"></a>加互斥锁（分布式锁）</h3><p>在访问 key 之前，采用 setnx （set  if  not exists）来设置另一个短期 key 来锁住当前 key 的访问，访问结束再删除改短期 key 。保证同时刻只有一个线程访问。这样对锁的要求就十分高。</p>
 <h1 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h1><h2 id="概念-2"><a href="#概念-2" class="headerlink" title="概念"></a>概念</h2><p>大量的 key 设置了相同的过期时间，导致在缓存在同一时刻的 key 全部消失，造成瞬时 DB 请求量大、压力骤增、引起雪崩。</p>
-<h2 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h2><h3 id="redis高可用"><a href="#redis高可用" class="headerlink" title="redis高可用"></a>redis高可用</h3><p>这个思想的含义是：既然redis有可能挂掉，那就多增加几台 redis , 这样一台挂掉之后其他还可以继续工作，其实就是<strong>搭建集群</strong></p>
-<h3 id="限流降级"><a href="#限流降级" class="headerlink" title="限流降级"></a>限流降级</h3><p>在缓存失效后，通过加锁或者队列来控制读数据库写幻想村的线程数量。比如对某个key只允许一个线程查询数据和写缓存，其他线程等待</p>
-<h3 id="数据预热"><a href="#数据预热" class="headerlink" title="数据预热"></a>数据预热</h3><p>数据预热的含义就是在正式部署之前，我先把可能的 数据先预先访问一遍，这样部门可能大量访问的数据久会加载到内存中。在即将发生大并发访问前手动触发加载缓存不同的key，设置不同的过期时间，让缓存失效的时间点尽量均匀。</p>
+<h2 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h2><h3 id="redis高可用"><a href="#redis高可用" class="headerlink" title="redis高可用"></a>redis高可用</h3><p>这个思想的含义是：既然 redis 有可能挂掉，那就多增加几台 redis , 这样一台挂掉之后其他还可以继续工作，其实就是<strong>搭建集群</strong></p>
+<h3 id="限流降级"><a href="#限流降级" class="headerlink" title="限流降级"></a>限流降级</h3><p>在缓存失效后，通过加锁或者队列来控制读数据库写缓存的线程数量。比如对某个 key 只允许一个线程查询数据和写缓存，其他线程等待</p>
+<h3 id="数据预热"><a href="#数据预热" class="headerlink" title="数据预热"></a>数据预热</h3><p>数据预热的含义就是在正式部署之前，我先把可能的数据先预先访问一遍，这样部门可能大量访问的数据就会加载到内存中。在即将发生大并发访问前手动触发加载缓存不同的 key ，设置不同的过期时间，让缓存失效的时间点尽量均匀。</p>
 
     </div>
 
@@ -408,7 +412,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-number">1.</span> <span class="nav-text">缓存穿透</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.2.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="nav-number">1.2.1.</span> <span class="nav-text">布隆过滤器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BA%E5%AF%B9%E8%B1%A1%EF%BC%88%E6%9F%A5%E8%AF%A2%E4%B8%8D%E5%88%B0%EF%BC%89"><span class="nav-number">1.2.2.</span> <span class="nav-text">缓存空对象（查询不到）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%EF%BC%88%E9%87%8F%E5%A4%AA%E5%A4%A7%EF%BC%8C%E7%BC%93%E5%AD%98%E8%BF%87%E6%9C%9F%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">缓存击穿（量太大，缓存过期）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-1"><span class="nav-number">2.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-1"><span class="nav-number">2.2.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E7%83%AD%E7%82%B9%E6%95%B0%E6%8D%AE%E6%B0%B8%E4%B8%8D%E8%BF%87%E6%9C%9F"><span class="nav-number">2.2.1.</span> <span class="nav-text">设置热点数据永不过期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E4%BA%92%E6%96%A5%E9%94%81%EF%BC%88%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%EF%BC%89"><span class="nav-number">2.2.2.</span> <span class="nav-text">加互斥锁（分布式锁）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">3.</span> <span class="nav-text">缓存雪崩</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-2"><span class="nav-number">3.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-2"><span class="nav-number">3.2.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">3.2.1.</span> <span class="nav-text">redis高可用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%90%E6%B5%81%E9%99%8D%E7%BA%A7"><span class="nav-number">3.2.2.</span> <span class="nav-text">限流降级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%A2%84%E7%83%AD"><span class="nav-number">3.2.3.</span> <span class="nav-text">数据预热</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%EF%BC%88redis%E6%95%B0%E6%8D%AE%E4%B8%8D%E5%AD%98%E5%9C%A8%EF%BC%8C%E8%AE%BF%E9%97%AE%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">缓存穿透（redis数据不存在，访问数据库）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.2.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="nav-number">1.2.1.</span> <span class="nav-text">布隆过滤器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BA%E5%AF%B9%E8%B1%A1%EF%BC%88%E6%9F%A5%E8%AF%A2%E4%B8%8D%E5%88%B0%EF%BC%89"><span class="nav-number">1.2.2.</span> <span class="nav-text">缓存空对象（查询不到）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%EF%BC%88%E5%8D%95%E7%82%B9%E9%87%8F%E5%A4%AA%E5%A4%A7%EF%BC%8C%E7%BC%93%E5%AD%98%E8%BF%87%E6%9C%9F%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">缓存击穿（单点量太大，缓存过期）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-1"><span class="nav-number">2.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-1"><span class="nav-number">2.2.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E7%83%AD%E7%82%B9%E6%95%B0%E6%8D%AE%E6%B0%B8%E4%B8%8D%E8%BF%87%E6%9C%9F"><span class="nav-number">2.2.1.</span> <span class="nav-text">设置热点数据永不过期</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E4%BA%92%E6%96%A5%E9%94%81%EF%BC%88%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%EF%BC%89"><span class="nav-number">2.2.2.</span> <span class="nav-text">加互斥锁（分布式锁）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">3.</span> <span class="nav-text">缓存雪崩</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-2"><span class="nav-number">3.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-2"><span class="nav-number">3.2.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">3.2.1.</span> <span class="nav-text">redis高可用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%90%E6%B5%81%E9%99%8D%E7%BA%A7"><span class="nav-number">3.2.2.</span> <span class="nav-text">限流降级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%A2%84%E7%83%AD"><span class="nav-number">3.2.3.</span> <span class="nav-text">数据预热</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -424,20 +428,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-count">56</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -456,6 +460,10 @@
         
         
           <li>
+            <a href="/2021/02/02/algorithm/sort/algorithm-sort/" title="十大经典排序算法" target="_blank">十大经典排序算法</a>
+          </li>
+        
+          <li>
             <a href="/2021/01/18/mq/mq-mq-%E6%B6%88%E6%81%AF%E5%A0%86%E7%A7%AF%E5%A4%84%E7%90%86%E6%96%B9%E6%A1%88/" title="消息队列--消息堆积处理方案" target="_blank">消息队列--消息堆积处理方案</a>
           </li>
         
@@ -469,10 +477,6 @@
         
           <li>
             <a href="/2021/01/17/database/mysql/mysql-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" title="MySQL 分库分表" target="_blank">MySQL 分库分表</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/17/database/mysql/mysql-%E9%94%81/" title="MySQL InnoDB-锁" target="_blank">MySQL InnoDB-锁</a>
           </li>
         
       </ul>
@@ -753,7 +757,7 @@ if(canvas.getContext){
         <div class="widget-wrap">
           <div id="myCanvasContainer" class="widget tagcloud">
             <canvas width="250" height="250" id="resCanvas" style="width=100%">
-              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/distributed/" rel="tag">distributed</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/juc/" rel="tag">juc</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/" rel="tag">jvm</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/map/" rel="tag">map</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">8</span></li></ul>
+              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/distributed/" rel="tag">distributed</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/juc/" rel="tag">juc</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/" rel="tag">jvm</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/map/" rel="tag">map</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sort/" rel="tag">sort</a><span class="tag-list-count">1</span></li></ul>
             </canvas>
           </div>
         </div>
@@ -786,12 +790,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">266k</span>
+    <span title="站点总字数">269k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:02</span>
+    <span title="站点阅读时长">4:04</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

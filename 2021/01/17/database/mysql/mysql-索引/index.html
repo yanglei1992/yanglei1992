@@ -29,11 +29,14 @@
 <meta property="og:site_name" content="yangl的博客">
 <meta property="og:description" content="索引概述定义索引是存储引擎用于快速找到记录的一种数据结构。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E7%B4%A2%E5%BC%95/b-tree.jpg">
+<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E7%B4%A2%E5%BC%95/b+-tree.png">
 <meta property="article:published_time" content="2021-01-17T05:19:41.000Z">
-<meta property="article:modified_time" content="2021-01-28T09:22:33.065Z">
+<meta property="article:modified_time" content="2021-02-04T08:13:08.718Z">
 <meta property="article:author" content="yangl">
 <meta property="article:tag" content="mysql">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E7%B4%A2%E5%BC%95/b-tree.jpg">
 
 <link rel="canonical" href="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E7%B4%A2%E5%BC%95/">
 
@@ -228,7 +231,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-28 17:22:33" itemprop="dateModified" datetime="2021-01-28T17:22:33+08:00">2021-01-28</time>
+                <time title="修改时间：2021-02-04 16:13:08" itemprop="dateModified" datetime="2021-02-04T16:13:08+08:00">2021-02-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -260,14 +263,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.1k</span>
+              <span>2.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -283,7 +286,29 @@
 <blockquote>
 <p>举例说明：如果查找一本书中的某个特定主题，一般会先看书的目录（类似索引），找到对应页面。在MySQL，存储引擎采用类似的方法使用索引，高效获取查找的数据。</p>
 </blockquote>
-<h1 id="索引底层数据结构-TODO"><a href="#索引底层数据结构-TODO" class="headerlink" title="索引底层数据结构(TODO)"></a>索引底层数据结构(TODO)</h1><h2 id="Hash索引"><a href="#Hash索引" class="headerlink" title="Hash索引"></a>Hash索引</h2><ul>
+<h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><h3 id="索引从实现上说"><a href="#索引从实现上说" class="headerlink" title="索引从实现上说"></a>索引从实现上说</h3><ul>
+<li><p>聚集索引：找到了索引就找到了需要的数据，那么这个索引就是聚簇索引，所以主键就是聚簇索引，修改聚簇索引其实就是修改主键。</p>
+</li>
+<li><p>非聚集索引（也叫二级索引或者辅助索引）：索引的存储和数据的存储是分离的，也就是说找到了索引但没找到数据，需要根据索引上的值(主键)再次回表查询,非聚簇索引也叫做辅助索引。</p>
+</li>
+</ul>
+<h3 id="从功能上说"><a href="#从功能上说" class="headerlink" title="从功能上说"></a>从功能上说</h3><ul>
+<li>普通索引：最基本的索引，没有任何约束。</li>
+<li>唯一索引：与普通索引类似，但具有唯一性约束。</li>
+<li>主键索引：特殊的唯一索引，不允许有空值。</li>
+<li>复合索引：将多个列组合在一起创建索引，可以覆盖多个列。</li>
+<li>外键索引：只有InnoDB类型的表才可以使用外键索引，保证数据的一致性、完整性和实现级联操作。</li>
+<li>全文索引：MySQL 自带的全文索引只能用于 InnoDB、MyISAM ，并且只能对英文进行全文检索，一般使用全文索引引擎（ES，Solr）。</li>
+</ul>
+<blockquote>
+<p><strong>注意：主键就是唯一索引，但是唯一索引不一定是主键，唯一索引可以为空，但是空值只能有一个，主键不能为空。</strong></p>
+<p>另外，InnoDB 通过主键聚簇数据，如果没有定义主键且没有定义聚集索引， MySql 会选择一个唯一的非空索引代替，如果没有这样的索引，会隐式定义个 6 字节的主键作为聚簇索引，用户不能查看或访问。</p>
+<p>简单点说：</p>
+<p>1、设置主键时，会自动生成一个唯一索引，如果<strong>之前</strong>没有聚集索引，那么主键就是聚集索引。</p>
+<p>2、没有设置主键时，会选择一个不为空的唯一索引作为聚集索引，如果还没有，那就生成一个隐式的 6 字节的索引。</p>
+<p>MySql 将数据按照页来存储，默认一页为 16kb，当你在查询时，不会只加载某一条数据，而是将这个数据所在的页都加载到 pageCache 中，这个其实和 OS 的就近访问原理类似。</p>
+</blockquote>
+<h1 id="索引底层数据结构"><a href="#索引底层数据结构" class="headerlink" title="索引底层数据结构"></a>索引底层数据结构</h1><h2 id="Hash索引"><a href="#Hash索引" class="headerlink" title="Hash索引"></a>Hash索引</h2><ul>
 <li><p>哈希索引能以 O(1) 时间进行查找，但是失去了有序性：</p>
 <ul>
 <li><p>无法用于排序与分组；</p>
@@ -310,22 +335,40 @@
 <li>InnoDB 的 B+Tree 索引分为主索引和辅助索引。<strong>主索引的叶子节点 data 域记录着完整的数据记录，这种索引方式被称为聚簇索引。</strong>因为无法把数据行存放在两个不同的地方，所以一个表只能有一个聚簇索引。</li>
 <li><strong>辅助索引的叶子节点的 data 域记录着主键的值，因此在使用辅助索引进行查找时，需要先查找到主键值，然后再到主索引中进行查找。</strong></li>
 </ul>
+<h3 id="b-tree数据结构"><a href="#b-tree数据结构" class="headerlink" title="b-tree数据结构"></a>b-tree数据结构</h3><blockquote>
+<ul>
+<li><strong>规则：</strong></li>
+</ul>
+<p>（1）排序方式：所有节点关键字是按递增次序排列，并遵循左小右大原则；</p>
+<p>（2）子节点数：非叶节点的子节点数&gt;1，且&lt;=M ，且M&gt;=2，空树除外（注：M阶代表一个树节点最多有多少个查找路径，M=M路,当M=2则是2叉树,M=3则是3叉）；</p>
+<p>（3）关键字数：枝节点的关键字数量大于等于 ceil(m/2 ) - 1 个且小于等于M-1个（注：ceil()是个朝正无穷方向取整的函数 如ceil(1.1)结果为2);</p>
+<p>（4）所有叶子节点均在同一层、叶子节点除了包含了关键字和关键字记录的指针外也有指向其子节点的指针只不过其指针地址都为null对应下图最后一层节点的空格子;</p>
+</blockquote>
+<p><img src="/2021/01/17/database/mysql/mysql-%E7%B4%A2%E5%BC%95/b-tree.jpg" alt="preview"></p>
+<h3 id="b-tree数据结构-1"><a href="#b-tree数据结构-1" class="headerlink" title="b+-tree数据结构"></a>b+-tree数据结构</h3><blockquote>
+<ul>
+<li><strong>规则</strong></li>
+</ul>
+<p>（1）B+跟B树不同B+树的<strong>非叶子</strong>节点不保存关键字记录的指针，只进行数据索引，这样使得B+树每个<strong>非叶子</strong>节点所能保存的关键字大大增加；</p>
+<p>（2）B+树<strong>叶子</strong>节点保存了父节点的所有关键字记录的指针，所有数据地址必须要到叶子节点才能获取到。所以每次数据查询的次数都一样；</p>
+<p>（3）B+树叶子节点的关键字从小到大有序排列，左边结尾数据都会保存右边节点开始数据的指针。</p>
+<p>（4）非叶子节点的子节点数=关键字数（来源百度百科）（根据各种资料 这里有两种算法的实现方式，另一种为非叶节点的关键字数=子节点数-1（来源维基百科)，虽然他们数据排列结构不一样，但其原理还是一样的Mysql 的B+树是用第一种方式实现）;</p>
+</blockquote>
+<p><img src="/2021/01/17/database/mysql/mysql-%E7%B4%A2%E5%BC%95/b+-tree.png" alt="img"></p>
 <h1 id="MySQL是如何存储索引和数据的"><a href="#MySQL是如何存储索引和数据的" class="headerlink" title="MySQL是如何存储索引和数据的"></a>MySQL是如何存储索引和数据的</h1><p>Innodb 创建表后生成的文件有：</p>
 <ul>
-<li>frm:创建表的语句</li>
-<li>idb:表里面的数据+索引文件</li>
+<li>frm：创建表的语句</li>
+<li>idb：表里面的数据+索引文件</li>
 </ul>
 <p>Myisam 创建表后生成的文件有</p>
 <ul>
-<li>frm:创建表的语句</li>
-<li>MYD:表里面的数据文件（myisam data）</li>
-<li>MYI:表里面的索引文件（myisam index）</li>
+<li>frm：创建表的语句</li>
+<li>MYD：表里面的数据文件（myisam data）</li>
+<li>MYI：表里面的索引文件（myisam index）</li>
 </ul>
-<h2 id="MYISAM存储引擎"><a href="#MYISAM存储引擎" class="headerlink" title="MYISAM存储引擎"></a>MYISAM存储引擎</h2><h2 id="InnoDB存储引擎"><a href="#InnoDB存储引擎" class="headerlink" title="InnoDB存储引擎"></a>InnoDB存储引擎</h2><h1 id="聚集索引-非聚集索引"><a href="#聚集索引-非聚集索引" class="headerlink" title="聚集索引/非聚集索引"></a>聚集索引/非聚集索引</h1><h1 id="联合索引"><a href="#联合索引" class="headerlink" title="联合索引"></a>联合索引</h1><p>参考：</p>
-<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904134261342216">https://juejin.cn/post/6844904134261342216</a></p>
-<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903843428319239">https://juejin.cn/post/6844903843428319239</a></p>
-<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904072089174023">https://juejin.cn/post/6844904072089174023</a></p>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/113917726">https://zhuanlan.zhihu.com/p/113917726</a></p>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/142139541">https://zhuanlan.zhihu.com/p/142139541</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/60492217">https://zhuanlan.zhihu.com/p/60492217</a></p>
 
     </div>
 
@@ -433,7 +476,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">索引概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">1.1.</span> <span class="nav-text">定义</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-TODO"><span class="nav-number">2.</span> <span class="nav-text">索引底层数据结构(TODO)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hash%E7%B4%A2%E5%BC%95"><span class="nav-number">2.1.</span> <span class="nav-text">Hash索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%B4%A2%E5%BC%95"><span class="nav-number">2.2.</span> <span class="nav-text">全文索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-Tree%E7%B4%A2%E5%BC%95"><span class="nav-number">2.3.</span> <span class="nav-text">B+Tree索引</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL%E6%98%AF%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E7%B4%A2%E5%BC%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%9A%84"><span class="nav-number">3.</span> <span class="nav-text">MySQL是如何存储索引和数据的</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MYISAM%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">3.1.</span> <span class="nav-text">MYISAM存储引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">3.2.</span> <span class="nav-text">InnoDB存储引擎</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%81%9A%E9%9B%86%E7%B4%A2%E5%BC%95-%E9%9D%9E%E8%81%9A%E9%9B%86%E7%B4%A2%E5%BC%95"><span class="nav-number">4.</span> <span class="nav-text">聚集索引&#x2F;非聚集索引</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%81%94%E5%90%88%E7%B4%A2%E5%BC%95"><span class="nav-number">5.</span> <span class="nav-text">联合索引</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">索引概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">1.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E7%B1%BB"><span class="nav-number">1.2.</span> <span class="nav-text">分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E4%BB%8E%E5%AE%9E%E7%8E%B0%E4%B8%8A%E8%AF%B4"><span class="nav-number">1.2.1.</span> <span class="nav-text">索引从实现上说</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E5%8A%9F%E8%83%BD%E4%B8%8A%E8%AF%B4"><span class="nav-number">1.2.2.</span> <span class="nav-text">从功能上说</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">索引底层数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hash%E7%B4%A2%E5%BC%95"><span class="nav-number">2.1.</span> <span class="nav-text">Hash索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E6%96%87%E7%B4%A2%E5%BC%95"><span class="nav-number">2.2.</span> <span class="nav-text">全文索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#B-Tree%E7%B4%A2%E5%BC%95"><span class="nav-number">2.3.</span> <span class="nav-text">B+Tree索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#b-tree%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">2.3.1.</span> <span class="nav-text">b-tree数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-tree%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-1"><span class="nav-number">2.3.2.</span> <span class="nav-text">b+-tree数据结构</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL%E6%98%AF%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E7%B4%A2%E5%BC%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%9A%84"><span class="nav-number">3.</span> <span class="nav-text">MySQL是如何存储索引和数据的</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -811,12 +854,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">269k</span>
+    <span title="站点总字数">270k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:04</span>
+    <span title="站点阅读时长">4:05</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

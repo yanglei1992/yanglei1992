@@ -22,26 +22,23 @@
     var CONFIG = {"hostname":"yanglei1992.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="共享锁和排他锁 共享锁、读锁（Shared (S) Lock）   持有行记录读锁的事物允许读取该行记录。">
+  <meta name="description" content="什么是锁锁类型 基于锁的属性分类：共享锁、排他锁。 基于锁的粒度分类：表锁、行锁、记录锁、间隙锁、临键锁。 基于锁的状态分类：意向共享锁、意向排它锁。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL InnoDB-锁">
 <meta property="og:url" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/index.html">
 <meta property="og:site_name" content="yangl的博客">
-<meta property="og:description" content="共享锁和排他锁 共享锁、读锁（Shared (S) Lock）   持有行记录读锁的事物允许读取该行记录。">
+<meta property="og:description" content="什么是锁锁类型 基于锁的属性分类：共享锁、排他锁。 基于锁的粒度分类：表锁、行锁、记录锁、间隙锁、临键锁。 基于锁的状态分类：意向共享锁、意向排它锁。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/167e01a7d1a1ad5c">
-<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/167e035c8f4d3c22">
-<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/167e03df48edc708">
-<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/167e045226074411">
-<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/167e04bb1058085e">
-<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/167df7d99f19812b">
-<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/167eab5ee346fb7b">
+<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/v2-691b5b3936ddd2bae289cac6356b4d97_720w.png">
+<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/v2-c02d6502983df69147e5f3d4c039cda0_720w.png">
+<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/v2-8c9555f753fbab98c71760ddba9e5068_720w.png">
+<meta property="og:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/v2-17fb981d24d52d615b382b79a7694378_720w.png">
 <meta property="article:published_time" content="2021-01-17T06:15:32.000Z">
-<meta property="article:modified_time" content="2021-01-28T07:33:18.014Z">
+<meta property="article:modified_time" content="2021-02-04T10:47:33.822Z">
 <meta property="article:author" content="yangl">
 <meta property="article:tag" content="mysql">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/167e01a7d1a1ad5c">
+<meta name="twitter:image" content="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/v2-691b5b3936ddd2bae289cac6356b4d97_720w.png">
 
 <link rel="canonical" href="https://yanglei1992.github.io/2021/01/17/database/mysql/mysql-%E9%94%81/">
 
@@ -236,7 +233,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-28 15:33:18" itemprop="dateModified" datetime="2021-01-28T15:33:18+08:00">2021-01-28</time>
+                <time title="修改时间：2021-02-04 18:47:33" itemprop="dateModified" datetime="2021-02-04T18:47:33+08:00">2021-02-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -268,7 +265,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.1k</span>
+              <span>2.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -287,141 +284,105 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="共享锁和排他锁"><a href="#共享锁和排他锁" class="headerlink" title="共享锁和排他锁"></a>共享锁和排他锁</h1><ul>
-<li>共享锁、读锁（Shared (S) Lock）</li>
+        <h1 id="什么是锁"><a href="#什么是锁" class="headerlink" title="什么是锁"></a>什么是锁</h1><h1 id="锁类型"><a href="#锁类型" class="headerlink" title="锁类型"></a>锁类型</h1><ul>
+<li>基于锁的属性分类：共享锁、排他锁。</li>
+<li>基于锁的粒度分类：表锁、行锁、记录锁、间隙锁、临键锁。</li>
+<li>基于锁的状态分类：意向共享锁、意向排它锁。</li>
+</ul>
+<h2 id="属性锁"><a href="#属性锁" class="headerlink" title="属性锁"></a>属性锁</h2><h3 id="共享锁-Share-Lock"><a href="#共享锁-Share-Lock" class="headerlink" title="共享锁(Share Lock)"></a>共享锁(Share Lock)</h3><ul>
+<li>共享锁又称读锁，简称 S 锁：当一个事务为数据加上读锁之后，其他事务只能对该数据加读锁，而不能对数据加写锁，直到所有的读锁释放之后其他事务才能对其进行加持写锁。</li>
+<li>共享锁的特性主要是为了支持并发的读取数据，读取数据的时候不支持修改，避免出现重复读的问题。</li>
+</ul>
+<h3 id="排他锁（eXclusive-Lock）"><a href="#排他锁（eXclusive-Lock）" class="headerlink" title="排他锁（eXclusive Lock）"></a>排他锁（eXclusive Lock）</h3><ul>
+<li>排他锁又称写锁，简称X锁；当一个事务为数据加上写锁时，其他请求将不能再为数据加任何锁，直到该锁释放之后，其他事务才能对数据进行加锁。</li>
+<li>排他锁的目的是在数据修改时候，不允许其他人同时修改，也不允许其他人读取。避免了出现脏数据和脏读的问题。</li>
+</ul>
+<h2 id="粒度锁"><a href="#粒度锁" class="headerlink" title="粒度锁"></a>粒度锁</h2><h3 id="表锁"><a href="#表锁" class="headerlink" title="表锁"></a>表锁</h3><ul>
+<li>表锁是指上锁的时候锁住的是整个表，当下一个事务访问该表的时候，必须等前一个事务释放了锁才能进行对表进行访问；</li>
+<li>特点： 粒度大，加锁简单，容易冲突；</li>
+</ul>
+<h3 id="行锁"><a href="#行锁" class="headerlink" title="行锁"></a>行锁</h3><ul>
+<li>行锁是指上锁的时候锁住的是表的某一行或多行记录，其他事务访问同一张表时，只有被锁住的记录不能访问，其他的记录可正常访问；</li>
+<li>特点：粒度小，加锁比表锁麻烦，不容易冲突，相比表锁支持的并发要高；</li>
+</ul>
+<h3 id="记录锁"><a href="#记录锁" class="headerlink" title="记录锁"></a>记录锁</h3><ul>
+<li>记录锁也属于行锁中的一种，只不过记录锁的范围只是表中的某一条记录，记录锁是说事务在加锁后锁住的只是表的某一条记录。</li>
 </ul>
 <blockquote>
-<p>持有行记录读锁的事物允许读取该行记录。</p>
+<p><strong>触发条件：</strong>精准条件命中，并且命中的条件字段是唯一索引；</p>
+<p><strong>例如：</strong>update user_info set name=’张三’ where id=1 ,这里的id是唯一索引。</p>
+<p><strong>记录锁的作用：</strong>加了记录锁之后数据可以避免数据在查询的时候被修改的重复读问题，也避免了在修改的事务未提交前被其他事务读取的脏读问题。</p>
 </blockquote>
+<h3 id="间隙锁"><a href="#间隙锁" class="headerlink" title="间隙锁"></a>间隙锁</h3><ul>
+<li>间隙锁属于行锁中的一种，间隙锁是在事务加锁后其锁住的是表记录的某一个区间，当表的相邻ID之间出现空隙则会形成一个区间，遵循左开右闭原则。</li>
+</ul>
+<blockquote>
+<p>比如下面的表里面的数据ID 为 1,4,5,7,10 ,那么会形成以下几个间隙区间，-n-1区间，1-4区间，7-10区间，10-n区间 （-n代表负无穷大，n代表正无穷大）</p>
+<p><img src="/2021/01/17/database/mysql/mysql-%E9%94%81/v2-691b5b3936ddd2bae289cac6356b4d97_720w.png" alt="img"></p>
+<p><strong>触发条件：</strong>范围查询并且查询未命中记录，查询条件必须命中索引、间隙锁只会出现在REPEATABLE_READ（重复读)的事务级别中。</p>
+<p><strong>例如</strong>：对应上图的表执行select * from user_info where id&gt;1 and id&lt;4(这里的id是唯一索引) ，这个SQL查询不到对应的记录，那么此时会使用间隙锁。</p>
+<p><strong>间隙锁作用</strong>：防止幻读问题，事务并发的时候，如果没有间隙锁，就会发生如下图的问题，在同一个事务里，A事务的两次查询出的结果会不一样。</p>
+<p><img src="/2021/01/17/database/mysql/mysql-%E9%94%81/v2-c02d6502983df69147e5f3d4c039cda0_720w.png" alt="img"></p>
+</blockquote>
+<h3 id="临键锁"><a href="#临键锁" class="headerlink" title="临键锁"></a>临键锁</h3><ul>
+<li>临键锁也属于行锁的一种，并且它是INNODB的行锁默认算法，总结来说它就是记录锁和间隙锁的组合，临键锁会把查询出来的记录锁住，同时也会把该范围查询内的所有间隙空间也会锁住，再之它会把相邻的下一个区间也会锁住。</li>
+</ul>
+<blockquote>
+<p><strong>例如：</strong>下面表的数据执行 select * from user_info where id&gt;1 and id&lt;=13 for update ;</p>
+<p>会锁住ID为 1,5,10的记录；同时会锁住，1至5,5至10,10至15的区间。</p>
+<p><img src="/2021/01/17/database/mysql/mysql-%E9%94%81/v2-8c9555f753fbab98c71760ddba9e5068_720w.png" alt="img"></p>
+<p><strong>触发条件：</strong>范围查询并命中，查询命中了索引。</p>
+<p><strong>临键锁的作用：</strong>结合记录锁和间隙锁的特性，临键锁避免了在范围查询时出现脏读、重复读、幻读问题。加了临键锁之后，在范围区间内数据不允许被修改和插入。</p>
+</blockquote>
+<h2 id="状态锁"><a href="#状态锁" class="headerlink" title="状态锁"></a>状态锁</h2><p>状态锁包括意向共享锁和意向排它锁，把他们区分为状态锁的一个核心逻辑，是因为这两个锁都是描述是否可以对某一个表进行加表锁的状态。</p>
+<p><strong>意向锁的解释</strong>：当一个事务试图对<strong>整个表</strong>进行加锁（共享锁或排它锁）之前，首先需要获得对应类型的意向锁（意向共享锁或意向共享锁）</p>
+<h3 id="意向共享锁"><a href="#意向共享锁" class="headerlink" title="意向共享锁"></a><strong>意向共享锁</strong></h3><ul>
+<li>当一个事务试图对<strong>整个表</strong>进行加共享锁之前，首先需要获得这个表的意向共享锁。</li>
+</ul>
+<h3 id="意向排他锁"><a href="#意向排他锁" class="headerlink" title="意向排他锁"></a><strong>意向排他锁</strong></h3><ul>
+<li>当一个事务试图对<strong>整个表</strong>进行加排它锁之前，首先需要获得这个表的意向排它锁。</li>
+</ul>
+<h3 id="为什么我们需要意向锁？"><a href="#为什么我们需要意向锁？" class="headerlink" title="为什么我们需要意向锁？"></a><strong>为什么我们需要意向锁？</strong></h3><p>意向锁光从概念上可能有点难理解，所以我们有必要从一个案例来分析其作用，这里首先我们先要有一个概念那就是 innodb 加锁的方式是基于索引，并且加锁粒度是行锁，然后我们来看下面的案例。</p>
+<p><strong>第一步：</strong></p>
+<p>事务 A 对 user_info 表执行一个 SQL ： <code>update user_info set name =”张三” where id=6</code>  加锁情况如下图;</p>
+<p><img src="/2021/01/17/database/mysql/mysql-%E9%94%81/v2-17fb981d24d52d615b382b79a7694378_720w.png" alt="img"></p>
+<p><strong>第二步：</strong></p>
+<p>与此同时数据库又接收到事务B修改数据的请求： SQL ：  <code>update user_info set name =”李四”；</code></p>
+<p>1、因为事务 B 是对整个表进行修改操作，那么此 SQL 是需要对整个表进行加排它锁的（ update 加锁类型为排他锁）；</p>
+<p>2、我们首先做的第一件事是先检查这个表有没有被别的事务锁住，只要有事务对表里的任何一行数据加了共享锁或排他锁我们就无法对整个表加锁（<strong>排他锁不能与任何属性的锁兼容</strong>）<strong>。</strong></p>
+<p>3、因为 InnoDB 锁的机制是基于行锁，那么这个时候我们会对整个索引每个节点一个个检查，我们需要检查每个节点是否被别的事务加了共享锁或排它锁。</p>
+<p>4、最后检查到索引 ID 为 6 的节点被事务 A 锁住了，最后导致事务 B 只能等待事务 A 锁的释放才能进行加锁操作。</p>
+<p><strong>思考：</strong></p>
+<p>在A事务的操作过程中，后面的每个需要对user_info加持表锁的事务都需要遍历整个索引树才能知道自己是否能够进行加锁，这种方式是不是太浪费时间和损耗数据库性能了？</p>
+<p><strong>所以就有了意向锁的概念：</strong>如果当事务A加锁成功之后就设置一个状态告诉后面的人，已经有人对表里的行加了一个排他锁了，你们不能对整个表加共享锁或排它锁了，那么后面需要对整个表加锁的人只需要获取这个状态就知道自己是不是可以对表加锁，避免了对整个索引树的每个节点扫描是否加锁，而这个状态就是我们的意向锁。</p>
+<h1 id="锁的算法"><a href="#锁的算法" class="headerlink" title="锁的算法"></a>锁的算法</h1><ul>
+<li>Record Lock：单个记录上的锁</li>
+<li>Gap Lock： 间隙锁，锁定一个范围，但不包括记录本上</li>
+<li>Next-Key Lock： Gap Lock+Record Lock，锁定一个范围，并且锁定记录本身</li>
+</ul>
+<h2 id="行锁（Record-Locks）"><a href="#行锁（Record-Locks）" class="headerlink" title="行锁（Record Locks）"></a>行锁（Record Locks）</h2><ul>
+<li>行锁是作用在索引记录上的。例如， SELECT c1 FROM t WHERE c1 = 10 FOR UPDATE;会防止其他事物对于t.c1=10的增、删、改。</li>
+<li>行锁总是锁索引记录的，尽管没有创建索引，对于没有创建索引的情况，InnoDB创建一个隐藏的聚簇索引并用该索引来实现行锁。</li>
+</ul>
+<h2 id="间隙锁（Gap-Locks）"><a href="#间隙锁（Gap-Locks）" class="headerlink" title="间隙锁（Gap Locks）"></a>间隙锁（Gap Locks）</h2><ul>
+<li>间隙锁是作用于索引记录之间或第一条索引记录之前或最后一条索引记录之后的锁。</li>
+<li>间隙锁不会作用于使用唯一索引去检索唯一行记录的情况。</li>
+<li>间隙锁能防止幻读。（当前读）</li>
+</ul>
+<h1 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h1><p>两个或以上事务在执行过程中，因争夺资源造成的相互等待现象</p>
+<p>解决办法：</p>
 <ul>
-<li>排他锁、写锁（ Exclusive (X) Lock）</li>
+<li>超时回滚</li>
+<li>wait-for graph，死锁检测<ul>
+<li>维护所得信息链表，事务等待链表，若存在回路则有死锁</li>
+<li>通常采用深度优先算法实现</li>
 </ul>
-<blockquote>
-<p>持有行记录写锁的事物允许更新活删除该行记录。</p>
-</blockquote>
-<h2 id="表锁"><a href="#表锁" class="headerlink" title="表锁"></a>表锁</h2><h2 id="行锁（Record-Locks）"><a href="#行锁（Record-Locks）" class="headerlink" title="行锁（Record Locks）"></a>行锁（Record Locks）</h2><p>A record lock is a lock on an index record. For example, SELECT c1 FROM t WHERE c1 = 10 FOR UPDATE; prevents any other transaction from inserting, updating, or deleting rows where the value of t.c1 is 10.</p>
-<blockquote>
-<p>行锁是作用在索引记录上的。例如， SELECT c1 FROM t WHERE c1 = 10 FOR UPDATE;会防止其他事物对于t.c1=10的增、删、改。</p>
-</blockquote>
-<p>Record locks always lock index records, even if a table is defined with no indexes. For such cases, InnoDB creates a hidden clustered index and uses this index for record locking.</p>
-<blockquote>
-<p>行锁总是锁索引记录的，尽管没有创建索引，对于没有创建索引的情况，InnoDB创建一个隐藏的聚簇索引并用该索引来实现行锁。</p>
-</blockquote>
-<h2 id="间隙锁（Gap-Locks）"><a href="#间隙锁（Gap-Locks）" class="headerlink" title="间隙锁（Gap Locks）"></a>间隙锁（Gap Locks）</h2><p>A gap lock is a lock on a gap between index records, or a lock on the gap before the first or after the last index record.</p>
-<blockquote>
-<p>间隙锁是作用于索引记录之间或第一条索引记录之前或最后一条索引记录之后的锁。</p>
-</blockquote>
-<p>Gap locking is not needed for statements that lock rows using a unique index to search for a unique row.</p>
-<blockquote>
-<p>间隙锁不会作用于使用唯一索引去检索唯一行记录的情况。</p>
-</blockquote>
-<p>为什么会有间隙锁？</p>
-<blockquote>
-<p>防止幻读。（当前读）</p>
-</blockquote>
-<ul>
-<li>下面这个语句加什么锁？已知条件MySQL5.7版本，InnoDB引擎，隔离级别RR。</li>
+</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">delete from t where id &#x3D; 10;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-<p>对id = 10的记录加写锁 (走主键索引)。<strong>这个答案对吗？</strong><br> 可能是对的也有可能是错的，因为已知条件不足。缺少下列条件：<br> 1，id是否是主键？<br> 2，id列如果不是主键，那么id上是否有索引？<br> 3，id列上如果有二级索引，那么这个索引是否是唯一索引？<br> 4，id=10的记录是否存在？<br> 根据以下组合来判断加的锁：</p>
-<ol>
-<li>id列是主键，只对id = 10 的记录加X锁。</li>
-</ol>
-<p><img src="/2021/01/17/database/mysql/mysql-%E9%94%81/167e01a7d1a1ad5c" alt="img"> 2. id是唯一索引，并且id = 10 记录存在，对唯一索引id的B+Tree id = 10 的记录加行锁，同时对聚簇索引（主键索引）上对应id = 10 的主键 b 加X锁。 <img src="/2021/01/17/database/mysql/mysql-%E9%94%81/167e035c8f4d3c22" alt="img"> 3. id是唯一索引，但是id = 10 的记录不存在，对唯一索引id的B+Tree id = 10 的空隙加就间隙锁，防止新的符合条件的记录插入，产生幻读，即锁住id索引树(8,b)至(15,c)之间的空间。</p>
-<p><img src="/2021/01/17/database/mysql/mysql-%E9%94%81/167e03df48edc708" alt="img"> 4. id非唯一索引，首先对id的索引树符合id = 10的记录加X锁，并且对符合id = 10对应的主键索引记录加X锁，还要对id索引树可能插入id = 10 的位置加入间隙锁，也就是(6,a)至(10,b), (10,b)至(10,c), (10,c)至(17,d)。</p>
-<p><img src="/2021/01/17/database/mysql/mysql-%E9%94%81/167e045226074411" alt="img"> 5. id无索引，这种是最恐怖的情况，对主键索引所有行记录加X锁，所有空隙加间隙锁，尽管MySQL对此有些优化，也不建议这样的方式，尤其是长事物，会使除了快照读的所有业务停摆。</p>
-<p><img src="/2021/01/17/database/mysql/mysql-%E9%94%81/167e04bb1058085e" alt="img"></p>
-<p>看下面几个例子：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE &#96;t&#96; (</span><br><span class="line">  &#96;id&#96; int(11) NOT NULL,</span><br><span class="line">  &#96;k&#96; int(11) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (&#96;id&#96;),</span><br><span class="line">  KEY &#96;idx_k&#96; (&#96;k&#96;)</span><br><span class="line">) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;utf8</span><br><span class="line">复制代码</span><br><span class="line">insert into t values(2,2),(6,6);</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
-<p>MySQL5.7版本，InnoDB引擎，隔离级别是RR情况下，创建表t，其中id是主键，k是普通索引。</p>
-<p><strong><em>问题1：其中语句 1、2、3可以插入吗？</em></strong></p>
-<p>|事物A | 事物B|事物C|事物D<br>|–|–|–|–|–|<br>begin;|<br>select * from t where k=4 for update; ||||<br>| | 1, insert into t values (3,3);||<br>| | |2, insert into t values (4,4);|<br>| | | |3, insert into t values (5,5);<br>|commit; |</p>
-<blockquote>
-<p>是不能插入的，因为k是普通索引，所以会在索引 k 的B+树上 k=2 至 k=6 之间加上间隙锁，防止幻读。</p>
-</blockquote>
-<p><strong><em>问题2：其中语句 4、5、6、 7可以插入吗？</em></strong></p>
-<table>
-<thead>
-<tr>
-<th>事物A</th>
-<th>事物B</th>
-<th>事物C</th>
-<th>事物D</th>
-<th>事物E</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>begin;</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>select * from t where k=4 for update;</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td>4, insert into t values (1,2);</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td>5, insert into t values (3,2);</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>6, insert into t values (5,6);</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>7, insert into t values (7,6);</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>commit;</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>其中语句 4, 7 是可以插入的，而语句 5, 6 是不能插入的。</p>
-</blockquote>
-<p>根据前面的加锁机制分析一下原因：<br> 首先，select * from t where k=4 for update，由于 k 是普通索引，所以在InnoDB引擎下，默认隔离级别RR情况下会加间隙锁防止新数据插入，防止幻读。加锁方式如下图：</p>
-<p><img src="/2021/01/17/database/mysql/mysql-%E9%94%81/167df7d99f19812b" alt="img"> <strong><em>如果4, 5, 6, 7语句可以插入的话应该插入在什么位置呢？</em></strong><br> 请看下图：</p>
-<p><img src="/2021/01/17/database/mysql/mysql-%E9%94%81/167eab5ee346fb7b" alt="img"> 由于B+树索引有序排列，所以如果4、5、6、7均可以插入，位置应该插入普通索引k的B+Tree,如上图所示。从上图插入数据的位置就可以很明显的看出为什么语句5、6不能插入了。因为对于K索引树来说叶子节点存的是(k, id),除了要按k值排序，也要按照id排序，所以insert into t values (3,2)和insert into t values (5,6)插入的位置就落在了间隙锁的范围，所以是不能插入的，而insert into t values (1,2)和insert into t values (7,6)插入的位置落在间隙锁范围之外，所以可以插入。</p>
-<ul>
-<li>间隙锁到底锁的是什么？</li>
-</ul>
-<p>通过上面这个例子可以看出，其实间隙锁并没有完全锁住k=2和k=6记录的插入，也就是锁住的不是具体的值，而是所有可能插入新值k=4的位置，在本例中也就是(2,2)至(6,6)之间的位置，因为索引是有序排列的，所以k=4只能插入(2,2)至(6,6)之间。</p>
-<ul>
-<li>什么情况下产生间隙锁？</li>
-</ul>
-<ol>
-<li>where条件后用非索引列约束的时候。</li>
-<li>where后用非唯一索引列约束(等值搜索、字符串的最左前缀 <em>LIKE ‘张%’</em> )的时候。</li>
-<li>where条件后用唯一索引、普通索引做范围查询时候( <em>&lt;、&lt;=、&gt;、&gt;=、between and</em> )。</li>
-<li>对于多列联合唯一索引，如果查询没有包含所有列的等值查询也会产生间隙锁。例如，联合唯一索引column_1、cloumn_2、column_3的联合唯一索引，如果当前读语句是  ··· where column_1 = value_1 and cloumn_2 = value_2，则会产生间隙锁，因为没有包含column_3。</li>
-<li>根据唯一索引<em>delete</em>、<em>update</em> 、<em>select ··· lock in share mode</em> 或 <em>select ··· for update</em>等值条件约束不存在的列的时候。</li>
-</ol>
 <p>参考：</p>
 <p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903744417562638">https://juejin.cn/post/6844903744417562638</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/213814000">https://zhuanlan.zhihu.com/p/213814000</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/66676020">https://zhuanlan.zhihu.com/p/66676020</a></p>
 
     </div>
 
@@ -529,7 +490,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E9%94%81%E5%92%8C%E6%8E%92%E4%BB%96%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">共享锁和排他锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8%E9%94%81"><span class="nav-number">1.1.</span> <span class="nav-text">表锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%8C%E9%94%81%EF%BC%88Record-Locks%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">行锁（Record Locks）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%B4%E9%9A%99%E9%94%81%EF%BC%88Gap-Locks%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">间隙锁（Gap Locks）</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">什么是锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%94%81%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">锁类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7%E9%94%81"><span class="nav-number">2.1.</span> <span class="nav-text">属性锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B1%E4%BA%AB%E9%94%81-Share-Lock"><span class="nav-number">2.1.1.</span> <span class="nav-text">共享锁(Share Lock)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%92%E4%BB%96%E9%94%81%EF%BC%88eXclusive-Lock%EF%BC%89"><span class="nav-number">2.1.2.</span> <span class="nav-text">排他锁（eXclusive Lock）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B2%92%E5%BA%A6%E9%94%81"><span class="nav-number">2.2.</span> <span class="nav-text">粒度锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E9%94%81"><span class="nav-number">2.2.1.</span> <span class="nav-text">表锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%8C%E9%94%81"><span class="nav-number">2.2.2.</span> <span class="nav-text">行锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%B0%E5%BD%95%E9%94%81"><span class="nav-number">2.2.3.</span> <span class="nav-text">记录锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%B4%E9%9A%99%E9%94%81"><span class="nav-number">2.2.4.</span> <span class="nav-text">间隙锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%B4%E9%94%AE%E9%94%81"><span class="nav-number">2.2.5.</span> <span class="nav-text">临键锁</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E9%94%81"><span class="nav-number">2.3.</span> <span class="nav-text">状态锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%84%8F%E5%90%91%E5%85%B1%E4%BA%AB%E9%94%81"><span class="nav-number">2.3.1.</span> <span class="nav-text">意向共享锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%84%8F%E5%90%91%E6%8E%92%E4%BB%96%E9%94%81"><span class="nav-number">2.3.2.</span> <span class="nav-text">意向排他锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E4%BB%AC%E9%9C%80%E8%A6%81%E6%84%8F%E5%90%91%E9%94%81%EF%BC%9F"><span class="nav-number">2.3.3.</span> <span class="nav-text">为什么我们需要意向锁？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%94%81%E7%9A%84%E7%AE%97%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">锁的算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%8C%E9%94%81%EF%BC%88Record-Locks%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">行锁（Record Locks）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%B4%E9%9A%99%E9%94%81%EF%BC%88Gap-Locks%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">间隙锁（Gap Locks）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%BB%E9%94%81"><span class="nav-number">4.</span> <span class="nav-text">死锁</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -907,12 +868,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">269k</span>
+    <span title="站点总字数">270k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:04</span>
+    <span title="站点阅读时长">4:05</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

@@ -22,15 +22,15 @@
     var CONFIG = {"hostname":"yanglei1992.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="AQS AQS 是一个用来构建锁和同步器的框架  AQS的原理">
+  <meta name="description" content="AQS  AQS ： AbstractQueuedSynchronizer ，即队列同步器。 是一个用来构建锁和同步器的框架  AQS 的原理">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java多线程--AQS">
 <meta property="og:url" content="https://yanglei1992.github.io/2020/12/31/java/juc/java-juc-AQS/index.html">
 <meta property="og:site_name" content="yangl的博客">
-<meta property="og:description" content="AQS AQS 是一个用来构建锁和同步器的框架  AQS的原理">
+<meta property="og:description" content="AQS  AQS ： AbstractQueuedSynchronizer ，即队列同步器。 是一个用来构建锁和同步器的框架  AQS 的原理">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-12-31T10:33:41.000Z">
-<meta property="article:modified_time" content="2021-01-11T01:59:48.848Z">
+<meta property="article:modified_time" content="2021-02-05T05:58:59.195Z">
 <meta property="article:author" content="yangl">
 <meta property="article:tag" content="juc">
 <meta name="twitter:card" content="summary">
@@ -130,7 +130,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">11</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -140,7 +140,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>时间轴<span class="badge">56</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>时间轴<span class="badge">63</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -228,7 +228,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-11 09:59:48" itemprop="dateModified" datetime="2021-01-11T09:59:48+08:00">2021-01-11</time>
+                <time title="修改时间：2021-02-05 13:58:59" itemprop="dateModified" datetime="2021-02-05T13:58:59+08:00">2021-02-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -260,7 +260,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2k</span>
+              <span>2.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -280,20 +280,25 @@
 
       
         <h1 id="AQS"><a href="#AQS" class="headerlink" title="AQS"></a>AQS</h1><ul>
-<li>AQS 是一个用来构建锁和同步器的框架</li>
+<li> AQS ： AbstractQueuedSynchronizer ，即队列同步器。 是一个用来构建锁和同步器的框架</li>
 </ul>
-<h1 id="AQS的原理"><a href="#AQS的原理" class="headerlink" title="AQS的原理"></a>AQS的原理</h1><ul>
-<li><p>如果请求的资源空闲，当前请求资源的线程就可以获取资源，并且给资源加上锁。如果当前请求的资源被暂用，就需要一套阻塞和唤醒机制，AQS使用CLH队列实现，将目前获取不到资源的锁的现场，加入到队列中</p>
-</li>
-<li><p>CLH 队列</p>
-<ul>
+<h1 id="AQS-的原理"><a href="#AQS-的原理" class="headerlink" title="AQS 的原理"></a>AQS 的原理</h1><ul>
+<li>如果请求的资源空闲，当前请求资源的线程就可以获取资源，并且给资源加上锁。如果当前请求的资源被占用，就需要一套阻塞和唤醒机制， AQS 使用 CLH 队列实现，将目前获取不到资源的锁的现场，加入到队列中</li>
+<li>CLH  队列<ul>
 <li>AQS 是将每条请求共享资源的线程封装成一个 CLH 锁队列的一个节点 （Node） 来实现锁的分配。</li>
 <li>虚拟的双向队列，并没有队列实例，仅存在节点间的指向关系。</li>
 </ul>
 </li>
-<li><p>AQS 使用一个volatile int state 成员变量来表示同步状态，通过内置的 FIFO 队列来完成获取资源线程的排队工作。 AQS 使用 CAS 对该同步状态进行原子操作实现对其值的修改。</p>
-</li>
+<li>AQS 使用一个volatile int state 成员变量来表示同步状态，通过内置的 FIFO 队列来完成获取资源线程的排队工作。 AQS 使用 CAS 对该同步状态进行原子操作实现对其值的修改。</li>
 </ul>
+<blockquote>
+<p>AQS结构大概由3部分组成：</p>
+<ol>
+<li>用 volatile 修饰的整数类型的 state 状态，用于表示同步状态，提供 getState 和 setState 来操作同步状态</li>
+<li>提供了一个 FIFO 等待队列，实现线程间的竞争和等待，这是 AQS 的核心</li>
+<li>AQS 内部提供了各种基于 CAS 原子操作方法，如 compareAndSetState 方法，并且提供了锁操作的acquire和release方法</li>
+</ol>
+</blockquote>
 <h1 id="AQS-资源共享方式"><a href="#AQS-资源共享方式" class="headerlink" title="AQS 资源共享方式"></a>AQS 资源共享方式</h1><ul>
 <li> Exclusive (独占)：：只有一个线程能执行， 如 ReentantLock</li>
 <li>Share（共享）：多个线程可同时执行， 如 Semaphore/CountDownLatch</li>
@@ -304,7 +309,7 @@
 <li>非公平锁：当线程要获取锁时，无视队列的顺序直接去抢锁（CAS），谁先抢到就是谁的</li>
 </ul>
 <h1 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h1><ul>
-<li>以 ReentrantLock 为例， state 初始化为 0 ， 表示未锁定状态。 A 线程 lock() 时，会调用 tryAcquire() 独占该锁并将 share +1 。此后，其他现场再 tryAcquire() 时就会失败， 直到 A 线程 unlock() 到 state = 0 （即释放锁）为止， 其他线程才有机会获取该锁。当然，锁释放之前， A 线程自己是可以重复获取此锁的 （state 会累加），这就是可重入的概念。但是要注意，获取多少次就要释放多少次，这样才能保证 state 是能回到零态的</li>
+<li>以 ReentrantLock 为例， state 初始化为 0 ， 表示未锁定状态。 A 线程 lock() 时，会调用 tryAcquire() 独占该锁并将 share +1 。此后，其他线程再 tryAcquire() 时就会失败， 直到 A 线程 unlock() 到 state = 0 （即释放锁）为止， 其他线程才有机会获取该锁。当然，锁释放之前， A 线程自己是可以重复获取此锁的 （state 会累加），这就是可重入的概念。但是要注意，获取多少次就要释放多少次，这样才能保证 state 是能回到零态的</li>
 </ul>
 <h1 id="CountDownLatch"><a href="#CountDownLatch" class="headerlink" title="CountDownLatch"></a>CountDownLatch</h1><ul>
 <li>再以 CountDownLatch 为例，任务分配为 N 个线程去执行， state 也初始化为 N（注意 N 要与线程个数一致）。 该 N 个子线程是并行执行的， 每个子线程执行完后 countDown() 一次， state 会 CAS 减1。等到所有子线程都执行完后 （即 state =0）, 会 unpark() 主调用线程，然后主调用线程就会从 await() 函数返回，继续后余动作。</li>
@@ -350,8 +355,8 @@
       <i class="fa fa-chevron-left"></i> java多线程--JMM和volatile关键字
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/12/31/java/juc/java-juc-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F--ThreadLocal/" rel="next" title="java内存泄漏--ThreadLocal">
-      java内存泄漏--ThreadLocal <i class="fa fa-chevron-right"></i>
+    <a href="/2020/12/31/java/juc/java-juc-AQS%E6%BA%90%E7%A0%81/" rel="next" title="java多线程--JDK1.8 AQS源码解析">
+      java多线程--JDK1.8 AQS源码解析 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -425,7 +430,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#AQS"><span class="nav-number">1.</span> <span class="nav-text">AQS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AQS%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">AQS的原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AQS-%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">AQS 资源共享方式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AC%E5%B9%B3%E9%94%81%E5%92%8C%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81"><span class="nav-number">4.</span> <span class="nav-text">公平锁和非公平锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ReentrantLock"><span class="nav-number">5.</span> <span class="nav-text">ReentrantLock</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CountDownLatch"><span class="nav-number">6.</span> <span class="nav-text">CountDownLatch</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Semaphore"><span class="nav-number">7.</span> <span class="nav-text">Semaphore</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CyclicBarrier-%E5%BE%AA%E7%8E%AF%E6%A0%85%E6%A0%8F"><span class="nav-number">8.</span> <span class="nav-text">CyclicBarrier(循环栅栏)</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#AQS"><span class="nav-number">1.</span> <span class="nav-text">AQS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AQS-%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">AQS 的原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AQS-%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">AQS 资源共享方式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AC%E5%B9%B3%E9%94%81%E5%92%8C%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81"><span class="nav-number">4.</span> <span class="nav-text">公平锁和非公平锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ReentrantLock"><span class="nav-number">5.</span> <span class="nav-text">ReentrantLock</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CountDownLatch"><span class="nav-number">6.</span> <span class="nav-text">CountDownLatch</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Semaphore"><span class="nav-number">7.</span> <span class="nav-text">Semaphore</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CyclicBarrier-%E5%BE%AA%E7%8E%AF%E6%A0%85%E6%A0%8F"><span class="nav-number">8.</span> <span class="nav-text">CyclicBarrier(循环栅栏)</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -441,7 +446,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">63</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -454,7 +459,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -770,7 +775,7 @@ if(canvas.getContext){
         <div class="widget-wrap">
           <div id="myCanvasContainer" class="widget tagcloud">
             <canvas width="250" height="250" id="resCanvas" style="width=100%">
-              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/distributed/" rel="tag">distributed</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/juc/" rel="tag">juc</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/" rel="tag">jvm</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/map/" rel="tag">map</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sort/" rel="tag">sort</a><span class="tag-list-count">1</span></li></ul>
+              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/distributed/" rel="tag">distributed</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/juc/" rel="tag">juc</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/" rel="tag">jvm</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/map/" rel="tag">map</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sort/" rel="tag">sort</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81/" rel="tag">源码</a><span class="tag-list-count">5</span></li></ul>
             </canvas>
           </div>
         </div>
@@ -803,12 +808,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">274k</span>
+    <span title="站点总字数">383k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:09</span>
+    <span title="站点阅读时长">5:48</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

@@ -127,7 +127,7 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">11</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -137,7 +137,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>时间轴<span class="badge">56</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>时间轴<span class="badge">63</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -194,6 +194,503 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/31/java/juc/java-juc-%E5%8F%8C%E9%87%8D%E6%A0%A1%E9%AA%8C%E9%94%81%E5%AE%9E%E7%8E%B0%E5%8D%95%E4%BE%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.png">
+      <meta itemprop="name" content="yangl">
+      <meta itemprop="description" content="仅作为学习记录">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yangl的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/12/31/java/juc/java-juc-%E5%8F%8C%E9%87%8D%E6%A0%A1%E9%AA%8C%E9%94%81%E5%AE%9E%E7%8E%B0%E5%8D%95%E4%BE%8B/" class="post-title-link" itemprop="url">双重校验锁实现单例</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-31 19:21:34" itemprop="dateCreated datePublished" datetime="2020-12-31T19:21:34+08:00">2020-12-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-02-05 15:45:38" itemprop="dateModified" datetime="2021-02-05T15:45:38+08:00">2021-02-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>0</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    <div>
+        
+    </div>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/31/java/juc/java-juc-%E7%BA%BF%E7%A8%8B%E6%B1%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.png">
+      <meta itemprop="name" content="yangl">
+      <meta itemprop="description" content="仅作为学习记录">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yangl的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/12/31/java/juc/java-juc-%E7%BA%BF%E7%A8%8B%E6%B1%A0/" class="post-title-link" itemprop="url">java多线程--线程池</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-31 19:21:34" itemprop="dateCreated datePublished" datetime="2020-12-31T19:21:34+08:00">2020-12-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-11 10:08:23" itemprop="dateModified" datetime="2021-01-11T10:08:23+08:00">2021-01-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="为什么要使用线程池"><a href="#为什么要使用线程池" class="headerlink" title="为什么要使用线程池"></a>为什么要使用线程池</h1><ul>
+<li>线程池提供了一种限制和管理资源</li>
+<li>好处：<ul>
+<li>降低资源消耗：线程的创建和销毁需要消耗资源</li>
+<li>提高响应速度：当任务达到的时候，任务可以不用等待线程创建就能立即执行</li>
+<li>提高线程的可管理性：线程是稀缺资源，不可以无限创建，需要统一分配和调度、监控</li>
+</ul>
+</li>
+</ul>
+<h1 id="Runable接口和Callable接口的区别"><a href="#Runable接口和Callable接口的区别" class="headerlink" title="Runable接口和Callable接口的区别"></a>Runable接口和Callable接口的区别</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/12/31/java/juc/java-juc-%E7%BA%BF%E7%A8%8B%E6%B1%A0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+        
+    </div>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/31/java/juc/java-juc-%E8%87%AA%E6%97%8B%E9%94%81-%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.png">
+      <meta itemprop="name" content="yangl">
+      <meta itemprop="description" content="仅作为学习记录">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yangl的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/12/31/java/juc/java-juc-%E8%87%AA%E6%97%8B%E9%94%81-%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0/" class="post-title-link" itemprop="url">自旋锁-手动实现</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-31 19:21:34" itemprop="dateCreated datePublished" datetime="2020-12-31T19:21:34+08:00">2020-12-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-02-05 15:51:10" itemprop="dateModified" datetime="2021-02-05T15:51:10+08:00">2021-02-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>0</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    <div>
+        
+    </div>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/31/java/juc/java-juc-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F--ThreadLocal/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.png">
+      <meta itemprop="name" content="yangl">
+      <meta itemprop="description" content="仅作为学习记录">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yangl的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/12/31/java/juc/java-juc-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F--ThreadLocal/" class="post-title-link" itemprop="url">java内存泄漏--ThreadLocal</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-31 18:34:41" itemprop="dateCreated datePublished" datetime="2020-12-31T18:34:41+08:00">2020-12-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-11 09:59:48" itemprop="dateModified" datetime="2021-01-11T09:59:48+08:00">2021-01-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h1><ul>
+<li>内存泄漏是堆内存中不再使用的对象，但是垃圾收集器没有将它们删除的情况，因此它们将会被不必要的一直存在。这样会消耗内存资源，降低系统性能，最终可能导致OOM发生。</li>
+</ul>
+<h1 id="Java中内存泄漏的类型"><a href="#Java中内存泄漏的类型" class="headerlink" title="Java中内存泄漏的类型"></a>Java中内存泄漏的类型</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/12/31/java/juc/java-juc-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F--ThreadLocal/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+        
+    </div>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/31/java/juc/java-juc-AQS%E6%BA%90%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/favicon.png">
+      <meta itemprop="name" content="yangl">
+      <meta itemprop="description" content="仅作为学习记录">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="yangl的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/12/31/java/juc/java-juc-AQS%E6%BA%90%E7%A0%81/" class="post-title-link" itemprop="url">java多线程--JDK1.8 AQS源码解析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-31 18:33:42" itemprop="dateCreated datePublished" datetime="2020-12-31T18:33:42+08:00">2020-12-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-02-05 13:40:56" itemprop="dateModified" datetime="2021-02-05T13:40:56+08:00">2021-02-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>79k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1:12</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="类注解"><a href="#类注解" class="headerlink" title="类注解"></a>类注解</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Provides a framework for implementing blocking locks and related</span></span><br><span class="line"><span class="comment"> * synchronizers (semaphores, events, etc) that rely on</span></span><br><span class="line"><span class="comment"> * first-in-first-out (FIFO) wait queues.  This class is designed to</span></span><br><span class="line"><span class="comment"> * be a useful basis for most kinds of synchronizers that rely on a</span></span><br><span class="line"><span class="comment"> * single atomic &#123;<span class="doctag">@code</span> int&#125; value to represent state. Subclasses</span></span><br><span class="line"><span class="comment"> * must define the protected methods that change this state, and which</span></span><br><span class="line"><span class="comment"> * define what that state means in terms of this object being acquired</span></span><br><span class="line"><span class="comment"> * or released.  Given these, the other methods in this class carry</span></span><br><span class="line"><span class="comment"> * out all queuing and blocking mechanics. Subclasses can maintain</span></span><br><span class="line"><span class="comment"> * other state fields, but only the atomically updated &#123;<span class="doctag">@code</span> int&#125;</span></span><br><span class="line"><span class="comment"> * value manipulated using methods &#123;<span class="doctag">@link</span> #getState&#125;, &#123;<span class="doctag">@link</span></span></span><br><span class="line"><span class="comment"> * #setState&#125; and &#123;<span class="doctag">@link</span> #compareAndSetState&#125; is tracked with respect</span></span><br><span class="line"><span class="comment"> * to synchronization.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">提供一个框架，用于实现依赖于先进先出（FIFO）等待队列的阻塞锁和相关的同步器（信号灯，事件等）。</span></span><br><span class="line"><span class="comment">此类旨在为大多数依赖单个原子&#123;<span class="doctag">@code</span> int&#125;值表示状态的同步器提供有用的基础。</span></span><br><span class="line"><span class="comment">子类必须定义更改此状态的受保护方法，并定义该状态对于获取或释放此对象而言意味着什么。</span></span><br><span class="line"><span class="comment">鉴于这些，此类中的其他方法将执行所有排队和阻塞机制。</span></span><br><span class="line"><span class="comment">子类可以维护其他状态字段，但是仅跟踪关于同步的使用方法&#123;<span class="doctag">@link</span> getState&#125;，&#123;@ link setState&#125;和&#123;<span class="doctag">@link</span> compareAndSetState&#125;操作的原子更新的&#123;<span class="doctag">@code</span> int&#125;值。</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> * &lt;p&gt;Subclasses should be defined as non-public internal helper</span></span><br><span class="line"><span class="comment"> * classes that are used to implement the synchronization properties</span></span><br><span class="line"><span class="comment"> * of their enclosing class.  Class</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> AbstractQueuedSynchronizer&#125; does not implement any</span></span><br><span class="line"><span class="comment"> * synchronization interface.  Instead it defines methods such as</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> #acquireInterruptibly&#125; that can be invoked as</span></span><br><span class="line"><span class="comment"> * appropriate by concrete locks and related synchronizers to</span></span><br><span class="line"><span class="comment"> * implement their public methods.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&lt;p&gt;子类应定义为用于实现其封闭类的同步属性的非公共内部帮助器类。</span></span><br><span class="line"><span class="comment">类&#123;<span class="doctag">@code</span> AbstractQueuedSynchronizer&#125;没有实现任何同步接口。</span></span><br><span class="line"><span class="comment">相反，它定义了诸如&#123;<span class="doctag">@link</span> acquisitionInterruptible&#125;之类的方法，可以通过具体的锁和相关的同步器适当地调用这些方法来实现其公共方法。</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;This class supports either or both a default &lt;em&gt;exclusive&lt;/em&gt;</span></span><br><span class="line"><span class="comment"> * mode and a &lt;em&gt;shared&lt;/em&gt; mode. When acquired in exclusive mode,</span></span><br><span class="line"><span class="comment"> * attempted acquires by other threads cannot succeed. Shared mode</span></span><br><span class="line"><span class="comment"> * acquires by multiple threads may (but need not) succeed. This class</span></span><br><span class="line"><span class="comment"> * does not &amp;quot;understand&amp;quot; these differences except in the</span></span><br><span class="line"><span class="comment"> * mechanical sense that when a shared mode acquire succeeds, the next</span></span><br><span class="line"><span class="comment"> * waiting thread (if one exists) must also determine whether it can</span></span><br><span class="line"><span class="comment"> * acquire as well. Threads waiting in the different modes share the</span></span><br><span class="line"><span class="comment"> * same FIFO queue. Usually, implementation subclasses support only</span></span><br><span class="line"><span class="comment"> * one of these modes, but both can come into play for example in a</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> ReadWriteLock&#125;. Subclasses that support only exclusive or</span></span><br><span class="line"><span class="comment"> * only shared modes need not define the methods supporting the unused mode.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&lt;p&gt;此类支持默认 exclusive 模式和 share 模式之一或两者。</span></span><br><span class="line"><span class="comment">当以独占方式进行获取时，其他线程尝试进行的获取将无法成功。</span></span><br><span class="line"><span class="comment">由多个线程获取的共享模式可能（但不一定）成功。</span></span><br><span class="line"><span class="comment">此类不会“理解”这些差异，只是从机械意义上说，当共享模式获取成功时，下一个等待线程（如果存在）也必须确定它是否也可以获取。</span></span><br><span class="line"><span class="comment">在不同模式下等待的线程共享相同的FIFO队列。</span></span><br><span class="line"><span class="comment">通常，实现子类仅支持这些模式之一，但例如可以在&#123;<span class="doctag">@link</span> ReadWriteLock&#125;中发挥作用。</span></span><br><span class="line"><span class="comment">仅支持独占模式或仅支持共享模式的子类无需定义支持未使用模式的方法。</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;This class defines a nested &#123;<span class="doctag">@link</span> ConditionObject&#125; class that</span></span><br><span class="line"><span class="comment"> * can be used as a &#123;<span class="doctag">@link</span> Condition&#125; implementation by subclasses</span></span><br><span class="line"><span class="comment"> * supporting exclusive mode for which method &#123;<span class="doctag">@link</span></span></span><br><span class="line"><span class="comment"> * #isHeldExclusively&#125; reports whether synchronization is exclusively</span></span><br><span class="line"><span class="comment"> * held with respect to the current thread, method &#123;<span class="doctag">@link</span> #release&#125;</span></span><br><span class="line"><span class="comment"> * invoked with the current &#123;<span class="doctag">@link</span> #getState&#125; value fully releases</span></span><br><span class="line"><span class="comment"> * this object, and &#123;<span class="doctag">@link</span> #acquire&#125;, given this saved state value,</span></span><br><span class="line"><span class="comment"> * eventually restores this object to its previous acquired state.  No</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> AbstractQueuedSynchronizer&#125; method otherwise creates such a</span></span><br><span class="line"><span class="comment"> * condition, so if this constraint cannot be met, do not use it.  The</span></span><br><span class="line"><span class="comment"> * behavior of &#123;<span class="doctag">@link</span> ConditionObject&#125; depends of course on the</span></span><br><span class="line"><span class="comment"> * semantics of its synchronizer implementation.</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment">&lt;p&gt;此类定义了一个嵌套的&#123;<span class="doctag">@link</span> ConditionObject&#125;类，该类可用作支持独占模式的子类的&#123;<span class="doctag">@link</span> Condition&#125;实现，为此方法&#123;<span class="doctag">@link</span> isHeldExclusively&#125;报告是否相对于当前独占同步。线程，使用当前&#123;<span class="doctag">@link</span> getState&#125;值调用的方法&#123;<span class="doctag">@link</span> release&#125;会完全释放该对象，并且给定已保存的状态值，&#123;@ link acquisition&#125;最终会将该对象恢复为先前的获取状态。否则，没有&#123;<span class="doctag">@code</span> AbstractQueuedSynchronizer&#125;方法会创建这样的条件，因此，如果无法满足此约束，请不要使用它。 &#123;<span class="doctag">@link</span> ConditionObject&#125;的行为当然取决于其同步器实现的语义。</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;This class provides inspection, instrumentation, and monitoring</span></span><br><span class="line"><span class="comment"> * methods for the internal queue, as well as similar methods for</span></span><br><span class="line"><span class="comment"> * condition objects. These can be exported as desired into classes</span></span><br><span class="line"><span class="comment"> * using an &#123;<span class="doctag">@code</span> AbstractQueuedSynchronizer&#125; for their</span></span><br><span class="line"><span class="comment"> * synchronization mechanics.</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> &lt;p&gt;此类提供内部队列的检查，检测和监视方法，以及条件对象的类似方法。可以根据需要使用&#123;<span class="doctag">@code</span> AbstractQueuedSynchronizer&#125;将它们导出到类中以实现其同步机制。</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;Serialization of this class stores only the underlying atomic</span></span><br><span class="line"><span class="comment"> * integer maintaining state, so deserialized objects have empty</span></span><br><span class="line"><span class="comment"> * thread queues. Typical subclasses requiring serializability will</span></span><br><span class="line"><span class="comment"> * define a &#123;<span class="doctag">@code</span> readObject&#125; method that restores this to a known</span></span><br><span class="line"><span class="comment"> * initial state upon deserialization.</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> &lt;p&gt;此类的串行化仅存储底层的原子整数维护状态，因此反序列化的对象具有空线程队列。需要可序列化的典型子类将定义一个&#123;<span class="doctag">@code</span> readObject&#125;方法，该方法可在反序列化时将其恢复为已知的初始状态。</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;h3&gt;Usage&lt;/h3&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;To use this class as the basis of a synchronizer, redefine the</span></span><br><span class="line"><span class="comment"> * following methods, as applicable, by inspecting and/or modifying</span></span><br><span class="line"><span class="comment"> * the synchronization state using &#123;<span class="doctag">@link</span> #getState&#125;, &#123;<span class="doctag">@link</span></span></span><br><span class="line"><span class="comment"> * #setState&#125; and/or &#123;<span class="doctag">@link</span> #compareAndSetState&#125;:</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;ul&gt;</span></span><br><span class="line"><span class="comment"> * &lt;li&gt; &#123;<span class="doctag">@link</span> #tryAcquire&#125;</span></span><br><span class="line"><span class="comment"> * &lt;li&gt; &#123;<span class="doctag">@link</span> #tryRelease&#125;</span></span><br><span class="line"><span class="comment"> * &lt;li&gt; &#123;<span class="doctag">@link</span> #tryAcquireShared&#125;</span></span><br><span class="line"><span class="comment"> * &lt;li&gt; &#123;<span class="doctag">@link</span> #tryReleaseShared&#125;</span></span><br><span class="line"><span class="comment"> * &lt;li&gt; &#123;<span class="doctag">@link</span> #isHeldExclusively&#125;</span></span><br><span class="line"><span class="comment"> * &lt;/ul&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Each of these methods by default throws &#123;<span class="doctag">@link</span></span></span><br><span class="line"><span class="comment"> * UnsupportedOperationException&#125;.  Implementations of these methods</span></span><br><span class="line"><span class="comment"> * must be internally thread-safe, and should in general be short and</span></span><br><span class="line"><span class="comment"> * not block. Defining these methods is the &lt;em&gt;only&lt;/em&gt; supported</span></span><br><span class="line"><span class="comment"> * means of using this class. All other methods are declared</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> final&#125; because they cannot be independently varied.</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> &lt;p&gt;要将此类用作同步器的基础，请使用&#123;<span class="doctag">@link</span> getState&#125;，&#123;@ link setState&#125;和或&#123;<span class="doctag">@link</span> compareAndSetState&#125;检查和/或修改同步状态，以重新定义以下方法（如适用）：</span></span><br><span class="line"><span class="comment"> &lt;ul &gt; </span></span><br><span class="line"><span class="comment"> &lt;li&gt; &#123;<span class="doctag">@link</span> tryAcquire&#125;          独占方式-获取同步资源</span></span><br><span class="line"><span class="comment"> &lt;li&gt; &#123;<span class="doctag">@link</span> tryRelease&#125;          独占方式-释放同步资源</span></span><br><span class="line"><span class="comment"> &lt;li&gt; &#123;<span class="doctag">@link</span> tryAcquireShared&#125;    共享方式-获取同步资源</span></span><br><span class="line"><span class="comment"> &lt;li&gt; &#123;<span class="doctag">@link</span> tryReleaseShared&#125;    共享方式-释放同步资源</span></span><br><span class="line"><span class="comment"> &lt;li&gt; &#123;<span class="doctag">@link</span> isHeldExclusively&#125;   当前线程是否在独占资源</span></span><br><span class="line"><span class="comment"> &lt;ul&gt;</span></span><br><span class="line"><span class="comment"> 默认情况下，每种方法引发&#123;<span class="doctag">@link</span> UnsupportedOperationException&#125;。这些方法的实现必须在内部是线程安全的，并且通常应简短且不阻塞。定义这些方法是使用此类的&lt;em&gt; only &lt;em&gt;支持的方法。所有其他方法都声明为&#123;<span class="doctag">@code</span> final&#125;，因为它们不能独立变化。</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;You may also find the inherited methods from &#123;<span class="doctag">@link</span></span></span><br><span class="line"><span class="comment"> * AbstractOwnableSynchronizer&#125; useful to keep track of the thread</span></span><br><span class="line"><span class="comment"> * owning an exclusive synchronizer.  You are encouraged to use them</span></span><br><span class="line"><span class="comment"> * -- this enables monitoring and diagnostic tools to assist users in</span></span><br><span class="line"><span class="comment"> * determining which threads hold locks.</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> &lt;p&gt;您可能还会发现从&#123;<span class="doctag">@link</span> AbstractOwnableSynchronizer&#125;继承的方法对于跟踪拥有专有同步器的线程很有用。鼓励您使用它们-这将启用监视和诊断工具，以帮助用户确定哪些线程持有锁。</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;Even though this class is based on an internal FIFO queue, it</span></span><br><span class="line"><span class="comment"> * does not automatically enforce FIFO acquisition policies.  The core</span></span><br><span class="line"><span class="comment"> * of exclusive synchronization takes the form:</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> &lt;p&gt;即使此类基于内部FIFO队列，它也不会自动执行FIFO获取策略。独占同步的核心采用以下形式：</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;pre&gt;</span></span><br><span class="line"><span class="comment"> * Acquire:</span></span><br><span class="line"><span class="comment"> *     while (!tryAcquire(arg)) &#123;</span></span><br><span class="line"><span class="comment"> *        &lt;em&gt;enqueue thread if it is not already queued&lt;/em&gt;;</span></span><br><span class="line"><span class="comment"> *        &lt;em&gt;possibly block current thread&lt;/em&gt;;</span></span><br><span class="line"><span class="comment"> *     &#125;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Release:</span></span><br><span class="line"><span class="comment"> *     if (tryRelease(arg))</span></span><br><span class="line"><span class="comment"> *        &lt;em&gt;unblock the first queued thread&lt;/em&gt;;</span></span><br><span class="line"><span class="comment"> * &lt;/pre&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * (Shared mode is similar but may involve cascading signals.)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p id=&quot;barging&quot;&gt;Because checks in acquire are invoked before</span></span><br><span class="line"><span class="comment"> * enqueuing, a newly acquiring thread may &lt;em&gt;barge&lt;/em&gt; ahead of</span></span><br><span class="line"><span class="comment"> * others that are blocked and queued.  However, you can, if desired,</span></span><br><span class="line"><span class="comment"> * define &#123;<span class="doctag">@code</span> tryAcquire&#125; and/or &#123;<span class="doctag">@code</span> tryAcquireShared&#125; to</span></span><br><span class="line"><span class="comment"> * disable barging by internally invoking one or more of the inspection</span></span><br><span class="line"><span class="comment"> * methods, thereby providing a &lt;em&gt;fair&lt;/em&gt; FIFO acquisition order.</span></span><br><span class="line"><span class="comment"> * In particular, most fair synchronizers can define &#123;<span class="doctag">@code</span> tryAcquire&#125;</span></span><br><span class="line"><span class="comment"> * to return &#123;<span class="doctag">@code</span> false&#125; if &#123;<span class="doctag">@link</span> #hasQueuedPredecessors&#125; (a method</span></span><br><span class="line"><span class="comment"> * specifically designed to be used by fair synchronizers) returns</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> true&#125;.  Other variations are possible.</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> &lt;p id =“ barging”&gt;因为在入队前调用了获取中的检查，所以新获取的线程可能先&lt;em&gt;插入&lt;em&gt;，然后再将其阻塞并排队。但是，如果需要，您可以定义&#123;<span class="doctag">@code</span> tryAcquire&#125;和/或&#123;<span class="doctag">@code</span> tryAcquireShared&#125;以通过内部调用一种或多种检查方法来禁用插入，从而提供&lt;em&gt; fair &lt;em&gt; FIFO获取顺序。特别是，如果&#123;<span class="doctag">@link</span> hasQueuedPredecessors&#125;（一种专门为公平同步器设计的方法）返回&#123;<span class="doctag">@code</span> true&#125;，则大多数公平同步器都可以定义&#123;<span class="doctag">@code</span> tryAcquire&#125;以返回&#123;<span class="doctag">@code</span> false&#125;。其他变化是可能的。</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;Throughput and scalability are generally highest for the</span></span><br><span class="line"><span class="comment"> * default barging (also known as &lt;em&gt;greedy&lt;/em&gt;,</span></span><br><span class="line"><span class="comment"> * &lt;em&gt;renouncement&lt;/em&gt;, and &lt;em&gt;convoy-avoidance&lt;/em&gt;) strategy.</span></span><br><span class="line"><span class="comment"> * While this is not guaranteed to be fair or starvation-free, earlier</span></span><br><span class="line"><span class="comment"> * queued threads are allowed to recontend before later queued</span></span><br><span class="line"><span class="comment"> * threads, and each recontention has an unbiased chance to succeed</span></span><br><span class="line"><span class="comment"> * against incoming threads.  Also, while acquires do not</span></span><br><span class="line"><span class="comment"> * &amp;quot;spin&amp;quot; in the usual sense, they may perform multiple</span></span><br><span class="line"><span class="comment"> * invocations of &#123;<span class="doctag">@code</span> tryAcquire&#125; interspersed with other</span></span><br><span class="line"><span class="comment"> * computations before blocking.  This gives most of the benefits of</span></span><br><span class="line"><span class="comment"> * spins when exclusive synchronization is only briefly held, without</span></span><br><span class="line"><span class="comment"> * most of the liabilities when it isn&#x27;t. If so desired, you can</span></span><br><span class="line"><span class="comment"> * augment this by preceding calls to acquire methods with</span></span><br><span class="line"><span class="comment"> * &quot;fast-path&quot; checks, possibly prechecking &#123;<span class="doctag">@link</span> #hasContended&#125;</span></span><br><span class="line"><span class="comment"> * and/or &#123;<span class="doctag">@link</span> #hasQueuedThreads&#125; to only do so if the synchronizer</span></span><br><span class="line"><span class="comment"> * is likely not to be contended.</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> 对于默认插入（也称为&lt;em&gt; greedy &lt;em&gt;，&lt;em&gt;放弃&lt;em&gt;和&lt;em&gt; convoy-avoidance &lt;em&gt;）策略，吞吐量和可伸缩性通常最高。尽管不能保证这是公平的，也可以避免饥饿，但是允许在较早排队的线程之前对较早排队的线程进行重新竞争，并且每个重新争用都可以毫无偏向地成功抵御传入线程。同样，尽管获取通常不会“旋转”，但是在阻塞之前，它们可能会执行&#123;<span class="doctag">@code</span> tryAcquire&#125;的多次调用，并插入其他计算。如果仅短暂地保持排他同步，则这将带来旋转的大部分好处，而在没有同步时，则不会带来很多负担。如果需要的话，可以通过在调用之前使用“快速路径”检查来获取方法来增强此功能，可能会预先检查&#123;<span class="doctag">@link</span> hasContended&#125;和&#123;<span class="doctag">@link</span> hasQueuedThreads&#125;以仅在可能不争用同步器的情况下才这样做。</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;This class provides an efficient and scalable basis for</span></span><br><span class="line"><span class="comment"> * synchronization in part by specializing its range of use to</span></span><br><span class="line"><span class="comment"> * synchronizers that can rely on &#123;<span class="doctag">@code</span> int&#125; state, acquire, and</span></span><br><span class="line"><span class="comment"> * release parameters, and an internal FIFO wait queue. When this does</span></span><br><span class="line"><span class="comment"> * not suffice, you can build synchronizers from a lower level using</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> java.util.concurrent.atomic atomic&#125; classes, your own custom</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> java.util.Queue&#125; classes, and &#123;<span class="doctag">@link</span> LockSupport&#125; blocking</span></span><br><span class="line"><span class="comment"> * support.</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> &lt;p&gt;此类专门为同步提供了有效且可扩展的基础，部分原因是将其使用范围专用于可以依靠&#123;<span class="doctag">@code</span> int&#125;状态，获取和释放参数以及内部FIFO等待队列的同步器。如果这还不够，则可以使用&#123;<span class="doctag">@link</span> java.util.concurrent.atomic atomic&#125;类，您自己的自定义&#123;<span class="doctag">@link</span> java.util.Queue&#125;类和&#123;<span class="doctag">@link</span> LockSupport&#125;阻止从较低级别构建同步器。支持。</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;h3&gt;Usage Examples&lt;/h3&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;Here is a non-reentrant mutual exclusion lock class that uses</span></span><br><span class="line"><span class="comment"> * the value zero to represent the unlocked state, and one to</span></span><br><span class="line"><span class="comment"> * represent the locked state. While a non-reentrant lock</span></span><br><span class="line"><span class="comment"> * does not strictly require recording of the current owner</span></span><br><span class="line"><span class="comment"> * thread, this class does so anyway to make usage easier to monitor.</span></span><br><span class="line"><span class="comment"> * It also supports conditions and exposes</span></span><br><span class="line"><span class="comment"> * one of the instrumentation methods:</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> &lt;p&gt;这是一个不可重入的互斥锁定类，使用值0表示解锁状态，使用值1表示锁定状态。虽然不可重入锁并不严格要求记录当前所有者线程，但是无论如何，此类都这样做以使使用情况更易于监视。它还支持条件并公开一种检测方法：</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *  &lt;pre&gt; &#123;<span class="doctag">@code</span></span></span><br><span class="line"><span class="comment"> * class Mutex implements Lock, java.io.Serializable &#123;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *   // Our internal helper class</span></span><br><span class="line"><span class="comment"> *   private static class Sync extends AbstractQueuedSynchronizer &#123;</span></span><br><span class="line"><span class="comment"> *     // Reports whether in locked state</span></span><br><span class="line"><span class="comment"> *     protected boolean isHeldExclusively() &#123;</span></span><br><span class="line"><span class="comment"> *       return getState() == 1;</span></span><br><span class="line"><span class="comment"> *     &#125;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *     // Acquires the lock if state is zero</span></span><br><span class="line"><span class="comment"> *     public boolean tryAcquire(int acquires) &#123;</span></span><br><span class="line"><span class="comment"> *       assert acquires == 1; // Otherwise unused</span></span><br><span class="line"><span class="comment"> *       if (compareAndSetState(0, 1)) &#123;</span></span><br><span class="line"><span class="comment"> *         setExclusiveOwnerThread(Thread.currentThread());</span></span><br><span class="line"><span class="comment"> *         return true;</span></span><br><span class="line"><span class="comment"> *       &#125;</span></span><br><span class="line"><span class="comment"> *       return false;</span></span><br><span class="line"><span class="comment"> *     &#125;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *     // Releases the lock by setting state to zero</span></span><br><span class="line"><span class="comment"> *     protected boolean tryRelease(int releases) &#123;</span></span><br><span class="line"><span class="comment"> *       assert releases == 1; // Otherwise unused</span></span><br><span class="line"><span class="comment"> *       if (getState() == 0) throw new IllegalMonitorStateException();</span></span><br><span class="line"><span class="comment"> *       setExclusiveOwnerThread(null);</span></span><br><span class="line"><span class="comment"> *       setState(0);</span></span><br><span class="line"><span class="comment"> *       return true;</span></span><br><span class="line"><span class="comment"> *     &#125;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *     // Provides a Condition</span></span><br><span class="line"><span class="comment"> *     Condition newCondition() &#123; return new ConditionObject(); &#125;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *     // Deserializes properly</span></span><br><span class="line"><span class="comment"> *     private void readObject(ObjectInputStream s)</span></span><br><span class="line"><span class="comment"> *         throws IOException, ClassNotFoundException &#123;</span></span><br><span class="line"><span class="comment"> *       s.defaultReadObject();</span></span><br><span class="line"><span class="comment"> *       setState(0); // reset to unlocked state</span></span><br><span class="line"><span class="comment"> *     &#125;</span></span><br><span class="line"><span class="comment"> *   &#125;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *   // The sync object does all the hard work. We just forward to it.</span></span><br><span class="line"><span class="comment"> *   private final Sync sync = new Sync();</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *   public void lock()                &#123; sync.acquire(1); &#125;</span></span><br><span class="line"><span class="comment"> *   public boolean tryLock()          &#123; return sync.tryAcquire(1); &#125;</span></span><br><span class="line"><span class="comment"> *   public void unlock()              &#123; sync.release(1); &#125;</span></span><br><span class="line"><span class="comment"> *   public Condition newCondition()   &#123; return sync.newCondition(); &#125;</span></span><br><span class="line"><span class="comment"> *   public boolean isLocked()         &#123; return sync.isHeldExclusively(); &#125;</span></span><br><span class="line"><span class="comment"> *   public boolean hasQueuedThreads() &#123; return sync.hasQueuedThreads(); &#125;</span></span><br><span class="line"><span class="comment"> *   public void lockInterruptibly() throws InterruptedException &#123;</span></span><br><span class="line"><span class="comment"> *     sync.acquireInterruptibly(1);</span></span><br><span class="line"><span class="comment"> *   &#125;</span></span><br><span class="line"><span class="comment"> *   public boolean tryLock(long timeout, TimeUnit unit)</span></span><br><span class="line"><span class="comment"> *       throws InterruptedException &#123;</span></span><br><span class="line"><span class="comment"> *     return sync.tryAcquireNanos(1, unit.toNanos(timeout));</span></span><br><span class="line"><span class="comment"> *   &#125;</span></span><br><span class="line"><span class="comment"> * &#125;&#125;&lt;/pre&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;Here is a latch class that is like a</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> java.util.concurrent.CountDownLatch CountDownLatch&#125;</span></span><br><span class="line"><span class="comment"> * except that it only requires a single &#123;<span class="doctag">@code</span> signal&#125; to</span></span><br><span class="line"><span class="comment"> * fire. Because a latch is non-exclusive, it uses the &#123;<span class="doctag">@code</span> shared&#125;</span></span><br><span class="line"><span class="comment"> * acquire and release methods.</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> &lt;p&gt;这里是一个类似于&#123;<span class="doctag">@link</span> java.util.concurrent.CountDownLatch CountDownLatch&#125;的闩锁类，只不过它只需要触发一个&#123;<span class="doctag">@code</span> signal&#125;。由于闩锁是非排他性的，因此它使用&#123;<span class="doctag">@code</span> shared&#125;获取和释放方法。</span></span><br><span class="line"><span class="comment"> </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *  &lt;pre&gt; &#123;<span class="doctag">@code</span></span></span><br><span class="line"><span class="comment"> * class BooleanLatch &#123;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *   private static class Sync extends AbstractQueuedSynchronizer &#123;</span></span><br><span class="line"><span class="comment"> *     boolean isSignalled() &#123; return getState() != 0; &#125;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *     protected int tryAcquireShared(int ignore) &#123;</span></span><br><span class="line"><span class="comment"> *       return isSignalled() ? 1 : -1;</span></span><br><span class="line"><span class="comment"> *     &#125;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *     protected boolean tryReleaseShared(int ignore) &#123;</span></span><br><span class="line"><span class="comment"> *       setState(1);</span></span><br><span class="line"><span class="comment"> *       return true;</span></span><br><span class="line"><span class="comment"> *     &#125;</span></span><br><span class="line"><span class="comment"> *   &#125;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *   private final Sync sync = new Sync();</span></span><br><span class="line"><span class="comment"> *   public boolean isSignalled() &#123; return sync.isSignalled(); &#125;</span></span><br><span class="line"><span class="comment"> *   public void signal()         &#123; sync.releaseShared(1); &#125;</span></span><br><span class="line"><span class="comment"> *   public void await() throws InterruptedException &#123;</span></span><br><span class="line"><span class="comment"> *     sync.acquireSharedInterruptibly(1);</span></span><br><span class="line"><span class="comment"> *   &#125;</span></span><br><span class="line"><span class="comment"> * &#125;&#125;&lt;/pre&gt;</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.5</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Doug Lea</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+<h1 id="内部类-node-注解"><a href="#内部类-node-注解" class="headerlink" title="内部类 node 注解"></a>内部类 node 注解</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/12/31/java/juc/java-juc-AQS%E6%BA%90%E7%A0%81/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+        
+    </div>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/31/java/juc/java-juc-AQS/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -225,7 +722,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-11 09:59:48" itemprop="dateModified" datetime="2021-01-11T09:59:48+08:00">2021-01-11</time>
+                <time title="修改时间：2021-02-05 13:58:59" itemprop="dateModified" datetime="2021-02-05T13:58:59+08:00">2021-02-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -245,7 +742,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2k</span>
+              <span>2.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -265,9 +762,9 @@
 
       
           <h1 id="AQS"><a href="#AQS" class="headerlink" title="AQS"></a>AQS</h1><ul>
-<li>AQS 是一个用来构建锁和同步器的框架</li>
+<li> AQS ： AbstractQueuedSynchronizer ，即队列同步器。 是一个用来构建锁和同步器的框架</li>
 </ul>
-<h1 id="AQS的原理"><a href="#AQS的原理" class="headerlink" title="AQS的原理"></a>AQS的原理</h1>
+<h1 id="AQS-的原理"><a href="#AQS-的原理" class="headerlink" title="AQS 的原理"></a>AQS 的原理</h1>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/12/31/java/juc/java-juc-AQS/#more" rel="contents">
@@ -428,7 +925,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-11 09:59:48" itemprop="dateModified" datetime="2021-01-11T09:59:48+08:00">2021-01-11</time>
+                <time title="修改时间：2021-02-05 15:51:16" itemprop="dateModified" datetime="2021-02-05T15:51:16+08:00">2021-02-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -531,7 +1028,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-11 09:59:48" itemprop="dateModified" datetime="2021-01-11T09:59:48+08:00">2021-01-11</time>
+                <time title="修改时间：2021-02-04 19:54:39" itemprop="dateModified" datetime="2021-02-04T19:54:39+08:00">2021-02-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -603,7 +1100,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-id/">
+    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/31/java/juc/java-juc-%E7%B3%BB%E7%BB%9F%E6%95%B4%E7%90%86-juc%E5%85%A5%E9%97%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/favicon.png">
@@ -617,7 +1114,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/12/21/java/distributed/java-distributed-id/" class="post-title-link" itemprop="url">分布式id</a>
+            <a href="/2020/12/31/java/juc/java-juc-%E7%B3%BB%E7%BB%9F%E6%95%B4%E7%90%86-juc%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">juc学习--参考狂神说JUC视频笔记</a>
         </h2>
 
         <div class="post-meta">
@@ -627,14 +1124,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-12-21 00:00:00" itemprop="dateCreated datePublished" datetime="2020-12-21T00:00:00+08:00">2020-12-21</time>
+              <time title="创建时间：2020-12-31 08:21:34" itemprop="dateCreated datePublished" datetime="2020-12-31T08:21:34+08:00">2020-12-31</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-14 07:55:46" itemprop="dateModified" datetime="2021-01-14T07:55:46+08:00">2021-01-14</time>
+                <time title="修改时间：2021-02-07 17:24:03" itemprop="dateModified" datetime="2021-02-07T17:24:03+08:00">2021-02-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -654,14 +1151,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.1k</span>
+              <span>25k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
+              <span>23 分钟</span>
             </span>
 
         </div>
@@ -673,529 +1170,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="分布式ID生成器"><a href="#分布式ID生成器" class="headerlink" title="分布式ID生成器"></a>分布式ID生成器</h1><h2 id="一、需求缘起"><a href="#一、需求缘起" class="headerlink" title="一、需求缘起"></a><strong>一、需求缘起</strong></h2><p>几乎所有的业务系统，都有生成一个唯一记录标识的需求，例如：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/21/java/distributed/java-distributed-id/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-        
-    </div>
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-transaction/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/favicon.png">
-      <meta itemprop="name" content="yangl">
-      <meta itemprop="description" content="仅作为学习记录">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="yangl的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/21/java/distributed/java-distributed-transaction/" class="post-title-link" itemprop="url">分布式事务</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-21 00:00:00" itemprop="dateCreated datePublished" datetime="2020-12-21T00:00:00+08:00">2020-12-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-14 07:55:46" itemprop="dateModified" datetime="2021-01-14T07:55:46+08:00">2021-01-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>871</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
-<li>在分布式系统中实现事务，他其实是<strong>由多个本地事</strong>务组合而成。</li>
+          <p>参考：<a target="_blank" rel="noopener" href="https://gitee.com/kuangstudy/openclass/tree/master/%E3%80%90%E9%81%87%E8%A7%81%E7%8B%82%E7%A5%9E%E8%AF%B4%E3%80%91JUC%E8%A7%86%E9%A2%91%E7%AC%94%E8%AE%B0">[遇见狂神说]JUC视频笔记</a></p>
+<h1 id="什么是-JUC"><a href="#什么是-JUC" class="headerlink" title="什么是 JUC"></a>什么是 JUC</h1><ul>
+<li>JUC 就是 java.util.concurrent 下面的类包，专门用于多线程的开发。</li>
 </ul>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/12/21/java/distributed/java-distributed-transaction/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-        
-    </div>
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/21/java/distributed/java-distributed-locks/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/favicon.png">
-      <meta itemprop="name" content="yangl">
-      <meta itemprop="description" content="仅作为学习记录">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="yangl的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/21/java/distributed/java-distributed-locks/" class="post-title-link" itemprop="url">分布式锁</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-21 00:00:00" itemprop="dateCreated datePublished" datetime="2020-12-21T00:00:00+08:00">2020-12-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-14 07:55:46" itemprop="dateModified" datetime="2021-01-14T07:55:46+08:00">2021-01-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>14k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>13 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h1><h2 id="基于数据库"><a href="#基于数据库" class="headerlink" title="基于数据库"></a><strong>基于数据库</strong></h2><blockquote>
-<ul>
-<li>基于数据库表记录做唯一约束（表中记录方法名称）</li>
-<li>基于数据库表做悲观锁（InnoDB，for update）</li>
-<li>基于数据库表做乐观锁，用于分布式锁。（version）</li>
-</ul>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/21/java/distributed/java-distributed-locks/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-        
-    </div>
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/19/java/jvm/java-jvm-GC%E5%8F%82%E6%95%B0%E5%92%8C%E8%B0%83%E4%BC%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/favicon.png">
-      <meta itemprop="name" content="yangl">
-      <meta itemprop="description" content="仅作为学习记录">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="yangl的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/19/java/jvm/java-jvm-GC%E5%8F%82%E6%95%B0%E5%92%8C%E8%B0%83%E4%BC%98/" class="post-title-link" itemprop="url">GC参数和调优</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-19 21:50:39" itemprop="dateCreated datePublished" datetime="2020-12-19T21:50:39+08:00">2020-12-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-11 09:59:48" itemprop="dateModified" datetime="2021-01-11T09:59:48+08:00">2021-01-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>13</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="GC参数和调优"><a href="#GC参数和调优" class="headerlink" title="GC参数和调优"></a>GC参数和调优</h2><p>// TODO</p>
-
-      
-    </div>
-
-    <div>
-        
-    </div>
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/19/java/jvm/java-jvm-%E5%9E%83%E5%9C%BE%E5%88%86%E4%BB%A3%E6%94%B6%E9%9B%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/favicon.png">
-      <meta itemprop="name" content="yangl">
-      <meta itemprop="description" content="仅作为学习记录">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="yangl的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/19/java/jvm/java-jvm-%E5%9E%83%E5%9C%BE%E5%88%86%E4%BB%A3%E6%94%B6%E9%9B%86/" class="post-title-link" itemprop="url">垃圾分代收集</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-19 16:57:39" itemprop="dateCreated datePublished" datetime="2020-12-19T16:57:39+08:00">2020-12-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-11 09:59:48" itemprop="dateModified" datetime="2021-01-11T09:59:48+08:00">2021-01-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>448</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="垃圾分代收集"><a href="#垃圾分代收集" class="headerlink" title="垃圾分代收集"></a>垃圾分代收集</h1><ul>
-<li><p>Full GC ： 针对的是整个堆。包括：新生代、老年代、永久代。</p>
-</li>
-<li><p>针对HotSpot VM 的实现，他里面的GC其实准确分类只有两大类：</p>
-<ul>
-<li><p>部分收集器（Partial GC）：</p>
-<ul>
-<li>新生代收集器（Minor GC/ Yong GC）：只对新生代进行垃圾收集</li>
-<li>老年代收集器（Major GC/Old GC）：只对老年代进行垃圾收集。</li>
-<li>混合收集器（Mixed GC）：对整个新生代和部分老年代进行垃圾收集。</li>
-</ul>
-</li>
-<li><p>整堆收集（Full GC）：收集整个Java堆和方法区。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="堆的基本结构"><a href="#堆的基本结构" class="headerlink" title="堆的基本结构"></a>堆的基本结构</h1>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/19/java/jvm/java-jvm-%E5%9E%83%E5%9C%BE%E5%88%86%E4%BB%A3%E6%94%B6%E9%9B%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-        
-    </div>
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://yanglei1992.github.io/2020/12/19/java/jvm/java-jvm-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/favicon.png">
-      <meta itemprop="name" content="yangl">
-      <meta itemprop="description" content="仅作为学习记录">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="yangl的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/19/java/jvm/java-jvm-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/" class="post-title-link" itemprop="url">jvm(HotSpot)的垃圾回收器</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-19 16:57:39" itemprop="dateCreated datePublished" datetime="2020-12-19T16:57:39+08:00">2020-12-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-11 09:59:48" itemprop="dateModified" datetime="2021-01-11T09:59:48+08:00">2021-01-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="jvm垃圾的回收作用范围"><a href="#jvm垃圾的回收作用范围" class="headerlink" title="jvm垃圾的回收作用范围"></a>jvm垃圾的回收作用范围</h1><p>下面描述的收集器是基于 JDK1.7 Update 14 之后的 HotSpot 虚拟机，这个虚拟机包含的所有收集器如下图：如果两个收集器之间存在连线，就说明他们可以搭配使用。</p>
-<p><img src="/2020/12/19/java/jvm/java-jvm-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/1610272098369.png" alt="1610272098369"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/19/java/jvm/java-jvm-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/#more" rel="contents">
+              <a class="btn" href="/2020/12/31/java/juc/java-juc-%E7%B3%BB%E7%BB%9F%E6%95%B4%E7%90%86-juc%E5%85%A5%E9%97%A8/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1221,7 +1202,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1289,7 +1270,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">63</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1302,7 +1283,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1618,7 +1599,7 @@ if(canvas.getContext){
         <div class="widget-wrap">
           <div id="myCanvasContainer" class="widget tagcloud">
             <canvas width="250" height="250" id="resCanvas" style="width=100%">
-              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/distributed/" rel="tag">distributed</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/juc/" rel="tag">juc</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/" rel="tag">jvm</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/map/" rel="tag">map</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sort/" rel="tag">sort</a><span class="tag-list-count">1</span></li></ul>
+              <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/distributed/" rel="tag">distributed</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/juc/" rel="tag">juc</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jvm/" rel="tag">jvm</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/map/" rel="tag">map</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mq/" rel="tag">mq</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sort/" rel="tag">sort</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81/" rel="tag">源码</a><span class="tag-list-count">5</span></li></ul>
             </canvas>
           </div>
         </div>
@@ -1651,12 +1632,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">274k</span>
+    <span title="站点总字数">383k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:09</span>
+    <span title="站点阅读时长">5:48</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>

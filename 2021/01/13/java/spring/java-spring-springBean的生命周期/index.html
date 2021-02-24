@@ -22,17 +22,18 @@
     var CONFIG = {"hostname":"yanglei1992.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Spring Bean 的生命周期 如上图所示，Bean 的生命周期还是比较复杂的，下面来对上图每一个步骤做文字描述:">
+  <meta name="description" content="Spring Bean 的生命周期">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spring Bean 的生命周期">
 <meta property="og:url" content="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-springBean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/index.html">
 <meta property="og:site_name" content="yangl的博客">
-<meta property="og:description" content="Spring Bean 的生命周期 如上图所示，Bean 的生命周期还是比较复杂的，下面来对上图每一个步骤做文字描述:">
+<meta property="og:description" content="Spring Bean 的生命周期">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-springBean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/162465267a0c2c59">
+<meta property="og:image" content="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-springBean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/1614051098712.png">
 <meta property="og:image" content="https://yanglei1992.github.io/2021/01/13/java/spring/java-spring-springBean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/585cbd557cb14e9b987f874012847d28_tplv-k3u1fbpfcp-zoom-1.image">
 <meta property="article:published_time" content="2021-01-13T11:30:45.000Z">
-<meta property="article:modified_time" content="2021-01-14T00:55:22.566Z">
+<meta property="article:modified_time" content="2021-02-23T03:31:56.340Z">
 <meta property="article:author" content="yangl">
 <meta property="article:tag" content="Spring">
 <meta name="twitter:card" content="summary">
@@ -231,7 +232,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-14 08:55:22" itemprop="dateModified" datetime="2021-01-14T08:55:22+08:00">2021-01-14</time>
+                <time title="修改时间：2021-02-23 11:31:56" itemprop="dateModified" datetime="2021-02-23T11:31:56+08:00">2021-02-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -283,6 +284,7 @@
 
       
         <h1 id="Spring-Bean-的生命周期"><a href="#Spring-Bean-的生命周期" class="headerlink" title="Spring Bean 的生命周期"></a>Spring Bean 的生命周期</h1><p><img src="/2021/01/13/java/spring/java-spring-springBean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/162465267a0c2c59" alt="img"></p>
+<p><img src="/2021/01/13/java/spring/java-spring-springBean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/1614051098712.png" alt="1614051098712"></p>
 <p><strong>如上图所示，Bean 的生命周期还是比较复杂的，下面来对上图每一个步骤做文字描述:</strong></p>
 <ol>
 <li>Spring 启动，查找并加载需要被 Spring 管理的 bean，进行 Bean 的实例化</li>
@@ -452,23 +454,23 @@
         
         
           <li>
-            <a href="/2021/02/02/algorithm/sort/algorithm-sort/" title="十大经典排序算法" target="_blank">十大经典排序算法</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/18/mq/mq-mq-%E6%B6%88%E6%81%AF%E5%A0%86%E7%A7%AF%E5%A4%84%E7%90%86%E6%96%B9%E6%A1%88/" title="消息队列--消息堆积处理方案" target="_blank">消息队列--消息堆积处理方案</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/18/mq/mq-mq-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E6%A6%82%E8%BF%B0/" title="消息队列概述" target="_blank">消息队列概述</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/18/mq/mq-mq-MQ%E5%A4%BA%E5%91%BD%E8%BF%9E%E7%8E%AF11%E9%97%AE/" title="MQ夺命连环11问" target="_blank">MQ夺命连环11问</a>
+            <a href="/2021/02/01/java/juc/java-juc-%E7%BA%BF%E7%A8%8B%E6%B1%A0/" title="java多线程--线程池" target="_blank">java多线程--线程池</a>
           </li>
         
           <li>
             <a href="/2021/01/17/database/mysql/mysql-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" title="MySQL 分库分表" target="_blank">MySQL 分库分表</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/17/database/mysql/mysql-%E9%94%81/" title="MySQL InnoDB-锁" target="_blank">MySQL InnoDB-锁</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/17/database/mysql/mysql-%E6%97%A5%E5%BF%97/" title="MySQL 日志" target="_blank">MySQL 日志</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/17/database/mysql/mysql-explain%E8%AF%A6%E8%A7%A3/" title="MySQL explain详解" target="_blank">MySQL explain详解</a>
           </li>
         
       </ul>
@@ -782,12 +784,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">338k</span>
+    <span title="站点总字数">347k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">5:07</span>
+    <span title="站点阅读时长">5:15</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
